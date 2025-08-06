@@ -1,6 +1,6 @@
 <aside class="sidebar">
     <div class="sidebar-header">
-        <a href="panel.php"><span class="rookieverse">FRC ROOKIEVERSE</span></a>
+        <a style="text-decoration: none" href="panel.php"><span class="rookieverse">FRC ROOKIEVERSE</span></a>
     </div>
     <div class="sidebar-search">
         <input type="text" id="menu-search" class="search-input" placeholder="Menüde Ara...">

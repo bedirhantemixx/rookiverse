@@ -1,8 +1,11 @@
 <?php
-session_start();
-if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
-require_once '../config.php';
-$pdo = connectDB();
+
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once $projectRoot . '/admin/admin_header.php'; // Tasarım için
+
+if (!isset($_SESSION['team_logged_in'])) { header("Location: $projectRoot/team-login.php'"); exit(); }
+require_once($projectRoot . '/config.php');
+$pdo = get_db_connection();
 
 // Takıma ait kursları çek
 $stmt = $pdo->prepare("SELECT id, title, status FROM courses WHERE team_db_id = ? ORDER BY id DESC");
@@ -10,7 +13,6 @@ $stmt->execute([$_SESSION['team_db_id']]);
 $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $page_title = "Takım Paneli";
-require_once '../admin/admin_header.php'; // Tasarım için
 ?>
 
 <aside class="sidebar">

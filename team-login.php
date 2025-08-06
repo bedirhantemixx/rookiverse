@@ -10,7 +10,7 @@ $error_message = null;
 // Form gönderilmişse (kullanıcı "Giriş Yap" butonuna bastıysa)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    $pdo = connectDB(); // Veritabanına bağlan
+    $pdo = get_db_connection(); // Veritabanına bağlan
 
     // Formdan gelen verileri al
     $team_number = $_POST['team_number'];
