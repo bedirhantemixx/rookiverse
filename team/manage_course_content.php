@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../config.php'; // BASE_URL gibi sabitler için bu satırı koruyoruz.
 
-// --- YENİ GÜVENLİK KONTROLLERİ ---
+// --- GÜVENLİK KONTROLLERİ ---
 
 // 1. KURAL: Kullanıcı giriş yapmış mı?
 if (!isset($_SESSION['team_logged_in']) || !isset($_SESSION['team_db_id'])) {
@@ -10,15 +10,38 @@ if (!isset($_SESSION['team_logged_in']) || !isset($_SESSION['team_db_id'])) {
     exit();
 }
 
-// 2. KURAL: Kurs ID'si geçerli mi ve bu takıma mı ait?
+// 2. KURAL: Kurs ID'si geçerli mi?
 $course_id = $_GET['id'] ?? null;
 if (!$course_id) {
-    // Eğer URL'de ID yoksa, direkt yetkisiz sayfasına yönlendir.
     header('Location: http://localhost:8888/frc_rookieverse/team/unauthorized.php');
     exit();
 }
 
-$pdo = connectDB();
+// --- ÇALIŞTIĞI KANITLANMIŞ YENİ BAĞLANTI KODU ---
+// db_test.php'de başarıyla test ettiğimiz ayarları kullanıyoruz.
+try {
+    $host = '127.0.0.1';
+    $port = '3307';              // <-- TESPİT ETTİĞİMİZ DOĞRU PORT
+    $dbname = 'frc_rookieverse';
+    $user = 'root';
+    $pass = '';                  // <-- TESPİT ETTİĞİMİZ DOĞRU ŞİFRE (BOŞ)
+    $charset = 'utf8mb4';
+
+    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=$charset";
+    
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ];
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    // Bu kodun artık hata vermemesi gerekiyor ama her ihtimale karşı burada.
+    die("Veritabanı bağlantı hatası: " . $e->getMessage());
+}
+// --- BAĞLANTI DÜZELTMESİ SONU ---
+
+
 // Veritabanından kursu, ID ve takım ID'si eşleşiyorsa çek.
 $stmt = $pdo->prepare("SELECT title FROM courses WHERE id = :course_id AND team_db_id = :team_id");
 $stmt->execute([
@@ -32,9 +55,6 @@ if (!$course) {
     header('Location: http://localhost:8888/frc_rookieverse/team/unauthorized.php');
     exit();
 }
-
-// --- GÜVENLİK KONTROLLERİ SONU ---
-
 
 $page_title = "İçerik Yükle";
 ?>
@@ -101,8 +121,6 @@ $page_title = "İçerik Yükle";
 
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
-    // Bu kısımdaki JavaScript kodunda bir değişiklik yapmaya gerek yok.
-    // Önceki versiyonu olduğu gibi kullanabilirsiniz.
     lucide.createIcons();
 
     function setupDropZone(options) {
@@ -148,7 +166,7 @@ $page_title = "İçerik Yükle";
             formData.append('upload_type', inputId.includes('cover') ? 'cover' : 'intro');
 
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', uploadUrl, true);
+            xhr.open('POST', 'save_course_files.php', true);
 
             xhr.upload.addEventListener('progress', function(e) {
                 if (e.lengthComputable) {
@@ -162,17 +180,24 @@ $page_title = "İçerik Yükle";
 
             xhr.onload = function() {
                 if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    if (response.success) {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            previewElement.src = reader.result;
-                            progressContainer.classList.add('hidden');
-                            previewContainer.classList.remove('hidden');
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                previewElement.src = reader.result;
+                                progressContainer.classList.add('hidden');
+                                previewContainer.classList.remove('hidden');
+                            }
+                            reader.readAsDataURL(file);
+                        } else {
+                            alert('Yükleme hatası: ' + response.message);
+                            resetDropZone();
                         }
-                        reader.readAsDataURL(file);
-                    } else {
-                        alert('Yükleme hatası: ' + response.message);
+                    } catch (e) {
+                        alert('Sunucudan geçersiz bir yanıt alındı. Lütfen sunucu loglarını kontrol edin.');
+                        console.error("JSON Parse Error:", e);
+                        console.error("Response Text:", xhr.responseText);
                         resetDropZone();
                     }
                 } else {
