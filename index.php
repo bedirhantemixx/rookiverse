@@ -1,4 +1,4 @@
-eee <?php require_once 'config.php'; ?>
+<?php require_once 'config.php'; ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -33,7 +33,7 @@ eee <?php require_once 'config.php'; ?>
               <p class="text-xl text-gray-600 max-w-lg"><b class="block mb-4">Türk FRC takımlarının hazırladığı tüm Türkçe doküman ve eğitim videoları artık tek çatı altında!</b> Rookie üyeler, ihtiyacınız olan kaynaklara zahmetsizce ulaşarak robotik serüveninize güçlü bir başlangıç yapın.</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-4">
-              <a href="<?php echo BASE_URL; ?>/courses" class="inline-flex items-center justify-center bg-custom-yellow hover:bg-opacity-90 text-white px-8 py-3 text-lg font-semibold rounded-lg"><i data-lucide="play" class="mr-2 w-5 h-5"></i>Kurslara Başla</a>
+              <a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center bg-custom-yellow hover:bg-opacity-90 text-white px-8 py-3 text-lg font-semibold rounded-lg"><i data-lucide="play" class="mr-2 w-5 h-5"></i>Kurslara Başla</a>
               <a href="<?php echo BASE_URL; ?>/games" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-lg"><i data-lucide="gamepad-2" class="mr-2 w-5 h-5"></i>Oyunları Keşfet</a>
             </div>
           </div>
