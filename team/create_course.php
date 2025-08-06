@@ -6,13 +6,14 @@ header("Pragma: no-cache");
 session_start();
 // ... kodunuzun geri kalanı ...
 // Dosyanın en başındaki PHP kodunu bu şekilde güncelleyin
-session_start();
+
 if (!isset($_SESSION['team_logged_in']) || !isset($_SESSION['team_db_id'])) { 
     header('Location: ../team-login.php?error=session_expired'); exit(); 
 }
-require_once '../config.php';
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 
-$pdo = connectDB();
+$pdo = get_db_connection();
 // Sadece durumu 'approved' olan kategorileri çek
 $categories = $pdo->query("SELECT * FROM categories WHERE status = 'approved'")->fetchAll(PDO::FETCH_ASSOC);
 $page_title = "Yeni Kurs Oluştur - Adım 1";
@@ -23,11 +24,11 @@ $page_title = "Yeni Kurs Oluştur - Adım 1";
     <meta charset="UTF-8">
     <title><?php echo $page_title; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/create_course.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/create_course.css">
 </head>
 <body class="bg-gray-100">
-<?php require_once '../navbar.php'; ?>
+<?php require_once $projectRoot . '/navbar.php'; ?>
 
 <div class="max-w-4xl mx-auto py-12 px-4">
     <div class="flex justify-between items-center mb-8">
