@@ -1,18 +1,18 @@
 <?php
 session_start();
-
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
 // 1. ADIM: Oturum kontrolü
 // Eğer kullanıcı giriş yapmamışsa veya takım numarası oturumda yoksa, yetkisiz sayfasına yönlendir.
 if (!isset($_SESSION['team_logged_in']) || !isset($_SESSION['team_number'])) { 
-    header('Location: http://localhost:8888/frc_rookieverse/team/unauthorized.php'); 
+    header("Location: $projectRoot/team/unauthorized.php");
     exit(); 
 }
 
 // 2. ADIM: Sadece form POST metodu ile gönderildiğinde devam et
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    require_once($projectRoot . '/config.php');
     
-    require_once '../config.php';
-    $pdo = connectDB();
+    $pdo = get_db_connection();
     
     try {
         // 3. ADIM (GÜVENLİK DÜZELTMESİ): Oturumdaki 'team_db_id'ye GÜVENME!
