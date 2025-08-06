@@ -1,6 +1,6 @@
 /* Genel Stil ve Değişkenler */
 :root {
-    --primary-color: ;
+    --primary-color: #E5AE32 ;
     --primary-hover: #c4952b;
     --background-color: #f7f7f7;
     --card-background: #ffffff;
@@ -79,6 +79,10 @@ body {
 /* Buton Stili */
 .btn {
     display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 2rem;
-    background-color: var(--primary-color); color: white; border: none; border-radius: 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
     cursor: pointer; font-size: 1.1rem; font-weight: 600; text-decoration: none;
+
 }

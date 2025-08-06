@@ -80,6 +80,8 @@ $page_title = "Yeni Kurs Oluştur - Adım 1";
         <div class="mb-4">
             <label for="new_category_name" class="block text-left font-semibold text-gray-700 mb-2">Önerdiğiniz Kategori Adı</label>
             <input type="text" id="new_category_name" class="form-input w-full" placeholder="Yeni kategori adı...">
+            <div id="category-error-message" class="error-text"></div>
+
         </div>
         <div class="flex gap-4 mt-6">
             <button type="button" onclick="submitCategory()" class="btn w-full">Öneriyi Gönder</button>
@@ -176,19 +178,5 @@ $page_title = "Yeni Kurs Oluştur - Adım 1";
     .input-error { border-color: #dc2626 !important; }
 </style>
 
-<div id="category-popup" class="popup-overlay">
-    <div class="popup-content">
-        <h2 class="text-2xl font-bold mb-4">Yeni Kategori Öner</h2>
-        <div class="mb-4">
-            <label for="new_category_name" class="block text-left font-semibold text-gray-700 mb-2">Önerdiğiniz Kategori Adı</label>
-            <input type="text" id="new_category_name" class="form-input w-full" placeholder="Yeni kategori adı...">
-            <div id="category-error-message" class="error-text"></div>
-        </div>
-        <div class="flex gap-4 mt-6">
-            <button type="button" onclick="submitCategory()" class="btn w-full">Öneriyi Gönder</button>
-            <button type="button" onclick="closePopup('category-popup')" class="w-full btn bg-gray-300 text-gray-800 hover:bg-gray-400">İptal</button>
-        </div>
-    </div>
-</div>
 </body>
 </html>
