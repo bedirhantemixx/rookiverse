@@ -1,4 +1,6 @@
 <?php
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 // Session'ı başlat.
 session_start();
 header('Content-Type: application/json'); // Bu dosyanın JSON döndüreceğini belirtiyoruz
@@ -17,7 +19,7 @@ if ($remaining_time > 0) {
 
 // Veritabanı bağlantısı
 try {
-    $pdo = new PDO("mysql:unix_socket=/Applications/MAMP/tmp/mysql/mysql.sock;dbname=frc_rookieverse;charset=utf8mb4", "root", "root");
+    $pdo = get_db_connection();
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası.']);

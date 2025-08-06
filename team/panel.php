@@ -1,7 +1,7 @@
 <?php
-
+session_start();
 $projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
-require_once $projectRoot . '/admin/admin_header.php'; // Tasarım için
+require_once 'team_header.php'; // Tasarım için
 
 if (!isset($_SESSION['team_logged_in'])) { header("Location: $projectRoot/team-login.php'"); exit(); }
 require_once($projectRoot . '/config.php');
