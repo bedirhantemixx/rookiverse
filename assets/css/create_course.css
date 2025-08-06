@@ -79,7 +79,7 @@ body {
 /* Buton Stili */
 .btn {
     display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 2rem;
-    background-color: var(--primary-color);
+    background-color: #E5AE32;
     color: white;
     border: none;
     border-radius: 0.5rem;

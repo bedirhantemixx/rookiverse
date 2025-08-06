@@ -11,7 +11,7 @@ if (!isset($_SESSION['team_logged_in']) || !isset($_SESSION['team_number'])) {
 // 2. ADIM: Sadece form POST metodu ile gönderildiğinde devam et
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once($projectRoot . '/config.php');
-    
+
     $pdo = get_db_connection();
     
     try {
