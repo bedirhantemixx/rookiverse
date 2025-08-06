@@ -48,18 +48,18 @@
             <div class="hidden md:flex items-center space-x-8">
                 <a
                     class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50"
-                    href="courses.html" data-discover="true">Kurslar</a>
+                    href="courses.php" data-discover="true">Kurslar</a>
                 <a
                     class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50"
-                    href="games.html" data-discover="true">Oyunlar</a>
+                    href="games.php" data-discover="true">Oyunlar</a>
                 <a
                     class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50"
-                    href="season.html" data-discover="true">2026 Sezonu</a>
+                    href="season.php" data-discover="true">2026 Sezonu</a>
                 <a
                     class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50"
-                    href="contact.html" data-discover="true">İletişim</a>
+                    href="contact.php" data-discover="true">İletişim</a>
                 <a
-                    href="team-login.html"
+                    href="team-login.php"
                     class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-9 bg-[#E5AE32] hover:bg-[#E5AE32]/90 text-white font-semibold px-6 py-2 rounded-lg transition-all duration-200 transform hover:scale-105"
                 >
                     <i data-lucide="log-in"></i>

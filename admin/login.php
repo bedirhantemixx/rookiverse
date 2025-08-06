@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../config.php';
 
 // Hata mesajı için boş bir değişken tanımla
 $error_message = null;
