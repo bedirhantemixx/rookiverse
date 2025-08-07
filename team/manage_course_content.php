@@ -1,12 +1,13 @@
 <?php
 session_start();
-require_once '../config.php'; // BASE_URL gibi sabitler için bu satırı koruyoruz.
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 
 // --- GÜVENLİK KONTROLLERİ ---
 
 // 1. KURAL: Kullanıcı giriş yapmış mı?
 if (!isset($_SESSION['team_logged_in']) || !isset($_SESSION['team_db_id'])) {
-    header('Location: http://localhost:8888/frc_rookieverse/team/unauthorized.php');
+    header("Location: $projectRoot/team/unauthorized.php");
     exit();
 }
 
@@ -17,28 +18,7 @@ if (!$course_id) {
     exit();
 }
 
-// --- ÇALIŞTIĞI KANITLANMIŞ YENİ BAĞLANTI KODU ---
-// db_test.php'de başarıyla test ettiğimiz ayarları kullanıyoruz.
-try {
-    $host = '127.0.0.1';
-    $port = '3307';              // <-- TESPİT ETTİĞİMİZ DOĞRU PORT
-    $dbname = 'frc_rookieverse';
-    $user = 'root';
-    $pass = '';                  // <-- TESPİT ETTİĞİMİZ DOĞRU ŞİFRE (BOŞ)
-    $charset = 'utf8mb4';
-
-    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=$charset";
-    
-    $options = [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ];
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-    // Bu kodun artık hata vermemesi gerekiyor ama her ihtimale karşı burada.
-    die("Veritabanı bağlantı hatası: " . $e->getMessage());
-}
+$pdo = get_db_connection();
 // --- BAĞLANTI DÜZELTMESİ SONU ---
 
 
@@ -64,11 +44,11 @@ $page_title = "İçerik Yükle";
     <meta charset="UTF-8">
     <title><?php echo $page_title; ?> - <?php echo htmlspecialchars($course['title']); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/manage_content.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/manage_content.css">
 </head>
 <body class="bg-gray-100">
-<?php require_once '../navbar.php'; ?>
+<?php require_once $projectRoot . '/navbar.php'; ?>
 
 <div class="max-w-4xl mx-auto py-12 px-4">
     <div class="flex justify-between items-center mb-8">

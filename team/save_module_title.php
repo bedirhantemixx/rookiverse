@@ -1,10 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['team_logged_in'])) { exit('Yetkisiz erişim'); }
-require_once '../config.php';
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id']) && !empty(trim($_POST['title']))) {
-    $pdo = connectDB();
+    $pdo = get_db_connection();
     $course_id = $_POST['course_id'];
     $title = trim($_POST['title']);
     // ... Security check ...

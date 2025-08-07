@@ -12,12 +12,13 @@ if (!isset($_SESSION['team_logged_in']) || !isset($_SESSION['team_db_id'])) {
 }
 
 // config.php dosyasını dahil et
-require_once '../config.php';
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 
 // Formun doğru metotla gönderildiğini ve gerekli ID'nin geldiğini kontrol et
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
     
-    $pdo = connectDB(); // Veritabanı bağlantısını kur
+    $pdo = get_db_connection(); // Veritabanı bağlantısını kur
     $course_id = $_POST['course_id'];
     $team_db_id = $_SESSION['team_db_id'];
 

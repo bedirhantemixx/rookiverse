@@ -1,12 +1,13 @@
 <?php
 // Session kontrolü
 session_start();
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
-require_once '../config.php';
 $course_id = $_GET['id'] ?? null;
 if (!$course_id) { die("Kurs ID'si bulunamadı."); }
 
-$pdo = connectDB();
+$pdo = get_db_connection();
 
 // KURAL 1: Bu sayfa sadece ilk defa içerik oluşturulurken kullanılır.
 $stmt_check = $pdo->prepare("SELECT COUNT(*) as module_count FROM course_modules WHERE course_id = ?");

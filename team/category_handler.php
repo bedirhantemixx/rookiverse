@@ -5,7 +5,8 @@ if (!isset($_SESSION['team_logged_in'])) {
     echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim.']);
     exit();
 }
-require_once '../config.php';
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 
 $input = json_decode(file_get_contents('php://input'), true);
 $categoryName = isset($input['name']) ? trim($input['name']) : '';
@@ -16,7 +17,7 @@ if (empty($categoryName)) {
 }
 
 try {
-    $pdo = connectDB();
+    $pdo = get_db_connection();
 
     // 1. Bu kategori adının var olup olmadığını ve durumunu kontrol et
     $stmt_check = $pdo->prepare("SELECT id, name, status FROM categories WHERE UPPER(name) = UPPER(?)");

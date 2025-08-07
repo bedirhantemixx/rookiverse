@@ -3,8 +3,9 @@ session_start();
 if (!isset($_SESSION['team_logged_in'])) {
     exit('Yetkisiz erişim');
 }
-require_once '../config.php';
-$pdo = connectDB();
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
+$pdo = get_db_connection();
 
 /**
  * PHP'nin karmaşık $_FILES dizisini daha mantıklı bir yapıya dönüştürür.

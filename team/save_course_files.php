@@ -1,11 +1,12 @@
 <?php
 session_start();
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 header('Content-Type: application/json');
 if (!isset($_SESSION['team_logged_in'])) { 
     echo json_encode(['success' => false, 'message' => 'Yetkisiz erişim.']);
     exit();
 }
-require_once '../config.php';
 
 $response = ['success' => false, 'message' => 'Geçersiz istek.'];
 
@@ -24,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['file']) && isset($_PO
     $target_file = $target_dir . $new_file_name;
 
     if (move_uploaded_file($file["tmp_name"], $target_file)) {
-        $pdo = connectDB();
+        $pdo = get_db_connection();
         $db_column = ($upload_type === 'cover') ? 'cover_image_url' : 'intro_video_url';
         
         $stmt = $pdo->prepare("UPDATE courses SET $db_column = ? WHERE id = ? AND team_db_id = ?");

@@ -1,11 +1,12 @@
 <?php
 session_start();
 if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
-require_once '../config.php';
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 $course_id = $_GET['id'] ?? null;
 if (!$course_id) { die("Kurs ID'si bulunamadı."); }
 
-$pdo = connectDB();
+$pdo = get_db_connection();
 // Güvenlik ve kurs başlığını alma
 $stmt_course = $pdo->prepare("SELECT title, status FROM courses WHERE id = ? AND team_db_id = ?");
 $stmt_course->execute([$course_id, $_SESSION['team_db_id']]);
@@ -24,8 +25,8 @@ $page_title = "Bölüm Yönetimi";
 <head>
     <title><?php echo $page_title; ?> - <?php echo htmlspecialchars($course['title']); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/manage_curriculum.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/manage_curriculum.css">
 </head>
 <body class="bg-gray-100">
 <?php require_once '../navbar.php'; ?>

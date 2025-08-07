@@ -1,7 +1,8 @@
 <?php
 session_start();
-require_once '../config.php'; 
-$pdo = connectDB();
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
+$pdo = get_db_connection();
 
 // Güvenlik: Kullanıcının giriş yapıp yapmadığını ve formun POST ile gönderildiğini kontrol et
 if (!isset($_SESSION['team_logged_in']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {

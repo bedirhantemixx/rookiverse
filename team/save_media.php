@@ -1,12 +1,14 @@
 <?php
+
 session_start();
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
 if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
-require_once '../config.php';
 
 $course_id = $_POST['course_id'] ?? null;
 if (!$course_id) { die("Geçersiz kurs ID'si."); }
 
-$pdo = connectDB();
+$pdo = get_db_connection();
 
 // Kapak fotoğrafını işle
 if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {

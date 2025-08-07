@@ -1,4 +1,5 @@
-<?php require_once '../config.php'; ?>
+<?php $projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php'); ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>

@@ -1,8 +1,9 @@
 <?php
 session_start();
 if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
-require_once '../config.php';
-$pdo = connectDB();
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once($projectRoot . '/config.php');
+$pdo = get_db_connection();
 
 // Dosya yükleme ve dizi düzenleme yardımcı fonksiyonları
 function reorganize_files_array($files_arr) { /* ... (önceki cevaptaki gibi) ... */ }
