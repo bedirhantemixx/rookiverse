@@ -45,7 +45,7 @@ $page_title = "Bölüm İçeriğini Düzenle";
         <a href="view_curriculum.php?id=<?php echo $module['course_id']; ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Geri Dön</a>
     </div>
     
-    <form id="module-form" action="save_module_content.php" method="POST" enctype="multipart/form-data">
+    <form id="module-form" action="update_module.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="module_id" value="<?php echo $module_id; ?>">
         <input type="hidden" name="course_id" value="<?php echo $module['course_id']; ?>">
         

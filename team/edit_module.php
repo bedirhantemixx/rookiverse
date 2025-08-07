@@ -33,7 +33,7 @@ $page_title = "Bölüm Başlığını Düzenle";
         <a href="view_curriculum.php?id=<?php echo $module['course_id']; ?>" class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Geri Dön</a>
     </div>
     
-    <form action="save_module.php" method="POST">
+    <form action="update_module_title.php" method="POST">
         <input type="hidden" name="action" value="edit_title">
         <input type="hidden" name="module_id" value="<?php echo $module['id']; ?>">
         <input type="hidden" name="course_id" value="<?php echo $module['course_id']; ?>">
