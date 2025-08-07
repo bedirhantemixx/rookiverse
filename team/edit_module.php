@@ -22,8 +22,8 @@ $page_title = "Bölüm Başlığını Düzenle";
 <head>
     <title><?php echo $page_title; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/manage_curriculum.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/manage_curriculum.css">
 </head>
 <body class="bg-gray-100">
 <?php require_once '../navbar.php'; ?>

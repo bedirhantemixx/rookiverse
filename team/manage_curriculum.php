@@ -30,7 +30,7 @@ if (!$course) { die("Hata: Bu kurs size ait değil veya bulunamadı."); }
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3. Adım: Kurs İçeriğini Oluştur - <?php echo htmlspecialchars($course['title']); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
     <style>
         :root {
             --primary-color: #E5AE32; --primary-hover: #c4952b; --background-color: #f7f7ff;

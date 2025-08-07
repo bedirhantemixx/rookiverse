@@ -20,7 +20,7 @@ $page_title = "Kurs Bilgilerini Düzenle";
 <html lang="tr">
 <head>
     <title><?php echo $page_title; ?></title>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/create_course.css">
+    <link rel="stylesheet" href="../assets/css/create_course.css">
     </head>
 <body class="bg-gray-100">
 <?php require_once '../navbar.php'; ?>

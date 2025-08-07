@@ -11,7 +11,7 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
 <html lang="tr">
 <head>
     <title>2. Adım: Görsel İçerikler</title>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/manage_content.css">
+    <link rel="stylesheet" href="../assets/css/manage_content.css">
     </head>
 <body class="bg-gray-100">
 <?php require_once '../navbar.php'; ?>

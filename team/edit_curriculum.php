@@ -25,7 +25,7 @@ if ($stmt_check_modules->fetchColumn() > 0) {
 <head>
     <title>İlk Bölümü Oluştur - <?php echo htmlspecialchars($course['title']); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
     <style>
         :root {
             --primary-color: #E5AE32; --primary-hover: #c4952b; --background-color: #f7f7f7;
