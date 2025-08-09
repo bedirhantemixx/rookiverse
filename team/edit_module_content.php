@@ -100,7 +100,7 @@ $page_title = "Bölüm İçeriğini Düzenle";
                 <?php endforeach; ?>
             </div>
             <div class="flex gap-4 mt-6 border-t pt-4">
-                <button type="button" class="add-content-btn btn btn-secondary btn-sm" data-type="video"><i data-lucide="video-plus"></i> Video Ekle</button>
+                <button type="button" class="add-content-btn btn btn-secondary btn-sm" data-type="video"><i data-lucide="video"></i> Video Ekle</button>
                 <button type="button" class="add-content-btn btn btn-secondary btn-sm" data-type="document"><i data-lucide="file-plus"></i> Döküman Ekle</button>
                 <button type="button" class="add-content-btn btn btn-secondary btn-sm" data-type="text"><i data-lucide="pilcrow"></i> Metin Ekle</button>
             </div>
