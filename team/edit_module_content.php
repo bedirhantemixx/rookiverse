@@ -20,7 +20,7 @@ $module = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$module) { die("Hata: Bu bölümü düzenleme yetkiniz yok veya bölüm bulunamadı."); }
 
 // Bu bölüme ait MEVCUT içerikleri veritabanından çek
-$stmt_contents = $pdo->prepare("SELECT * FROM module_contents WHERE module_id = ? ORDER BY sort_order ASC");
+$stmt_contents = $pdo->prepare("SELECT * FROM module_contents WHERE id = ? ORDER BY sort_order ASC");
 $stmt_contents->execute([$module_id]);
 $contents = $stmt_contents->fetchAll(PDO::FETCH_ASSOC);
 
@@ -44,72 +44,154 @@ $page_title = "Bölüm İçeriğini Düzenle";
         </div>
         <a href="view_curriculum.php?id=<?php echo $module['course_id']; ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Geri Dön</a>
     </div>
-    
+
+    <?php
+    // ---- Tek satırı (JSON) çek ve payload'ı hazırla ----
+    $payload = [
+        'text'     => ['title' => '', 'body' => ''],
+        'document' => ['title' => '', 'path' => ''],
+        'video'    => ['title' => '', 'path' => ''],
+    ];
+
+    $existing_id = '';
+
+    try {
+        $stmt = $pdo->prepare("SELECT id, data FROM module_contents WHERE module_id = ? LIMIT 1");
+        $stmt->execute([$module_id]);
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $existing_id = (string)$row['id'];
+            $decoded = json_decode($row['data'] ?? '', true);
+            if (is_array($decoded)) {
+                // mevcut alanları override et
+                $payload = array_replace_recursive($payload, $decoded);
+            }
+        }
+    } catch (Exception $e) {
+        // burayı loglayabilirsin, form yine boşlarla çalışır
+    }
+    ?>
+
+    <?php
+    // GEREKENLER: $pdo, $module_id, $module['course_id'], BASE_URL
+
+    // Varolan tek satırı çek
+    $row = null;
+    $existing_id = '';
+    try {
+        $stmt = $pdo->prepare("SELECT id, title, data, data_file, data_vid FROM module_contents WHERE module_id = ? LIMIT 1");
+        $stmt->execute([$module_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        if ($row) $existing_id = (string)$row['id'];
+    } catch (Exception $e) {
+        // loglayabilirsin, form boş da çalışır
+    }
+
+    $title          = $row['title']     ?? '';
+    $text_body      = $row['data']      ?? '';
+    $document_path  = $row['data_file'] ?? '';
+    $video_path     = $row['data_vid']  ?? '';
+    ?>
+
     <form id="module-form" action="update_module.php" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="module_id" value="<?php echo $module_id; ?>">
-        <input type="hidden" name="course_id" value="<?php echo $module['course_id']; ?>">
-        
+        <input type="hidden" name="module_id" value="<?= (int)$module_id ?>">
+        <input type="hidden" name="course_id" value="<?= (int)$module['course_id'] ?>">
+        <input type="hidden" name="existing_id" value="<?= htmlspecialchars($existing_id) ?>">
+
         <div class="card space-y-6">
-            <div class="content-items-container space-y-4">
-                <?php foreach($contents as $content): ?>
-                    <div class="content-item" data-content-id="<?php echo $content['id']; ?>">
-                        <input type="hidden" name="contents[<?php echo $content['id']; ?>][type]" value="<?php echo $content['content_type']; ?>">
-                        <?php if ($content['content_type'] === 'text'): ?>
-                            <div class="content-item-header">
-                                <div class="flex items-center gap-2"><i data-lucide="type"></i> Metin</div>
-                                <div class="module-actions"><button type="button" class="delete-content-btn text-red-500"><i data-lucide="trash-2"></i></button></div>
-                            </div>
-                            <div class="content-item-body space-y-2">
-                                <input type="text" name="contents[<?php echo $content['id']; ?>][title]" class="form-input font-bold" placeholder="Başlık (opsiyonel)" value="<?php echo htmlspecialchars($content['title'] ?? ''); ?>">
-                                <div class="editor-toolbar">
-                                    <button type="button" class="editor-button" data-command="bold"><b>B</b></button>
-                                    <button type="button" class="editor-button" data-command="italic"><i>I</i></button>
-                                    <button type="button" class="editor-button link-btn"><i data-lucide="link"></i></button>
-                                    <button type="button" class="editor-button" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
-                                    <button type="button" class="editor-button" data-command="insertOrderedList"><i data-lucide="list-ordered"></i></button>
-                                </div>
-                                <div class="editable-content" contenteditable="true"><?php echo $content['data']; ?></div>
-                                <textarea name="contents[<?php echo $content['id']; ?>][paragraph]" class="hidden"><?php echo htmlspecialchars($content['data']); ?></textarea>
-                            </div>
-                        <?php else: ?>
-                            <div class="content-item-header">
-                                <div class="flex items-center gap-2"><i data-lucide="<?php echo $content['content_type'] === 'video' ? 'video' : 'file-text'; ?>"></i> <?php echo $content['content_type'] === 'video' ? 'Video' : 'Döküman'; ?></div>
-                                <div class="module-actions"><button type="button" class="delete-content-btn text-red-500"><i data-lucide="trash-2"></i></button></div>
-                            </div>
-                            <div class="content-item-body">
-                                <div class="horizontal-upload-card">
-                                    <div class="upload-preview-thumb">
-                                        <?php if($content['content_type'] === 'video'): ?>
-                                            <video src="<?php echo BASE_URL . '/' . $content['data']; ?>" class="w-full h-full object-cover"></video>
-                                        <?php else: ?>
-                                            <i data-lucide="file-check-2"></i>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="upload-drop-area">
-                                        <div class="upload-info">
-                                            <div class="file-name"><?php echo basename($content['data']); ?></div>
-                                            <p class="text-xs text-gray-500 mt-1">Yeni dosya yüklemek için buraya tıklayın veya sürükleyin.</p>
-                                        </div>
-                                        <input type="file" name="contents[<?php echo $content['id']; ?>][file]" class="hidden-input" accept="<?php echo $content['content_type'] === 'video' ? 'video/*' : '.pdf,.doc,.docx'; ?>">
-                                        <input type="hidden" name="contents[<?php echo $content['id']; ?>][existing_file]" value="<?php echo $content['data']; ?>">
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+
+            <!-- GENEL BAŞLIK (opsiyonel) -->
+            <div class="content-item">
+                <div class="content-item-header">
+                    <div class="flex items-center gap-2"><i data-lucide="heading-1"></i> Başlık</div>
+                </div>
+                <div class="content-item-body">
+                    <input
+                            type="text"
+                            name="title"
+                            class="form-input"
+                            placeholder="Başlık (opsiyonel)"
+                            value="<?= htmlspecialchars($title) ?>">
+                </div>
+            </div>
+
+            <!-- METİN (opsiyonel) -->
+            <div class="content-item">
+                <div class="content-item-header">
+                    <div class="flex items-center gap-2"><i data-lucide="type"></i> Metin</div>
+                </div>
+                <div class="content-item-body">
+        <textarea
+                name="text_body"
+                class="form-textarea"
+                rows="8"
+                placeholder="Metin içeriği (opsiyonel)"><?= htmlspecialchars($text_body) ?></textarea>
+                </div>
+            </div>
+
+            <!-- VİDEO (opsiyonel) -->
+            <div class="content-item">
+                <div class="content-item-header">
+                    <div class="flex items-center gap-2"><i data-lucide="video"></i> Video</div>
+                </div>
+                <div class="content-item-body">
+                    <?php if (!empty($video_path)): ?>
+                        <div class="mb-2 text-sm">
+                            Mevcut video: <code><?= htmlspecialchars(basename($video_path)) ?></code>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="mt-2">
+                        <label class="block text-sm mb-1">Yeni video yükle (opsiyonel)</label>
+                        <input type="file" name="video_file" accept="video/*">
                     </div>
-                <?php endforeach; ?>
+
+                    <!-- yeni dosya gelmezse mevcut korunsun -->
+                    <input type="hidden" name="video_existing_path" value="<?= htmlspecialchars($video_path) ?>">
+                    <!-- İstersen temizle seçeneği (opsiyonel) -->
+                    <label class="inline-flex items-center gap-2 mt-2 text-sm">
+                      <input type="checkbox" name="video_clear" value="1"> Videoyu kaldır
+                    </label>
+                </div>
             </div>
-            <div class="flex gap-4 mt-6 border-t pt-4">
-                <button type="button" class="add-content-btn btn btn-secondary btn-sm" data-type="video"><i data-lucide="video"></i> Video Ekle</button>
-                <button type="button" class="add-content-btn btn btn-secondary btn-sm" data-type="document"><i data-lucide="file-plus"></i> Döküman Ekle</button>
-                <button type="button" class="add-content-btn btn btn-secondary btn-sm" data-type="text"><i data-lucide="pilcrow"></i> Metin Ekle</button>
+
+            <!-- DÖKÜMAN (opsiyonel) -->
+            <div class="content-item">
+                <div class="content-item-header">
+                    <div class="flex items-center gap-2"><i data-lucide="file-text"></i> Döküman</div>
+                </div>
+                <div class="content-item-body">
+                    <?php if (!empty($document_path)): ?>
+                        <div class="mb-2 text-sm">
+                            Mevcut döküman: <code><?= htmlspecialchars(basename($document_path)) ?></code>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="mt-2">
+                        <label class="block text-sm mb-1">Yeni döküman yükle (opsiyonel)</label>
+                        <input type="file" name="document_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">
+                    </div>
+
+                    <!-- yeni dosya gelmezse mevcut korunsun -->
+                    <input type="hidden" name="document_existing_path" value="<?= htmlspecialchars($document_path) ?>">
+                    <!-- İstersen temizle seçeneği (opsiyonel) -->
+                    <label class="inline-flex items-center gap-2 mt-2 text-sm">
+                      <input type="checkbox" name="document_clear" value="1"> Dökümanı kaldır
+                    </label>
+                </div>
             </div>
+
         </div>
 
         <div class="text-right mt-8">
-            <button type="submit" class="btn text-lg"><i data-lucide="save" class="mr-2"></i> Bölümü Kaydet</button>
+            <button type="submit" class="btn text-lg">
+                <i data-lucide="save" class="mr-2"></i> Bölümü Kaydet
+            </button>
         </div>
     </form>
+
+
+
+
 </div>
 <div id="link-modal" class="modal-overlay"><div class="modal-content"><div class="p-6"><h2 class="text-xl font-bold mb-4">Link Ekle/Düzenle</h2><div class="space-y-2"><label for="link-url" class="font-medium text-gray-700">URL Adresi</label><input type="url" id="link-url" class="form-input p-2 border" placeholder="https://www.example.com"></div></div><div class="bg-gray-100 p-4 flex justify-end gap-4 rounded-b-lg"><button type="button" id="cancel-link-btn" class="btn btn-secondary">İptal</button><button type="button" id="apply-link-btn" class="btn">Linki Uygula</button></div></div></div>
 
