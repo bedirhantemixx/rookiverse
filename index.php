@@ -1,4 +1,6 @@
-<?php require_once 'config.php'; ?>
+<?php require_once 'config.php';
+//a
+?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
