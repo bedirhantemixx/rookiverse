@@ -2,10 +2,6 @@
 // Hata raporlamayı açarak, olası sorunları net bir şekilde görmemizi sağlar.
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-session_start();
-// Sitenin ana URL'sini tanımla
-//define('BASE_URL', 'http://localhost:8888/frc_rookieverse');
-
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
 $domain = $_SERVER['HTTP_HOST'];
 $path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
