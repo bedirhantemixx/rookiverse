@@ -2,7 +2,7 @@
 // Hata raporlamayı açarak, olası sorunları net bir şekilde görmemizi sağlar.
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-
+session_start();
 // Sitenin ana URL'sini tanımla
 //define('BASE_URL', 'http://localhost:8888/frc_rookieverse');
 
