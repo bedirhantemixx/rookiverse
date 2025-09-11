@@ -14,7 +14,7 @@
                 <a href="<?php echo BASE_URL; ?>/team-login" class="inline-flex items-center justify-center gap-2 h-9 bg-[#E5AE32] hover:bg-[#E5AE32]/90 text-white font-semibold px-6 py-2 rounded-lg">
                     <?php
                     if (isset($_SESSION['team_logged_in'])) {
-                        echo "TEAM " . $_SESSION['team_number'];
+                        echo "# Team " . $_SESSION['team_number'];
                     }
                     else{
                         ?>
