@@ -34,7 +34,68 @@ function get_db_connection() {
     return $db;
 }
 
+function getCourseDetails($id)
+{
+    $db = get_db_connection();
 
+    $sql = "SELECT * FROM courses WHERE course_uid = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+}
+function getCourses()
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM courses";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+function getApprovedCategories()
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM categories WHERE status = 'approved'";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
+function getModules($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM course_modules WHERE course_id = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
+function getTeam($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM teams WHERE id = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+}
 
 /**
  * Veritabanına bağlanmak için GÜVENLİ ve HATALARI GÖSTEREN fonksiyon.

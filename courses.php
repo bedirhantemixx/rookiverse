@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="tr">
-<?php require_once 'config.php'; ?>
+<?php require_once 'config.php';
+
+$courses = getCourses();
+$categories = getApprovedCategories();
+
+
+
+?>
 
 <head>
     <meta charset="UTF-8" />
@@ -93,11 +100,82 @@
         <!-- KURS KARTLARI -->
         <div class="space-y-12">
 
+            <?php
+            foreach ($categories as $category):
+            ?>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 flex items-center">
+                    <div class="w-1 h-8 bg-custom-yellow mr-4 rounded-full"></div> <?= $category['name']?>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <?php
+                    foreach ($courses as $course):
+                        if ($course['category_id'] != $category['id']):
+                            continue;
+                        elseif ($course['status'] != "approved"):
+                            continue;
+                        else:
+                    ?>
+                        <div class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg">
+                            <div class="aspect-video relative overflow-hidden group">
+                                <img src="<?=$course['cover_image_url']?>" alt="<?=$course['title']?>"
+                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                <div
+                                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <a href="courseDetails.php?course=<?=$course['course_uid']?>"
+                                       class="inline-flex items-center justify-center px-4 py-2 bg-white text-custom-yellow hover:bg-gray-100 rounded-md">
+                                        <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> Kurs Tanıtımı
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-xl font-bold text-gray-900 line-clamp-2"><?=$course['title']?></h3>
+                                    <?php
+                                    if ($course['level'] == 'Başlangıç'):
+                                        ?>
+                                        <span
+                                                class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 whitespace-nowrap">Başlangıç</span>
+
+                                    <?php
+                                    elseif ($course['level'] == 'Orta'):
+                                        ?>
+                                        <span
+                                                class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-800 bg-yellow-100 border-0 whitespace-nowrap">Orta</span>
+                                    <?php
+                                    elseif ($course['level'] == 'İleri'):
+                                        ?>
+                                        <span
+                                                class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-red-800 bg-red-100 border-0 whitespace-nowrap">İleri</span>
+                                    <?php endif;?>
+                                    </div>
+                                <p class="text-gray-600 line-clamp-3 mb-4"><?=$course['goal_text']?></p>
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center text-sm text-gray-500"><i data-lucide="clock" class="mr-1"
+                                                                                            style="width: 16px; height: 16px;"></i> 2 saat</div>
+
+                                        <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
+                                                                                                style="width: 16px; height: 16px;"></i> <?= $course['level']?></div>
+
+                                </div>
+                                <a href="courseDetails.php?course=<?=$course['course_uid']?>"
+                                   class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md">Kursa
+                                    Başla</a>
+                            </div>
+                        </div>
+                        <?php endif;?>
+                    <?php endforeach;?>
+
+                    </div>
+            <?php endforeach;?>
+
+
+
             <!-- FRC Temelleri -->
             <div data-category="frc">
                 <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 flex items-center">
                     <div class="w-1 h-8 bg-custom-yellow mr-4 rounded-full"></div> FRC Temelleri
                 </h2>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div
                         class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg">
