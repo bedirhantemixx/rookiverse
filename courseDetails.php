@@ -134,7 +134,7 @@ require_once 'navbar.php';
                             </div>
                         </div>
                         <video id="intro-video" class="w-full h-full hidden" controls>
-                            <source src="<?=$course['intro_video_url']?>" type="video/mp4">
+                            <source  src="<?=$course['intro_video_url']?>" type="video/mp4">
                             Tarayıcınız video etiketini desteklemiyor.
                         </video>
                         <div id="skip-backward-indicator" class="skip-indicator hidden">
@@ -169,7 +169,7 @@ require_once 'navbar.php';
                             </div>
                             <div class="flex items-center text-sm text-gray-600">
                                 <i data-lucide="users" class="mr-1" style="width: 16px; height: 16px;"></i>
-                                250+ öğrenci
+                                <?=$course['student']?> öğrenci
                             </div>
                         </div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-4">
@@ -273,7 +273,7 @@ require_once 'navbar.php';
                         <div class="space-y-4">
                             <div class="flex justify-between"><span class="text-gray-600">Seviye:</span><span class="font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 text-xs">Başlangıç</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">Süre:</span><span class="font-medium">8 saat</span></div>
-                            <div class="flex justify-between"><span class="text-gray-600">Öğrenci:</span><span class="font-medium">250+</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">Öğrenci:</span><span class="font-medium"><?=$course['student']?></span></div>
                             <div class="flex justify-between"><span class="text-gray-600">Dil:</span><span class="font-medium">Türkçe</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">Sertifika:</span><span class="font-medium text-custom-yellow">Mevcut</span></div>
                         </div>
@@ -317,6 +317,12 @@ require_once 'navbar.php';
     lucide.createIcons();
 
     let isEnrolled = false;
+
+
+    let video = document.querySelector('#intro-video')
+
+
+
 
     const enrollButtonContainer = document.getElementById('enroll-button-container');
     const enrolledContainer = document.getElementById('enrolled-container');
@@ -395,6 +401,20 @@ require_once 'navbar.php';
         const enrollBtn = document.getElementById('enroll-btn');
         const enrollBtnContent = document.getElementById('enroll-btn-content');
         const enrollBtnLoading = document.getElementById('enroll-btn-loading');
+        let course_id = <?=$course['id']?>;
+        fetch('addStudent.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `id=${course_id}`
+        })
+            .then(res => res.json())
+            .then(data => {
+            })
+            .catch(err => {
+                console.error("Sabitleme hatası", err);
+            });
 
         enrollBtn.disabled = true;
         enrollBtn.classList.add('cursor-not-allowed');
@@ -418,6 +438,10 @@ require_once 'navbar.php';
     }
 
     function continueCourse() {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = res.json();
+        console.log('Created:', data);
+
         const teamNameElement = document.getElementById('team_name_with_number');
         const teamId = "team" + teamNameElement.textContent.split('#')[1].trim();
 
