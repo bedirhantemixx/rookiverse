@@ -2,7 +2,7 @@
 //a
 
 $courses = getTopCourses();
-
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -94,7 +94,7 @@ $courses = getTopCourses();
                           </div>
                       </div>
                   <?php endforeach;?>
-                  
+
               </div>
 
               <div class="text-center mt-12">
