@@ -46,6 +46,18 @@ function getCourseDetails($id)
     return $stmt->fetch(PDO::FETCH_ASSOC);
 
 }
+function getTopCourses()
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM courses ORDER BY student DESC LIMIT 3";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
 function getCourses()
 {
     $db = get_db_connection();

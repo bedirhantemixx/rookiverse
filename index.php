@@ -1,5 +1,8 @@
 <?php require_once 'config.php';
 //a
+
+$courses = getTopCourses();
+
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -56,9 +59,54 @@
 
     <section class="py-20"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div class="text-center mb-16"><h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Neden RookieVerse?</h2><p class="text-xl text-gray-600 max-w-3xl mx-auto">Türk FRC takımlarının deneyimli öğrencilerin hazırladığı, interaktif içeriklerden ve gerçek dünya deneyimlerinden faydalanın.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="book-open" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold">Kapsamlı Kurslar</h3></div><p class="text-center text-base text-gray-600">FRC'nin tüm alanlarını kapsayan detaylı kurs içerikleri. Başlangıçtan ileri seviyeye kadar öğrenin.</p></div><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="gamepad-2" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold">İnteraktif Oyunlar</h3></div><p class="text-center text-base text-gray-600">Eğlenceli oyunlar ile öğrendiklerinizi pekiştirin. Öğrenme sürecini keyifli hale getirin.</p></div><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="users" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold">Topluluk Desteği</h3></div><p class="text-center text-base text-gray-600">Projenin amacı doğrultusunda Türkiye'deki FRC takımlarına döküman veya videolara dair sorularınızı sorun.</p></div></div></div></section>
 
-    <section class="bg-gray-50 py-20"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div class="text-center mb-16"><h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Öne Çıkan Kurslar</h2><p class="text-xl text-gray-600">En popüler ve etkili kurslarımızla FRC yolculuğunuza başlayın</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="overflow-hidden hover:shadow-xl rounded-lg border"><div class="aspect-video relative group"><img src="<?php echo BASE_URL; ?>/assets/images/guncel_takim.jpg" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100"><a href="course.php?id=1" class="inline-flex items-center px-4 py-2 bg-white text-custom-yellow rounded-md"><i data-lucide="play" class="mr-2 w-4 h-4"></i> Kursu Görüntüle</a></div></div><div class="p-4"><div class="flex justify-between items-start mb-2"><h3 class="text-lg font-bold">FRC'ye Giriş</h3><span class="text-xs font-semibold py-1 px-2 uppercase rounded-full text-gray-700 bg-gray-200">Başlangıç</span></div><p class="text-base text-gray-600 mb-4">Yarışma formatı, kurallar ve takım yapısı hakkında her şeyi öğrenin.</p><div class="flex justify-between items-center"><span class="text-sm text-gray-500">⏱️ 2 saat</span><a href="course.php?id=1" class="px-3 py-1.5 text-sm bg-custom-yellow text-white rounded-md">Detayları Gör</a></div></div></div><div class="overflow-hidden hover:shadow-xl rounded-lg border"><div class="aspect-video relative group"><img src="<?php echo BASE_URL; ?>/assets/images/guncel_takim.jpg" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100"><a href="course.php?id=2" class="inline-flex items-center px-4 py-2 bg-white text-custom-yellow rounded-md"><i data-lucide="play" class="mr-2 w-4 h-4"></i> Kursu Görüntüle</a></div></div><div class="p-4"><div class="flex justify-between items-start mb-2"><h3 class="text-lg font-bold">Java ile Robot Programlama</h3><span class="text-xs font-semibold py-1 px-2 uppercase rounded-full text-gray-700 bg-gray-200">Orta</span></div><p class="text-base text-gray-600 mb-4">Sıfırdan başlayarak FRC robotları için Java programlamanın temelleri.</p><div class="flex justify-between items-center"><span class="text-sm text-gray-500">⏱️ 8 saat</span><a href="course.php?id=2" class="px-3 py-1.5 text-sm bg-custom-yellow text-white rounded-md">Detayları Gör</a></div></div></div><div class="overflow-hidden hover:shadow-xl rounded-lg border"><div class="aspect-video relative group"><img src="<?php echo BASE_URL; ?>/assets/images/guncel_takim.jpg" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100"><a href="course.php?id=3" class="inline-flex items-center px-4 py-2 bg-white text-custom-yellow rounded-md"><i data-lucide="play" class="mr-2 w-4 h-4"></i> Kursu Görüntüle</a></div></div><div class="p-4"><div class="flex justify-between items-start mb-2"><h3 class="text-lg font-bold">Robot Elektroniği Temelleri</h3><span class="text-xs font-semibold py-1 px-2 uppercase rounded-full text-gray-700 bg-gray-200">Başlangıç</span></div><p class="text-base text-gray-600 mb-4">Motor kontrolcüleri, RoboRIO ve diğer bileşenlerin bağlantıları.</p><div class="flex justify-between items-center"><span class="text-sm text-gray-500">⏱️ 5 saat</span><a href="course.php?id=3" class="px-3 py-1.5 text-sm bg-custom-yellow text-white rounded-md">Detayları Gör</a></div></div></div></div><div class="text-center mt-12"><a href="<?php echo BASE_URL; ?>/courses" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-md">Tüm Kursları Görüntüle</a></div></div></section>
+      <section class="bg-gray-50 py-20">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="text-center mb-16">
+                  <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Öne Çıkan Kurslar</h2>
+                  <p class="text-xl text-gray-600">En popüler ve etkili kurslarımızla FRC yolculuğunuza başlayın</p>
+              </div>
 
-    <section class="bg-white py-20">
+
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <?php
+                  foreach ($courses as $course):
+                  ?>
+                      <div class="overflow-hidden hover:shadow-xl rounded-lg border">
+                          <div class="aspect-video relative group">
+                              <img src="<?=$course['cover_image_url']?>" class="w-full h-full object-cover">
+                              <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                  <a href="courseDetails.php?course=<?=$course['course_uid']?>" class="inline-flex items-center px-4 py-2 bg-white text-custom-yellow rounded-md">
+                                      <i data-lucide="play" class="mr-2 w-4 h-4"></i> Kursu Görüntüle
+                                  </a>
+                              </div>
+                          </div>
+                          <div class="p-4">
+                              <div class="flex justify-between items-start mb-2">
+                                  <h3 class="text-lg font-bold"><?=$course['title']?></h3>
+                                  <span class="text-xs font-semibold py-1 px-2 uppercase rounded-full text-gray-700 bg-gray-200"><?=$course['level']?></span>
+                              </div>
+                              <p class="text-base text-gray-600 mb-4"><?=$course['goal_text']?></p>
+                              <div class="flex justify-between items-center">
+                                  <span class="text-sm text-gray-500">⏱️ 2 saat</span>
+                                  <a href="courseDetails.php?course=<?=$course['course_uid']?>" class="px-3 py-1.5 text-sm bg-custom-yellow text-white rounded-md">Detayları Gör</a>
+                              </div>
+                          </div>
+                      </div>
+                  <?php endforeach;?>
+                  
+              </div>
+
+              <div class="text-center mt-12">
+                  <a href="<?php echo BASE_URL; ?>/courses" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-md">
+                      Tüm Kursları Görüntüle
+                  </a>
+              </div>
+          </div>
+      </section>
+
+
+      <section class="bg-white py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16"><h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Destekleyen Takımlar</h2><p class="text-xl text-gray-600">Bu platformun gelişimine katkıda bulunan değerli FRC takımları</p></div>
             <div class="logo-slider-container">
