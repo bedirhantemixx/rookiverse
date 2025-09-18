@@ -114,19 +114,29 @@ $page_title = "Bölüm İçeriğini Düzenle";
                 </div>
             </div>
 
-            <!-- METİN (opsiyonel) -->
             <div class="content-item">
                 <div class="content-item-header">
                     <div class="flex items-center gap-2"><i data-lucide="type"></i> Metin</div>
                 </div>
-                <div class="content-item-body">
-        <textarea
-                name="text_body"
-                class="form-textarea"
-                rows="8"
-                placeholder="Metin içeriği (opsiyonel)"><?= htmlspecialchars($text_body) ?></textarea>
+                <div class="content-item-body space-y-2">
+                    <div class="editor-toolbar">
+                        <button type="button" class="editor-button" data-command="bold" title="Kalın"><b>B</b></button>
+                        <button type="button" class="editor-button" data-command="italic" title="İtalik"><i>I</i></button>
+                        <button type="button" class="editor-button" id="link-btn" title="Link Ekle"><i data-lucide="link"></i></button>
+                        <button type="button" class="editor-button" data-command="insertUnorderedList" title="Madde İşaretli">
+                            <i data-lucide="list"></i>
+                        </button>
+                        <button type="button" class="editor-button" data-command="insertOrderedList" title="Numaralı">
+                            <i data-lucide="list-ordered"></i>
+                        </button>
+                    </div>
+                    <div id="editable" class="editable-content" contenteditable="true"><?= $text_body ?></div>
+                    <textarea  style="width: 100%" name="text_body" id="text_body" class="hidden"></textarea>
                 </div>
             </div>
+
+
+         
 
             <!-- VİDEO (opsiyonel) -->
             <div class="content-item">
@@ -235,7 +245,7 @@ $page_title = "Bölüm İçeriğini Düzenle";
         attachContentItemListeners(itemElement, type);
         lucide.createIcons();
     }
-    
+
     function attachContentItemListeners(itemElement, type) {
         itemElement.querySelector('.delete-content-btn').addEventListener('click', () => itemElement.remove());
         if (type === 'video' || type === 'document') {
@@ -270,11 +280,11 @@ $page_title = "Bölüm İçeriğini Düzenle";
             lucide.createIcons();
         }
     }
-    
+
     function saveLastFocusedEditor(editor) { lastFocusedEditor = editor; }
     function formatDoc(command) { if (lastFocusedEditor) { lastFocusedEditor.focus(); document.execCommand(command, false, null); updateHiddenTextarea(lastFocusedEditor); } }
     function updateHiddenTextarea(div) { if (div.nextElementSibling) div.nextElementSibling.value = div.innerHTML; }
-    
+
     function toggleLink() {
         if (!lastFocusedEditor) return;
         lastFocusedEditor.focus();
@@ -287,9 +297,9 @@ $page_title = "Bölüm İçeriğini Düzenle";
             linkUrlInput.focus();
         }
     }
-    
+
     function closeLinkModal() { linkModal.classList.remove('show'); }
-    
+
     function applyLink() {
         const url = linkUrlInput.value;
         if (url && savedSelection) {
@@ -302,6 +312,55 @@ $page_title = "Bölüm İçeriğini Düzenle";
             updateHiddenTextarea(lastFocusedEditor);
         }
     }
+    // --- WYSIWYG bağlama (modal gerektirmez) ---
+    (function () {
+        const editable = document.getElementById('editable');      // contenteditable div
+        const hidden   = document.getElementById('text_body');     // formdaki textarea (gizli)
+        if (!editable || !hidden) return;
+
+        // Sayfa yüklenince textarea'yı güncelle (mevcut HTML'i taşı)
+        hidden.value = editable.innerHTML;
+
+        // Kullanıcı yazdıkça textarea senkron kalsın
+        editable.addEventListener('input', () => {
+            hidden.value = editable.innerHTML;
+        });
+
+        // Toolbar: bold / italic / listeler
+        document.querySelectorAll('.editor-button[data-command]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                editable.focus();
+                document.execCommand(btn.dataset.command, false, null);
+                hidden.value = editable.innerHTML;
+            });
+        });
+
+        // Link ekle (modal yoksa prompt ile)
+        const linkBtn = document.getElementById('link-btn');
+        if (linkBtn) {
+            linkBtn.addEventListener('click', () => {
+                // Seçim yoksa uyar
+                const sel = window.getSelection();
+                if (!sel || sel.toString().length === 0) {
+                    alert('Lütfen link vermek için metin seçin.');
+                    return;
+                }
+                const url = prompt('Bağlantı URL\'si (https:// ile):', 'https://');
+                if (!url) return;
+                editable.focus();
+                document.execCommand('createLink', false, url);
+                hidden.value = editable.innerHTML;
+            });
+        }
+
+        // Form gönderilirken son halini textarea'ya yaz
+        const form = document.getElementById('module-form');
+        if (form) {
+            form.addEventListener('submit', () => {
+                hidden.value = editable.innerHTML;
+            });
+        }
+    })();
 </script>
 </body>
 </html>
