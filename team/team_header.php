@@ -9,6 +9,7 @@ require_once $projectRoot . '/config.php';
     <meta charset="UTF-8">
     <title><?php echo $page_title ?? 'Admin Paneli'; ?> - FRC Rookieverse</title>
     <link rel="stylesheet" href="<?=BASE_URL?>/assets/css/panel2.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>@font-face { font-family: "Sakana"; src: url("../assets/fonts/Sakana.ttf") format("truetype"); }</style>
 </head>

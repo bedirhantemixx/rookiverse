@@ -30,7 +30,9 @@ $page_title = "Takım Paneli";
 
 
 <aside class="sidebar">
-    <div class="sidebar-header"><a href="panel.php"><span class="rookieverse">TAKIM PANELİ</span></a></div>
+    <a class="flex items-center space-x-2" href="<?php echo BASE_URL; ?>">
+        <span class="rookieverse">FRC ROOKIEVERSE</span>
+    </a>
     <div class="sidebar-profile">
         <div class="icon"><i data-lucide="users"></i></div>
         <h2>Hoş Geldin,</h2>
