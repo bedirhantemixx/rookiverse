@@ -2,11 +2,21 @@
 // Hata raporlamayı açarak, olası sorunları net bir şekilde görmemizi sağlar.
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
-$domain = $_SERVER['HTTP_HOST'];
-$path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+$https = (
+    (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+    (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+);
+$protocol = $https ? 'https://' : 'http://';
+$domain   = $_SERVER['HTTP_HOST'];
 
-define('BASE_URL', $protocol . $domain . $path);
+// FS yollarını normalize et
+$docRoot  = rtrim(str_replace('\\','/', $_SERVER['DOCUMENT_ROOT']), '/');
+$projRoot = rtrim(str_replace('\\','/', __DIR__), '/'); // config.php'nin klasörü (proje kökü)
+$basePath = str_replace($docRoot, '', $projRoot);       // web köküne göre relatif path, ör: /rookiverse/rookiverse
+
+define('BASE_URL', $protocol . $domain . $basePath);
+// İstersen trailing slash'lı sabit:
+// define('BASE_URL_SLASH', rtrim(BASE_URL, '/') . '/');
 
 
 function get_db_connection() {

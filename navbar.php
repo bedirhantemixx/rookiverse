@@ -3,7 +3,7 @@
 <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
-            <a class="flex items-center space-x-2" href="<?php echo BASE_URL; ?>/index.php">
+            <a class="flex items-center space-x-2" href="<?php echo BASE_URL; ?>">
                 <span class="rookieverse">FRC ROOKIEVERSE</span>
             </a>
             <div class="hidden md:flex items-center space-x-8">
