@@ -1,6 +1,6 @@
 <?php
 $projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
-
+require_once $projectRoot . '/config.php';
 ?>
 
 <!DOCTYPE html>
@@ -8,7 +8,7 @@ $projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
 <head>
     <meta charset="UTF-8">
     <title><?php echo $page_title ?? 'Admin Paneli'; ?> - FRC Rookieverse</title>
-    <link rel="stylesheet" href="<?=$projectRoot?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?=BASE_URL?>/assets/css/panel2.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>@font-face { font-family: "Sakana"; src: url("../assets/fonts/Sakana.ttf") format("truetype"); }</style>
 </head>

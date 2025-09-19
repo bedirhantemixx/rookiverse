@@ -14,6 +14,20 @@ $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $page_title = "Takım Paneli";
 ?>
+    <script>
+        // Lucide varsa ikonları çizelim; yoksa sessiz geç
+        try { if (window.lucide?.createIcons) lucide.createIcons(); } catch(e){}
+        // Aktif link sınıfını otomatik ata (exact match)
+        (function(){
+            var here = location.pathname.split('/').pop() || 'panel.php';
+            document.querySelectorAll('.sidebar-nav a').forEach(a=>{
+                var href = a.getAttribute('href') || '';
+                if(href === here){ a.classList.add('active'); }
+            });
+        })();
+    </script>
+
+
 
 <aside class="sidebar">
     <div class="sidebar-header"><a href="panel.php"><span class="rookieverse">TAKIM PANELİ</span></a></div>
