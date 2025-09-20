@@ -168,7 +168,7 @@ $teamNumber = htmlspecialchars((string)($_SESSION['team_number'] ?? ''));
 </style>
 
 <aside class="sidebar">
-    <div class="sidebar-header"><a href="panel.php"><span class="rookieverse">TAKIM PANELİ</span></a></div>
+    <div class="sidebar-header"><a href="panel.php"><span class="rookieverse">TAKIM PANELI</span></a></div>
     <div class="sidebar-profile">
         <div class="icon"><i data-lucide="users"></i></div>
         <h2>Hoş Geldin,</h2>
@@ -186,7 +186,6 @@ $teamNumber = htmlspecialchars((string)($_SESSION['team_number'] ?? ''));
     <div class="top-bar">
         <div class="font-bold">Takım #<?php echo $teamNumber; ?> Profil Ayarları</div>
         <div class="actions">
-            <span class="badge"><i data-lucide="shield-check"></i> Güvenli Bölge</span>
             <a href="panel.php" class="btn btn-sm"><i data-lucide="arrow-left"></i> Panele Dön</a>
         </div>
     </div>
