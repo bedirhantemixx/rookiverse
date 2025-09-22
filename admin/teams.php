@@ -43,8 +43,15 @@ $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM 
 
 <label for="team_number" class="font-medium">Takım Numarası</label>
 
-<input id="team_number" name="team_number" type="number" required placeholder="Örn: 6228" class="mt-2 w-full px-4 py-2.5 border rounded-lg">
 
+
+
+<input id="team_number" name="team_number" type="number" required placeholder="Örn: 6228" class="mt-2 w-full px-4 py-2.5 border rounded-lg">
+    <?php
+    if (isset($_GET['fail'])):
+        ?>
+        <p style="color: red">#<?=$_GET['number']?> numaralı takım zaten var.</p>
+    <?php endif;?>
 </div>
 
 <button type="submit" class="btn h-12">

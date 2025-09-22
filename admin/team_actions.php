@@ -32,6 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         $generated_id = generateRandomId();
         $generated_password = generatePassword();
         $password_hash = password_hash($generated_password, PASSWORD_DEFAULT);
+        echo 'iststuff💔';
+        $stmt = $pdo->prepare("SELECT id FROM teams WHERE team_number = ?");
+        $stmt->execute([$team_number]);
+        if ($stmt->rowCount() > 0) {
+            header("Location: teams.php?fail=exists&number=$team_number");
+            exit();
+        }
+
+
 
         $stmt = $pdo->prepare("INSERT INTO teams (team_number, team_name, team_id_generated, password_hash) VALUES (?, ?, ?, ?)");
         $stmt->execute([$team_number, $team_name, $generated_id, $password_hash]);
