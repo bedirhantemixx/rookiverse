@@ -114,6 +114,31 @@ if (!$course) { die("Hata: Bu kurs size ait değil veya bulunamadı."); }
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
+    // === TÜR LİMİTLERİ ===
+// Hepsinden max 1: istersen 'text' için 999 yapıp sınırsız gibi kullanabilirsin.
+    const TYPE_LIMITS = { text: 1, video: 1, document: 1 };
+
+// Yardımcılar
+    function getTypeCount(container, type) {
+        return container.querySelectorAll(`input[name*="[type]"][value="${type}"]`).length;
+    }
+    function canAdd(container, type) {
+        const limit = TYPE_LIMITS[type] ?? Infinity;
+        return getTypeCount(container, type) < limit;
+    }
+    function refreshAddButtons(moduleEl) {
+        const container = moduleEl.querySelector('.content-items-container');
+        moduleEl.querySelectorAll('.add-content-btn').forEach((btn) => {
+            const type = btn.dataset.type;
+            const allowed = canAdd(container, type);
+            btn.disabled = !allowed;
+            btn.classList.toggle('opacity-50', !allowed);
+            btn.classList.toggle('cursor-not-allowed', !allowed);
+        });
+    }
+
+
     lucide.createIcons();
     const curriculumForm = document.getElementById('curriculum-form');
     const modulesContainer = document.getElementById('modules-container');
@@ -152,6 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {
         modulesContainer.appendChild(moduleElement);
         attachModuleListeners(moduleElement, moduleKey);
         lucide.createIcons();
+        refreshAddButtons(moduleElement);
+
     }
 
     // === İÇERİK YÖNETİMİ ===
@@ -161,17 +188,40 @@ document.addEventListener('DOMContentLoaded', function() {
         moduleElement.querySelectorAll('.add-content-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const type = btn.dataset.type;
+                const contentContainer = moduleElement.querySelector('.content-items-container');
+
+                // LİMİT KONTROLÜ: Eklenebiliyor mu?
+                if (!canAdd(contentContainer, type)) {
+                    alert(`Bu modülde "${type}" içeriği en fazla ${TYPE_LIMITS[type]} kez eklenebilir.`);
+                    return;
+                }
+
                 if (type === 'text') {
                     try {
                         const clipboardText = await navigator.clipboard.readText();
                         if (clipboardText.trim() && clipboardText.length < 750) {
                             pasteModal.classList.add('show');
-                            document.getElementById('paste-confirm-btn').onclick = () => { addContentItem(contentContainer, type, moduleKey, { data: clipboardText }); pasteModal.classList.remove('show'); };
-                            document.getElementById('paste-cancel-btn').onclick = () => { addContentItem(contentContainer, type, moduleKey); pasteModal.classList.remove('show'); };
+                            document.getElementById('paste-confirm-btn').onclick = () => {
+                                addContentItem(contentContainer, type, moduleKey, { data: clipboardText });
+                                pasteModal.classList.remove('show');
+                                refreshAddButtons(moduleElement);
+                            };
+                            document.getElementById('paste-cancel-btn').onclick = () => {
+                                addContentItem(contentContainer, type, moduleKey);
+                                pasteModal.classList.remove('show');
+                                refreshAddButtons(moduleElement);
+                            };
                         } else { throw new Error("Pano boş veya limit aşıldı"); }
-                    } catch (err) { addContentItem(contentContainer, type, moduleKey); }
-                } else { addContentItem(contentContainer, type, moduleKey); }
+                    } catch (err) {
+                        addContentItem(contentContainer, type, moduleKey);
+                        refreshAddButtons(moduleElement);
+                    }
+                } else {
+                    addContentItem(contentContainer, type, moduleKey);
+                    refreshAddButtons(moduleElement);
+                }
             });
+
         });
     }
 
@@ -179,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const contentKey = `new_c_${Date.now()}`;
         const itemElement = document.createElement('div');
         itemElement.className = 'content-item';
-        itemElement.setAttribute('draggable', true);
         const data = contentData.data || '';
         const typeText = type === 'text' ? 'Metin İçeriği' : (type === 'video' ? 'Video' : 'Döküman');
         const icon = type === 'text' ? 'type' : (type === 'video' ? 'video' : 'file-text');
@@ -192,8 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const accept = type === 'video' ? 'video/*' : '.pdf,.doc,.docx,.ppt,.pptx';
             bodyHTML = `<div class="upload-container"><div class="file-display hidden"></div><div class="horizontal-upload-card"><div class="upload-preview-thumb"><i data-lucide="${icon}"></i></div><div class="upload-drop-area"><p>Dosyayı buraya sürükleyin veya <span class="font-bold text-yellow-600">tıklayın</span></p></div></div></div><input type="file" class="hidden-file-input" name="modules[${moduleKey}][contents][${contentKey}][file]" accept="${accept}" style="display:none;"><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][existing_file]" value="${data}">`;
         }
-        itemElement.innerHTML = `<div class="content-item-header"><i data-lucide="grip-vertical" class="drag-handle text-gray-400"></i><i data-lucide="${icon}" class="text-gray-500"></i><span class="content-item-title">${typeText}</span><div class="ml-auto flex items-center gap-2"><button type="button" class="action-button move-up-btn" title="Yukarı Taşı"><i data-lucide="chevron-up"></i></button><button type="button" class="action-button move-down-btn" title="Aşağı Taşı"><i data-lucide="chevron-down"></i></button><button type="button" class="action-button delete-content-btn text-red-500" title="Sil"><i data-lucide="trash-2"></i></button></div></div><div class="content-item-body">${bodyHTML}</div><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][type]" value="${type}"><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][sort_order]" value="">`;
-        
+        itemElement.innerHTML = `<div class="content-item-header"><i  class="text-gray-500"></i><span class="content-item-title">${typeText}</span><div class="ml-auto flex items-center gap-2"><button type="button" class="action-button move-up-btn" title="Yukarı Taşı"><i data-lucide="chevron-up"></i></button><button type="button" class="action-button move-down-btn" title="Aşağı Taşı"><i data-lucide="chevron-down"></i></button><button type="button" class="action-button delete-content-btn text-red-500" title="Sil"><i data-lucide="trash-2"></i></button></div></div><div class="content-item-body">${bodyHTML}</div><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][type]" value="${type}"><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][sort_order]" value="">`;
+
         container.appendChild(itemElement);
         updateSortOrder(container);
         attachContentItemListeners(itemElement, type);
@@ -201,7 +250,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function attachContentItemListeners(itemElement, type) {
-        itemElement.querySelector('.delete-content-btn').addEventListener('click', () => { if (confirm('İçeriği sil?')) { itemElement.remove(); updateSortOrder(itemElement.parentElement); } });
+        itemElement.querySelector('.delete-content-btn').addEventListener('click', () => {
+            if (confirm('İçeriği sil?')) {
+                const moduleEl = itemElement.closest('.module-card');
+                itemElement.remove();
+                updateSortOrder(itemElement.parentElement);
+                // SİLİNDİ: Ekleme butonlarını güncelle
+                refreshAddButtons(moduleEl);
+            }
+        });
         itemElement.querySelector('.move-up-btn').addEventListener('click', (e) => moveContent(e.currentTarget, 'up'));
         itemElement.querySelector('.move-down-btn').addEventListener('click', (e) => moveContent(e.currentTarget, 'down'));
         

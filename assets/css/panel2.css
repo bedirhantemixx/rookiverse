@@ -95,7 +95,6 @@ body{
 .btn{
     display:inline-flex; align-items:center; gap:10px;
     background: var(--brand); color:white; text-decoration:none;
-    border:1px solid var(--brand-700);
     padding:10px 14px; border-radius:12px; font-weight:700;
     transition: transform .02s ease, filter .15s ease;
 }
