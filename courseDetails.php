@@ -207,7 +207,7 @@ require_once 'navbar.php';
                             foreach ($modules as $module):
                                 $i++
                             ?>
-                                <div class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                <div data-moduleid="<?=$module['id']?>" class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 modulePlayer">
                                     <div class="flex items-center space-x-4">
                                         <div class="flex items-center justify-center w-8 h-8 bg-custom-yellow/10 rounded-full flex-shrink-0">
                                             <span class="text-custom-yellow font-semibold text-sm"><?=$i?></span>
@@ -312,8 +312,81 @@ require_once 'navbar.php';
         </div>
     </div>
 </div>
+<!-- KAYIT GEREKİYOR MODALI -->
+<div id="enroll-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
+    <!-- arkaplan -->
+    <div id="enroll-modal-backdrop" class="absolute inset-0 bg-black/40"></div>
+
+    <!-- modal kutu -->
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="w-full max-w-md rounded-2xl border-2 border-custom-yellow/30 bg-white shadow-xl">
+            <div class="p-6">
+                <div class="flex items-start gap-3">
+                    <div class="mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full bg-custom-yellow/10">
+                        <i data-lucide="lock" class="text-custom-yellow" style="width:20px;height:20px;"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Önce ücretsiz kayıt ol</h3>
+                        <p class="mt-1 text-gray-600">
+                            Bu modülü görmek için önce kursa <span class="font-semibold text-custom-yellow">ücretsiz kayıt</span> olman gerekiyor.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                    <button id="modal-enroll-btn"
+                            class="flex-1 inline-flex items-center justify-center rounded-md bg-custom-yellow px-4 py-2 font-semibold text-white hover:bg-opacity-90">
+                        <i data-lucide="book-open" class="mr-2" style="width:18px;height:18px;"></i>
+                        Ücretsiz Kayıt Ol
+                    </button>
+                    <button id="modal-cancel-btn"
+                            class="flex-1 inline-flex items-center justify-center rounded-md border-2 border-gray-200 px-4 py-2 font-semibold text-gray-700 hover:bg-gray-50">
+                        Vazgeç
+                    </button>
+                </div>
+
+                <p class="mt-3 text-xs text-gray-500">
+                    Kayıttan sonra tüm modüllere sınırsız erişim sağlanır.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
+    // --- Modal referansları ---
+    const enrollModal = document.getElementById('enroll-modal');
+    const enrollModalBackdrop = document.getElementById('enroll-modal-backdrop');
+    const modalEnrollBtn = document.getElementById('modal-enroll-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+    function openEnrollModal() {
+        enrollModal.classList.remove('hidden');
+        enrollModal.setAttribute('aria-hidden', 'false');
+        lucide.createIcons();
+    }
+    function closeEnrollModal() {
+        enrollModal.classList.add('hidden');
+        enrollModal.setAttribute('aria-hidden', 'true');
+    }
+
+    // Dışına tıklayınca kapat
+    enrollModalBackdrop.addEventListener('click', closeEnrollModal);
+    // ESC ile kapat
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !enrollModal.classList.contains('hidden')) closeEnrollModal();
+    });
+
+    // Modal içindeki "Ücretsiz Kayıt Ol" butonu: mevcut handleEnroll'i çağırır
+    modalEnrollBtn.addEventListener('click', async () => {
+        await handleEnroll();
+        closeEnrollModal();
+    });
+
+    // Vazgeç
+    modalCancelBtn.addEventListener('click', closeEnrollModal);
+
     lucide.createIcons();
 
     let isEnrolled = false;
@@ -334,6 +407,19 @@ require_once 'navbar.php';
     const skipBackwardIndicator = document.getElementById('skip-backward-indicator');
     const skipForwardIndicator = document.getElementById('skip-forward-indicator');
     let skipIndicatorTimeout;
+
+    document.querySelectorAll('.modulePlayer').forEach(el => {
+        el.addEventListener('click', (e) => {
+            if (isEnrolled){
+                let id = el.dataset.moduleid; // <div class="modulePlayer" data-moduleid="123">
+                window.location.href = `moduleDetails.php?id=${id}`;
+            }
+            else{
+                openEnrollModal()
+            }
+        });
+    });
+
 
     // İleri/geri sarma animasyonunu gösteren fonksiyon
     function showSkipIndicator(indicator) {
@@ -429,13 +515,7 @@ require_once 'navbar.php';
         enrolledContainer.classList.remove('hidden');
     }
 
-    function playModule() {
-        if (isEnrolled) {
-            alert('Modül oynatıcı yakında aktif olacak!');
-        } else {
-            alert('Bu içeriği görüntülemek için lütfen önce kursa ücretsiz kayıt olun.');
-        }
-    }
+
 
     function continueCourse() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
