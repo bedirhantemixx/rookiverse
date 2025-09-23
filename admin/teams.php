@@ -288,7 +288,7 @@ $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM 
                                             </div>
                                         </td>
                                         <td data-label="İşlemler" class="actions justify-end">
-                                            <a href="team_dashboard.php?team_id=<?php echo htmlspecialchars($team['team_id_generated']); ?>" class="btn btn-sm btn-info">
+                                            <a href="../team/panel.php?team_id=<?php echo htmlspecialchars($team['team_id_generated']); ?>" class="btn btn-sm btn-info">
                                                 <i data-lucide="arrow-right" class="w-4 h-4 mr-2"></i>Panele Git
                                             </a>
                                             <form action="team_actions.php" method="POST" onsubmit="return confirm('Bu takımı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.');">

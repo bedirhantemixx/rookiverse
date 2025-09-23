@@ -105,6 +105,18 @@ function getModules($id)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 }
+function getModuleContent($id, $i)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM module_contents WHERE module_id = ? AND sort_order = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id, $i]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
 
 function getTeam($id)
 {

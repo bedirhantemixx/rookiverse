@@ -207,7 +207,7 @@ require_once 'navbar.php';
                             foreach ($modules as $module):
                                 $i++
                             ?>
-                                <div data-moduleid="<?=$module['id']?>" class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 modulePlayer">
+                                <div data-moduleid="<?=$module['id']?>" data-ord="<?=$i?>" class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 modulePlayer">
                                     <div class="flex items-center space-x-4">
                                         <div class="flex items-center justify-center w-8 h-8 bg-custom-yellow/10 rounded-full flex-shrink-0">
                                             <span class="text-custom-yellow font-semibold text-sm"><?=$i?></span>
@@ -217,7 +217,7 @@ require_once 'navbar.php';
                                             <div class="flex items-center text-sm text-gray-500 mt-1"><i data-lucide="clock" class="mr-1" style="width: 14px; height: 14px;"></i>30 dakika</div>
                                         </div>
                                     </div>
-                                    <button onclick="playModule()" class="p-2 text-custom-yellow hover:bg-custom-yellow/10 rounded-full"><i data-lucide="play" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="p-2 text-custom-yellow hover:bg-custom-yellow/10 rounded-full"><i data-lucide="play" style="width: 16px; height: 16px;"></i></button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -299,9 +299,16 @@ require_once 'navbar.php';
                                 </a>
 
                                 <div class="flex items-center space-x-3 mt-3">
-                                    <a id="team_instagram_url" href="#" target="_blank" class="text-gray-500 hover:text-pink-600 transition-colors"><i data-lucide="instagram"></i></a>
-                                    <a id="team_youtube_url" href="#" target="_blank" class="text-gray-500 hover:text-red-600 transition-colors"><i data-lucide="youtube"></i></a>
-                                    <a id="team_linkedin_url" href="#" target="_blank" class="text-gray-500 hover:text-blue-700 transition-colors"><i data-lucide="linkedin"></i></a>
+                                    <?php if ($team['instagram']):?>
+                                        <a id="team_instagram_url" href="<?=$team['instagram']?>" target="_blank" class="text-gray-500 hover:text-pink-600 transition-colors"><i data-lucide="instagram"></i></a>
+                                    <?php elseif ($team['youtube']):?>
+                                        <a id="team_youtube_url" href="<?=$team['youtube']?>" target="_blank" class="text-gray-500 hover:text-red-600 transition-colors"><i data-lucide="youtube"></i></a>
+                                    <?php elseif ($team['linkedin']):?>
+                                        <a id="team_linkedin_url" href="<?=$team['linkedin']?>" target="_blank" class="text-gray-500 hover:text-blue-700 transition-colors"><i data-lucide="linkedin"></i></a>
+                                    <?php elseif ($team['website']):?>
+                                        <a id="team_linkedin_url" href="<?=$team['website']?>" target="_blank" class="text-gray-500 hover:text-green-700 transition-colors"><i data-lucide="link"></i></a>
+                                    <?php endif;?>
+
                                 </div>
 
                             </div>
@@ -412,7 +419,8 @@ require_once 'navbar.php';
         el.addEventListener('click', (e) => {
             if (isEnrolled){
                 let id = el.dataset.moduleid; // <div class="modulePlayer" data-moduleid="123">
-                window.location.href = `moduleDetails.php?id=${id}`;
+                let i = el.dataset.ord; // <div class="modulePlayer" data-moduleid="123">
+                window.location.href = `moduleDetails.php?id=${id}&ord=${i}`;
             }
             else{
                 openEnrollModal()

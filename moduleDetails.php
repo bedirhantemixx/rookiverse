@@ -1,3 +1,15 @@
+<?php
+require_once 'config.php';
+session_start();
+$id = $_GET['id'];
+$i = $_GET['ord'];
+
+$modules = getModules($id);
+$content = getModuleContent($id, $i);
+
+
+?>
+<?= print_r($content); ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -30,11 +42,9 @@
     </script>
 </head>
 <body class="bg-gray-100">
-<nav class="bg-white shadow-md p-4">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <a href="#" class="rookieverse font-bold text-xl" style="font-family:'Sakana',system-ui,sans-serif!important;color:#E5AE32;">ROBOTİCTR</a>
-    </div>
-</nav>
+<?php
+require_once 'navbar.php'
+?>
 
 <div class="min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
