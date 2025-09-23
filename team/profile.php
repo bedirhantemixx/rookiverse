@@ -9,9 +9,7 @@ if (!isset($_SESSION['team_logged_in'])) {
     header('Location: ' . $base . '/team-login.php');
     exit();
 }
-
-$pdo = get_db_connection();
-$teamId = (int) ($_SESSION['team_db_id'] ?? 0);
+$team = getTeam($_SESSION['team_db_id']);
 
 if (empty($_SESSION['csrf'])) {
     $_SESSION['csrf'] = bin2hex(random_bytes(32));
@@ -21,29 +19,7 @@ $csrf = $_SESSION['csrf'];
 $flash_success = null;
 $flash_error = null;
 
-$team = [
-    'display_name' => '',
-    'contact_email' => '',
-    'website' => '',
-    'bio' => '',
-    'logo' => '',
-    'instagram_url' => '',
-    'youtube_url' => '',
-    'linkedin_url' => '',
-];
 
-try {
-    $stmt = $pdo->prepare("SELECT id, display_name, contact_email, website, bio, logo, instagram_url, youtube_url, linkedin_url FROM teams WHERE id = ? LIMIT 1");
-    $stmt->execute([$teamId]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) {
-        $team = array_merge($team, $row);
-    } else {
-        $flash_error = 'Takım profili bulunamadı.';
-    }
-} catch (PDOException $e) {
-    $flash_error = 'Veri okunamadı: ' . $e->getMessage();
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $in_csrf = $_POST['csrf'] ?? '';
@@ -142,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $page_title = 'Profilimi Düzenle';
 $base = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
-$logoUrl = $team['logo'] ? ($base . '/' . ltrim($team['logo'], '/')) : ($base . '/assets/images/default-logo.png');
+$logoUrl = $team['profile_pic_path'] ? ($base . '/' . ltrim($team['profile_pic_path'], '/')) : ($base . '/assets/images/default.jgp');
 $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
 ?>
 
@@ -433,7 +409,7 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
             <div class="alert error"><strong>Hata:</strong> <?php echo htmlspecialchars($flash_error); ?></div>
         <?php endif; ?>
 
-        <form method="post" enctype="multipart/form-data" id="profileForm">
+        <form action="edit_profile.php" method="post" enctype="multipart/form-data" id="profileForm">
             <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($csrf); ?>">
 
             <div class="form-card">
@@ -441,11 +417,11 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
                     <div class="form-grid">
                         <div class="field">
                             <label class="label" for="display_name">Görünen Ad</label>
-                            <input class="input" type="text" id="display_name" name="display_name" value="<?php echo htmlspecialchars($team['display_name'] ?? ''); ?>" required>
+                            <input class="input" type="text" id="display_name" name="display_name" value="<?php echo htmlspecialchars($team['team_name'] ?? ''); ?>" required>
                         </div>
                         <div class="field">
                             <label class="label" for="contact_email">İletişim E-postası</label>
-                            <input class="input" type="email" id="contact_email" name="contact_email" placeholder="ornek@takim.com" value="<?php echo htmlspecialchars($team['contact_email'] ?? ''); ?>">
+                            <input class="input" type="email" id="contact_email" name="contact_email" placeholder="ornek@takim.com" value="<?php echo htmlspecialchars($team['email'] ?? ''); ?>">
                         </div>
                         <div class="field col-span-2">
                             <label class="label" for="bio">Kısa Tanım / Biyografi</label>
@@ -457,7 +433,7 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
 
                 <div class="form-aside">
                     <div class="logo-card">
-                        <img src="<?php echo htmlspecialchars($logoUrl); ?>" class="logo-preview" id="logoPreview" alt="Takım Logosu">
+                        <img src="<?= htmlspecialchars($logoUrl) ?>" class="logo-preview" id="logoPreview" alt="Takım Logosu">
                         <div class="logo-actions">
                             <label for="logo" class="change-logo-label">
                                 <i data-lucide="upload-cloud" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;"></i> Değiştir
@@ -470,7 +446,7 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
                     <div class="card" style="margin-top:16px;">
                         <div class="field">
                             <label class="label">Takım Numarası</label>
-                            <input class="input" value="<?php echo $teamNumber; ?>" disabled>
+                            <input class="input" value="<?= $team['team_number']; ?>" disabled>
                             <span class="help">Bu alan sistem tarafından belirlenir.</span>
                         </div>
                     </div>
@@ -486,15 +462,15 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
                     </div>
                     <div class="field">
                         <label class="label" for="instagram_url">Instagram</label>
-                        <input class="input" type="url" id="instagram_url" name="instagram_url" placeholder="https://instagram.com/takimim" value="<?php echo htmlspecialchars($team['instagram_url'] ?? ''); ?>">
+                        <input class="input" type="url" id="instagram_url" name="instagram_url" placeholder="https://instagram.com/takimim" value="<?php echo htmlspecialchars($team['instagram'] ?? ''); ?>">
                     </div>
                     <div class="field">
                         <label class="label" for="youtube_url">YouTube</label>
-                        <input class="input" type="url" id="youtube_url" name="youtube_url" placeholder="https://youtube.com/c/takimim" value="<?php echo htmlspecialchars($team['youtube_url'] ?? ''); ?>">
+                        <input class="input" type="url" id="youtube_url" name="youtube_url" placeholder="https://youtube.com/c/takimim" value="<?php echo htmlspecialchars($team['youtube'] ?? ''); ?>">
                     </div>
                     <div class="field">
                         <label class="label" for="linkedin_url">LinkedIn</label>
-                        <input class="input" type="url" id="linkedin_url" name="linkedin_url" placeholder="https://linkedin.com/company/takimim" value="<?php echo htmlspecialchars($team['linkedin_url'] ?? ''); ?>">
+                        <input class="input" type="url" id="linkedin_url" name="linkedin_url" placeholder="https://linkedin.com/company/takimim" value="<?php echo htmlspecialchars($team['linkedin'] ?? ''); ?>">
                     </div>
                 </div>
             </div>

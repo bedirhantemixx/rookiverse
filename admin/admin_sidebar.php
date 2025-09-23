@@ -17,7 +17,7 @@
         </div>
         <div class="menu-item">
             <div class="menu-title"><div class="flex items-center"><i data-lucide="users" class="menu-icon"></i>Takımlar</div><i data-lucide="chevron-right" class="menu-arrow"></i></div>
-            <div class="submenu"><a href="#">Takımları Görüntüle</a><a href="#">Takım Ekle/Çıkar</a></div>
+            <div class="submenu"><a href="team_actions.php">Takımları Görüntüle</a></div>
         </div>
         <div class="menu-item">
             <div class="menu-title"><div class="flex items-center"><i data-lucide="book-open" class="menu-icon"></i>Kurslar</div><i data-lucide="chevron-right" class="menu-arrow"></i></div>
