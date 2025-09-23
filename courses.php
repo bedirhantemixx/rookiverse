@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <?php require_once 'config.php';
-
+session_start();
 $courses = getCourses();
 $categories = getApprovedCategories();
 
