@@ -112,12 +112,15 @@ session_start();
             <div class="logo-slider-container">
                 <button id="prevBtn" class="slider-arrow left"><i data-lucide="chevron-left" class="text-gray-700"></i></button>
                 <div class="logo-slider-track">
-                     <div class="logo-slide"><a href="https://www.thebluealliance.com/team/27" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/fotopng" alt="Team RUSH"></a></div>
-                    <div class="logo-slide"><a href="https://www.thebluealliance.com/team/254" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/x.png" alt="Cheesy Poofs"></a></div>
-                    <div class="logo-slide"><a href="https://www.thebluealliance.com/team/67" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/x.png" alt="The HOT Team"></a></div>
-                    <div class="logo-slide"><a href="https://www.thebluealliance.com/team/6228" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/x.png" alt="Mat"></a></div>
-                    <div class="logo-slide"><a href="https://www.thebluealliance.com/team/118" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/x.png" alt="Robonauts"></a></div>
-                </div>
+                    <?php
+                    $contributors = getContributors();
+                    foreach ($contributors as $cont):
+                        $id = $cont['id']
+
+                    ?>
+                        <div class="logo-slide"><a href="<?= $cont['website'] ? $cont['website'] : "teamsCourses?id=$id]" ?>" target="_blank"><img src="<?= $cont['profile_pic_path'] ?>" alt="<?=$cont['team_name']?>"></a></div>
+                    <?php endforeach;?>
+                    </div>
                 <button id="nextBtn" class="slider-arrow right"><i data-lucide="chevron-right" class="text-gray-700"></i></button>
             </div>
         </div>

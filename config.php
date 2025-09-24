@@ -105,6 +105,23 @@ function getModules($id)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 }
+function getContributors()
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT t.team_name, t.profile_pic_path, t.website, t.id
+FROM teams AS t
+INNER JOIN courses AS c ON c.team_db_id = t.id
+WHERE c.status = 'approved';
+";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
 function getModuleContent($id, $i)
 {
     $db = get_db_connection();
