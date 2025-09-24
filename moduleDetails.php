@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+session_start();
 /**
  * module_view.php — JS'siz, PHP ile basılan kurs modül sayfası
  * - Notlar yerine DÜMDÜZ METİN alanı var (nl2br + htmlspecialchars)
@@ -18,7 +19,10 @@ function e(?string $s): string { return htmlspecialchars($s ?? '', ENT_QUOTES, '
 $content = getModuleContent($_GET['id'], $_GET['ord']);
 $course = getCourseDetails($_GET['course']);
 $video_url = $content['data_vid'];
-$count = count(getModules($_GET['course']));
+$h = getCourseDetails($_GET['course']);
+
+$modules = getModules($h['id']);
+$count = count($modules);
 
 if ($count == ($_GET['ord'] + 1)) {
     $isLast = true;
@@ -68,6 +72,7 @@ if (!isset($documents)) {
 if (!isset($zip_url)) {
     $zip_url = null; // örn: "/download/module-2.zip"
 }
+/*
 if (!isset($modules)) {
     // Sağdaki içerik listesi
     $modules = [
@@ -77,6 +82,7 @@ if (!isset($modules)) {
         ['title' => 'İlk Robotunu Kodla',     'url' => '#', 'active' => false],
     ];
 }
+*/
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -220,21 +226,26 @@ require_once 'navbar.php';
                         <h3 class="text-lg font-bold text-gray-900">Kurs İçeriği</h3>
                     </div>
                     <div class="p-4 space-y-2">
-                        <?php foreach ($modules as $m): ?>
-                            <a href="<?= e($m['url']) ?>"
+                        <?php
+                        $i = 0;
+                        foreach ($modules as $m):
+                            ?>
+                            <a href="moduleDetails.php?course=<?=$_GET['course']?>&id=<?=$_GET['id']?>&ord=<?=$i?>"
                                class="flex items-center space-x-4 p-3 rounded-lg transition-colors
-                               <?= !empty($m['active']) ? 'bg-yellow-100/60 border-l-4 border-yellow-500' : 'hover:bg-gray-50' ?>">
+                               <?= $i == $_GET['ord'] ? 'bg-yellow-100/60 border-l-4 border-yellow-500' : 'hover:bg-gray-50' ?>">
                                 <div class="flex items-center justify-center w-8 h-8 rounded-full flex-shrink-0
-                                    <?= !empty($m['active']) ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-600' ?>">
+                                    <?= $i == $_GET['ord'] ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-600' ?>">
                                     ▶
                                 </div>
                                 <div>
-                                    <h4 class="font-medium <?= !empty($m['active']) ? 'text-yellow-700' : 'text-gray-900' ?>">
+                                    <h4 class="font-medium <?= $i == $_GET['ord'] ? 'text-yellow-700' : 'text-gray-900' ?>">
                                         <?= e($m['title']) ?>
                                     </h4>
                                 </div>
                             </a>
-                        <?php endforeach; ?>
+                        <?php
+                            $i++;
+                        endforeach; ?>
                     </div>
                 </div>
             </div>
