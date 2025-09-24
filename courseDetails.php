@@ -207,7 +207,7 @@ require_once 'navbar.php';
                             foreach ($modules as $module):
                                 $i++
                             ?>
-                                <div data-moduleid="<?=$module['id']?>" data-ord="<?=$i?>" class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 modulePlayer">
+                                <div data-course="<?=$course['course_uid']?>" data-moduleid="<?=$module['id']?>" data-ord="<?=$i?>" class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 modulePlayer">
                                     <div class="flex items-center space-x-4">
                                         <div class="flex items-center justify-center w-8 h-8 bg-custom-yellow/10 rounded-full flex-shrink-0">
                                             <span class="text-custom-yellow font-semibold text-sm"><?=$i?></span>
@@ -419,8 +419,10 @@ require_once 'navbar.php';
         el.addEventListener('click', (e) => {
             if (isEnrolled){
                 let id = el.dataset.moduleid; // <div class="modulePlayer" data-moduleid="123">
+                let course = el.dataset.course; // <div class="modulePlayer" data-moduleid="123">
                 let i = el.dataset.ord; // <div class="modulePlayer" data-moduleid="123">
-                window.location.href = `moduleDetails.php?id=${id}&ord=${i}`;
+                i = i - 1;
+                window.location.href = `moduleDetails.php?course=${course}&id=${id}&ord=${i}`;
             }
             else{
                 openEnrollModal()

@@ -114,7 +114,7 @@ function getModuleContent($id, $i)
     $stmt = $db->prepare($sql);
     $stmt->execute([$id, $i]);
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 
 }
 
