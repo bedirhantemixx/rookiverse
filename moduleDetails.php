@@ -89,6 +89,9 @@ if (!isset($modules)) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/index.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
+
     <title><?= e($course['title']) ?> - Modül Görünümü</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>

@@ -98,7 +98,7 @@ session_start();
               </div>
 
               <div class="text-center mt-12">
-                  <a href="<?php echo BASE_URL; ?>/courses" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-md">
+                  <a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-md">
                       Tüm Kursları Görüntüle
                   </a>
               </div>

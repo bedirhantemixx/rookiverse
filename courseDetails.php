@@ -14,6 +14,8 @@ $course = getCourseDetails($_GET['course'])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kurs Detayı - RobotikTR</title>
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/index.css">
+
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>

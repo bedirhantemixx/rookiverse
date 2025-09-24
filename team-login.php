@@ -4,7 +4,7 @@
 session_start();
 require_once 'config.php'; // Ayar dosyasını dahil et
 
-if ($_SESSION['team_logged_in']){
+if (isset($_SESSION['team_logged_in'])){
     header("location: team/panel.php");
 }
 

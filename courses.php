@@ -14,6 +14,8 @@ $categories = getApprovedCategories();
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kurslar - RookieVerse</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/index.css">
+
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
