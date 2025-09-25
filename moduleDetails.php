@@ -13,16 +13,24 @@ session_start();
  *   controller’dan doldurup bu dosyayı include edebilirsin.
  */
 
+
+
 // Yardımcı güvenli kaçış
 function e(?string $s): string { return htmlspecialchars($s ?? '', ENT_QUOTES, 'UTF-8'); }
 
 $content = getModuleContent($_GET['id'], $_GET['ord']);
 $course = getCourseDetails($_GET['course']);
-$video_url = $content['data_vid'];
 $h = getCourseDetails($_GET['course']);
 
 $modules = getModules($h['id']);
 $count = count($modules);
+$thisModule = null;
+foreach($modules as $m){
+    if($m['sort_order'] == $_GET['ord']){
+        $thisModule = $m;
+    }
+}
+
 
 if ($count == ($_GET['ord'] + 1)) {
     $isLast = true;
@@ -52,9 +60,7 @@ if (!isset($module)) {
         'next_url'    => '#',
     ];
 }
-if (!isset($video_url)) {
-    $video_url = 'https://www.w3schools.com/html/mov_bbb.mp4';
-}
+
 if (!isset($plain_text)) {
     // DÜMDÜZ METİN — zengin içerik istemiyorsan bu alanı düz metin olarak tut
     $plain_text = "Robotik; algılama → karar verme → eyleme geçme döngüsüne dayanır.\n".
@@ -92,7 +98,7 @@ if (!isset($modules)) {
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/index.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
 
-    <title><?= e($course['title']) ?> - Modül Görünümü</title>
+    <title><?= e($thisModule['title']) ?> - Modül Görünümü</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif}
@@ -102,6 +108,7 @@ if (!isset($modules)) {
 <!-- NAVBAR -->
 <?php
 require_once 'navbar.php';
+
 ?>
 
 <div class="min-h-screen py-8">
@@ -112,114 +119,86 @@ require_once 'navbar.php';
             <a href="courseDetails.php?course=<?=$course['course_uid']?>" class="inline-flex items-center text-[#E5AE32] hover:bg-yellow-100/50 p-2 rounded-md">
                 <span class="mr-2">←</span> Kurs Detayına Geri Dön
             </a>
-            <h1 class="text-2xl font-bold text-gray-900"><?= e($course['title']) ?></h1>
+            <h1 class="text-2xl font-bold text-gray-900"><?= $thisModule['title'] ?></h1>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <!-- SOL / ANA İÇERİK -->
             <div class="lg:col-span-3 space-y-6">
 
-                <!-- Video -->
-                <?php if (!empty($video_url)): ?>
-                    <div class="bg-black rounded-lg overflow-hidden relative aspect-video">
-                        <video class="w-full h-full" controls autoplay>
-                            <source src="<?=$video_url?>" type="video/mp4">
-                            Tarayıcınız video etiketini desteklemiyor.
-                        </video>
-                    </div>
-                <?php endif; ?>
+
 
                 <!-- Modül başlık / açıklama -->
                 <div class="p-6 bg-white rounded-lg shadow-md">
                     <div class="mb-4">
-                        <h2 class="text-2xl font-bold text-gray-900"><?= e($course['title']) ?></h2>
+                        <h2 class="text-2xl font-bold text-gray-900"><?=$thisModule['title']?></h2>
                     </div>
+                    <?php
+
+                    ?>
                     <div class="mt-6 pt-4 border-t border-gray-200 flex items-center justify-between">
                         <a href="<?= e($prev_url) ?>" class="flex items-center <?= $_GET['ord'] == 0 ? 'pointer-events-none text-gray-700' : 'text-[#E5AE32] hover:opacity-80'?> transition-colors">
                             <span class="mr-2">«</span> Önceki Modül
                         </a>
-                        <a href="<?= e($next_url) ?>" class="flex items-center <?= $isLast == 0 ? 'pointer-events-none text-gray-700' : 'text-[#E5AE32] hover:opacity-80'?> transition-colors">
+                        <a href="<?= e($next_url) ?>" class="flex items-center <?= $isLast ? 'pointer-events-none text-gray-700' : 'text-[#E5AE32] hover:opacity-80'?> transition-colors">
                             Sonraki Modül <span class="ml-2">»</span>
                         </a>
                     </div>
                 </div>
 
-                <!-- DÜMDÜZ METİN (Not değil) -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-                        <h3 class="text-lg font-bold text-gray-900">Metin</h3>
-                    </div>
-                    <div class="p-6 text-gray-800 leading-relaxed whitespace-pre-line">
-                        <?= $content['data'] ?>
-                    </div>
-                </div>
+                <?php
+                foreach ($content as $cont):
+                    if($cont['type'] == 'text'):
+                        $empty = false;
 
-                <!-- DOKÜMANLAR -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-                        <h3 class="text-lg font-bold text-gray-900">Dokümanlar</h3>
-                        <div class="flex items-center gap-3">
-                            <?php if ($zip_url): ?>
-                                <a href="<?= e($zip_url) ?>" class="text-sm font-semibold text-[#E5AE32] underline">Tümünü İndir (.zip)</a>
-                            <?php endif; ?>
+                        ?>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-gray-900">Metin</h3>
+                        </div>
+                        <div class="p-6 text-gray-800 leading-relaxed whitespace-pre-line">
+                            <?= $cont['data'] ?>
                         </div>
                     </div>
+                <?php
+                    elseif ($cont['type'] == 'video'):
+                        $empty = false;
 
+                ?>
+                    <div class="bg-black rounded-lg overflow-hidden relative aspect-video">
+                        <video class="w-full h-full" controls autoplay>
+                            <source src="<?=$cont['data']?>" type="video/mp4">
+                            Tarayıcınız video etiketini desteklemiyor.
+                        </video>
+                    </div>
                     <?php
-                    /*
-                     * <?php if (!empty($documents)): ?>
-                        <div class="p-6 space-y-3">
-                            <?php foreach ($documents as $doc): ?>
-                                <div class="flex items-center justify-between p-3 border rounded-lg">
-                                    <div class="min-w-0">
-                                        <div class="font-medium text-gray-900 truncate"><?= e($doc['title'] ?? 'Doküman') ?></div>
-                                        <?php if (!empty($doc['size'])): ?>
-                                            <div class="text-xs text-gray-500"><?= e($doc['size']) ?></div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <a href="<?= $content['data_file'] ?>" download class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
-                                            İndir
-                                        </a>
-                                        <a href="<?= $content['data_file'] ?>" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
-                                            Yeni Sekmede Aç
-                                        </a>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="p-6 text-gray-600">Bu modül için doküman bulunmuyor.</div>
-                    <?php endif; ?>
-                     */
+                    elseif ($cont['type'] == 'doc'):
+                        $empty = false;
 
-
-                    ?>
-
-                    <?php if (!empty($content['data_file'])): ?>
-                        <div class="p-6 space-y-3">
-                            <div class="flex items-center justify-between p-3 border rounded-lg">
-                                <div class="min-w-0">
-                                    <div class="font-medium text-gray-900 truncate"><?= e($doc['title'] ?? 'Doküman') ?></div>
-                                    <?php if (!empty($doc['size'])): ?>
-                                        <div class="text-xs text-gray-500"><?= e($doc['size']) ?></div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <a href="<?= $content['data_file'] ?>" download class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
-                                        İndir
-                                    </a>
-                                    <a href="<?= $content['data_file'] ?>" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
-                                        Yeni Sekmede Aç
-                                    </a>
-                                </div>
+                ?>
+                    <div class="p-6 space-y-3">
+                        <div class="flex items-center justify-between p-3 border rounded-lg">
+                            <div class="min-w-0">
+                                <div class="font-medium text-gray-900 truncate"><?= e($doc['title'] ?? 'Doküman') ?></div>
+                                <?php if (!empty($doc['size'])): ?>
+                                    <div class="text-xs text-gray-500"><?= e($doc['size']) ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="<?= $cont['data'] ?>" download class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
+                                    İndir
+                                </a>
+                                <a href="<?= $cont['data'] ?>" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
+                                    Yeni Sekmede Aç
+                                </a>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <div class="p-6 text-gray-600">Bu modül için doküman bulunmuyor.</div>
-                    <?php endif; ?>
+                    </div>
+                <?php
+                    endif;
+                endforeach;
+                ?>
 
-                </div>
             </div>
 
             <!-- SAĞ / KURS İÇERİĞİ -->

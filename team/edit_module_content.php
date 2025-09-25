@@ -1,223 +1,520 @@
 <?php
+// File: modules/curriculum/edit_module_content.php
 session_start();
 if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
-$projectRoot = dirname(__DIR__);
-require_once($projectRoot . '/config.php');
+
+$projectRoot = dirname(__DIR__, 2);
+require_once '../config.php';
 $pdo = get_db_connection();
 
-$module_id = $_GET['id'] ?? null;
-if (!$module_id) { die("Bölüm ID'si bulunamadı."); }
+$module_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($module_id <= 0) { die('Bölüm ID\'si bulunamadı.'); }
 
-// Bölüm ve sahiplik kontrolü
+// Yetki + modül bilgisi
 $stmt = $pdo->prepare("
-    SELECT m.*, c.id as course_id, c.team_db_id
+    SELECT m.id, m.course_id, m.title, c.team_db_id, c.title AS course_title
     FROM course_modules m
-    JOIN courses c ON m.course_id = c.id
+    JOIN courses c ON c.id = m.course_id
     WHERE m.id = ? AND c.team_db_id = ?
 ");
 $stmt->execute([$module_id, $_SESSION['team_db_id']]);
 $module = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$module) { die("Hata: Bu bölümü düzenleme yetkiniz yok veya bölüm bulunamadı."); }
+if (!$module) { die('Hata: Bu bölümü düzenleme yetkiniz yok veya bölüm bulunamadı.'); }
 
-// Bu modüle ait (tek satır) içerikleri çek
-$row = null;
-try {
-    $stmt2 = $pdo->prepare("SELECT id, title, data, data_file, data_vid FROM module_contents WHERE module_id = ? LIMIT 1");
-    $stmt2->execute([$module_id]);
-    $row = $stmt2->fetch(PDO::FETCH_ASSOC) ?: null;
-} catch (Exception $e) {
-    $row = null;
-}
+// İçerikleri çek
+$stmtC = $pdo->prepare("SELECT id, type, title, data, sort_order FROM module_contents WHERE module_id = ? ORDER BY sort_order ASC, id ASC");
+$stmtC->execute([$module_id]);
+$contents = $stmtC->fetchAll(PDO::FETCH_ASSOC);
 
-$existing_id    = $row['id']        ?? '';
-$title          = $row['title']     ?? '';
-$text_body      = $row['data']      ?? '';
-$document_path  = $row['data_file'] ?? '';
-$video_path     = $row['data_vid']  ?? '';
-// BASE_URL tanımı config’te yoksa basit fallback
-if (!defined('BASE_URL')) {
-    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    $base = rtrim(str_replace('\\','/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
-    define('BASE_URL', 'https://' . $host . $base);
-}
 $page_title = "Bölüm İçeriğini Düzenle";
 ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="utf-8" />
-    <title><?= htmlspecialchars($page_title) ?> - <?= htmlspecialchars($module['title']) ?></title>
+    <meta charset="UTF-8" />
+    <title><?= htmlspecialchars($page_title) ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/manage_curriculum.css">
     <style>
-        .card{background:#fff;border:1px solid #e5e7eb;border-radius:.75rem;padding:1rem}
-        .content-item{border:1px solid #e5e7eb;border-radius:.5rem;overflow:hidden}
-        .content-item-header{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;border-bottom:1px solid #e5e7eb;background:#fafafa}
-        .content-item-body{padding:1rem}
-        .form-input{width:100%;border:1px solid #e5e7eb;border-radius:.5rem;padding:.5rem .75rem}
-        .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:.5rem;background:#E5AE32;color:#fff;font-weight:600}
-        .btn:hover{background:#c4952b}
-        .btn-secondary{background:#e5e7eb;color:#374151}
-        .editable-content{min-height:180px;border:1px solid #e5e7eb;border-radius:.5rem;padding:1rem;background:#fff}
-        .editor-toolbar{display:flex;gap:.5rem;margin-bottom:.5rem}
-        .editor-button{border:1px solid #e5e7eb;border-radius:.375rem;background:#fff;padding:.35rem .5rem;cursor:pointer}
-        .upload-preview{border:1px dashed #d1d5db;border-radius:.5rem;padding:1rem}
-        .note{font-size:.85rem;color:#6b7280}
+        .card{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:16px; }
+        .module-card{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:16px; }
+        .content-item{ border:1px dashed #e5e7eb; border-radius:12px; padding:12px; background:#fff; }
+        .content-item-header{ display:flex; align-items:center; gap:8px; border-bottom:1px solid #f3f4f6; padding-bottom:8px; margin-bottom:8px; }
+        .content-item-title{ font-weight:600; }
+        .action-button{ padding:6px; border-radius:8px; border:1px solid #e5e7eb; background:#fff; }
+        .action-button.disabled{ opacity:.4; pointer-events:none; }
+        .editor-toolbar{ display:flex; gap:8px; border:1px solid #e5e7eb; border-radius:10px; padding:6px; margin-bottom:8px; }
+        .editor-button{ padding:6px 10px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; }
+        .editor-button.is-active{ border-color:#f59e0b; box-shadow:0 0 0 2px rgb(245 158 11 / 20%); }
+        .editable-content{ min-height:140px; border:1px solid #e5e7eb; border-radius:10px; padding:10px; outline:none; }
+        .horizontal-upload-card{ display:flex; gap:12px; align-items:center; border:1px dashed #e5e7eb; border-radius:12px; padding:14px; }
+        .upload-drop-area{ cursor:pointer; }
+        .upload-drop-area.drag-over{ border:2px dashed #f59e0b; }
+        .file-display{ display:flex; align-items:center; gap:12px; }
+        .file-name{ font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .file-actions{ display:flex; gap:8px; }
+        .btn{ background:#f59e0b; color:#111827; padding:.6rem 1rem; border-radius:.75rem; font-weight:700; }
+        .btn:hover{ filter:brightness(.95); }
+        .btn-secondary{ background:#eef2ff; color:#1f2937; }
+        .btn-sm{ padding:.45rem .8rem; font-size:.875rem; }
+        .modal-overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.4); z-index:50; }
+        .modal-overlay.show{ display:flex; }
+        .modal-content{ background:#fff; width:min(720px, 92vw); border-radius:12px; overflow:hidden; }
+        .form-input{ width:100%; border:1px solid #e5e7eb; border-radius:10px; }
+        #preview-modal-content iframe, #preview-modal-content video { width:100%; height:70vh; display:block; }
     </style>
 </head>
 <body class="bg-gray-100">
 <?php require_once '../navbar.php'; ?>
 
-<div class="max-w-4xl mx-auto py-10 px-4">
+<div class="max-w-4xl mx-auto py-12 px-4">
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">Bölüm Detayları</h1>
-            <p class="text-gray-600">“<?= htmlspecialchars($module['title']) ?>” bölümünün içeriğini düzenleyin.</p>
+            <h1 class="text-3xl font-bold text-gray-800"><?= htmlspecialchars($page_title) ?></h1>
+            <p class="text-gray-600">
+                Kurs: <strong><?= htmlspecialchars($module['course_title']) ?></strong> —
+                Bölüm: <strong><?= htmlspecialchars($module['title']) ?></strong>
+            </p>
         </div>
-        <a href="view_curriculum.php?id=<?= (int)$module['course_id'] ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Geri Dön</a>
+        <div class="flex gap-2">
+            <a href="view_curriculum.php?id=<?= (int)$module['course_id'] ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Geri Dön</a>
+            <a href="edit_module_title.php?id=<?= (int)$module['id'] ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Başlığı Düzenle</a>
+        </div>
     </div>
 
-    <form id="module-form" action="update_module.php" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="module_id" value="<?= (int)$module_id ?>">
-        <input type="hidden" name="course_id" value="<?= (int)$module['course_id'] ?>">
-        <input type="hidden" name="existing_id" value="<?= htmlspecialchars($existing_id) ?>">
+    <form id="content-form" action="update_module_content.php" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="module_id" value="<?= (int)$module['id'] ?>">
 
-        <div class="card space-y-6">
-
-            <!-- GENEL BAŞLIK (opsiyonel) -->
-            <div class="content-item">
-                <div class="content-item-header">
-                    <div class="flex items-center gap-2"><i data-lucide="heading-1"></i> Başlık</div>
-                </div>
-                <div class="content-item-body">
-                    <input type="text" name="title" class="form-input" placeholder="Başlık (opsiyonel)" value="<?= htmlspecialchars($title) ?>">
-                </div>
+        <div class="module-card">
+            <div class="module-header">
+                <h3 class="font-bold text-lg">İçerik Öğeleri</h3>
             </div>
 
-            <!-- METİN -->
-            <div class="content-item">
-                <div class="content-item-header">
-                    <div class="flex items-center gap-2"><i data-lucide="type"></i> Metin</div>
-                </div>
-                <div class="content-item-body">
-                    <div class="editor-toolbar">
-                        <button type="button" class="editor-button" data-command="bold"><b>B</b></button>
-                        <button type="button" class="editor-button" data-command="italic"><i>I</i></button>
-                        <button type="button" class="editor-button" id="link-btn"><i data-lucide="link"></i></button>
-                        <button type="button" class="editor-button" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
-                        <button type="button" class="editor-button" data-command="insertOrderedList"><i data-lucide="list-ordered"></i></button>
-                    </div>
-                    <div id="editable" class="editable-content" contenteditable="true"><?= $text_body ?></div>
-                    <textarea name="text_body" id="text_body" class="hidden"></textarea>
-                </div>
-            </div>
+            <div class="module-content">
+                <div id="content-items" class="content-items-container space-y-4">
+                    <?php foreach ($contents as $row):
+                        $key = 'exist_' . (int)$row['id'];
+                        // Frontend tipi: 'doc' → 'document'
+                        $renderType = ($row['type'] === 'doc') ? 'document' : $row['type'];
+                        $typeText = $renderType === 'text' ? 'Metin İçeriği' : ($renderType === 'video' ? 'Video' : 'Döküman');
+                        $icon = $renderType === 'text' ? 'type' : ($renderType === 'video' ? 'video' : 'file-text');
+                        $data = (string)$row['data'];
+                        $isFile = ($renderType === 'video' || $renderType === 'document');
+                        ?>
+                        <div class="content-item">
+                            <div class="content-item-header">
+                                <i class="text-gray-500"></i>
+                                <span class="content-item-title"><?= $typeText ?></span>
+                                <div class="ml-auto flex items-center gap-2">
+                                    <button type="button" class="action-button move-up-btn" title="Yukarı Taşı"><i data-lucide="chevron-up"></i></button>
+                                    <button type="button" class="action-button move-down-btn" title="Aşağı Taşı"><i data-lucide="chevron-down"></i></button>
+                                    <button type="button" class="action-button delete-content-btn text-red-500" title="Sil"><i data-lucide="trash-2"></i></button>
+                                </div>
+                            </div>
 
-            <!-- VİDEO -->
-            <div class="content-item">
-                <div class="content-item-header">
-                    <div class="flex items-center gap-2"><i data-lucide="video"></i> Video</div>
-                </div>
-                <div class="content-item-body space-y-3">
-                    <?php if (!empty($video_path)): ?>
-                        <div class="note">Mevcut video: <code><?= htmlspecialchars(basename($video_path)) ?></code></div>
-                        <div class="upload-preview">
-                            <video controls preload="metadata" style="width:100%;max-height:360px">
-                                <source src="<?= htmlspecialchars((str_starts_with($video_path,'http') ? $video_path : ('/'.ltrim($video_path,'/')))) ?>" type="video/mp4">
-                                Tarayıcınız video etiketini desteklemiyor.
-                            </video>
+                            <div class="content-item-body">
+                                <?php if ($renderType === 'text'): ?>
+                                    <div class="editor-toolbar">
+                                        <div class="toolbar-group flex gap-1">
+                                            <button type="button" class="editor-button" data-action="bold" title="Kalın"><i data-lucide="bold"></i></button>
+                                            <button type="button" class="editor-button" data-action="italic" title="İtalik"><i data-lucide="italic"></i></button>
+                                        </div>
+                                        <div class="toolbar-group flex gap-1">
+                                            <button type="button" class="editor-button" data-action="insertUnorderedList" title="Liste"><i data-lucide="list"></i></button>
+                                            <button type="button" class="editor-button" data-action="insertOrderedList" title="Numaralı Liste"><i data-lucide="list-ordered"></i></button>
+                                        </div>
+                                        <div class="toolbar-group">
+                                            <button type="button" class="editor-button" data-action="createLink" title="Link"><i data-lucide="link"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="editable-content" contenteditable="true" spellcheck="false"><?= $data !== '' ? $data : '<p>Metninizi buraya yazın...</p>' ?></div>
+                                    <textarea class="hidden" name="contents[<?= $key ?>][paragraph]"><?= htmlspecialchars($data) ?></textarea>
+                                <?php else: ?>
+                                    <div class="upload-container">
+                                        <div class="file-display <?= $data ? '' : 'hidden' ?>">
+                                            <?php if ($data): ?>
+                                                <div class="upload-preview-thumb">
+                                                    <?php if ($renderType === 'video'): ?>
+                                                        <video src="<?= htmlspecialchars($data) ?>"></video>
+                                                    <?php else: ?>
+                                                        <i data-lucide="file-text"></i>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="flex-grow min-w-0">
+                                                    <div class="file-name" title="<?= htmlspecialchars(basename($data)) ?>"><?= htmlspecialchars(basename($data)) ?></div>
+                                                    <div class="file-size">Kaydedilmiş dosya</div>
+                                                </div>
+                                                <div class="file-actions">
+                                                    <button type="button" class="action-button preview-btn" data-prev="<?= htmlspecialchars($data) ?>" data-kind="<?= $renderType ?>" title="Önizle"><i data-lucide="eye"></i></button>
+                                                    <button type="button" class="action-button change-btn" title="Değiştir"><i data-lucide="refresh-cw"></i></button>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="horizontal-upload-card <?= $data ? 'hidden' : '' ?>">
+                                            <div class="upload-preview-thumb"><i data-lucide="<?= $icon ?>"></i></div>
+                                            <div class="upload-drop-area"><p>Dosyayı buraya sürükleyin veya <span class="font-bold text-yellow-600">tıklayın</span></p></div>
+                                        </div>
+                                    </div>
+                                    <input type="file"
+                                           class="hidden-file-input"
+                                           name="contents[<?= $key ?>][file]"
+                                           accept="<?= $renderType === 'video' ? 'video/*' : '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx' ?>"
+                                           style="display:none;">
+                                    <input type="hidden" name="contents[<?= $key ?>][existing_file]" value="<?= htmlspecialchars($data) ?>">
+                                <?php endif; ?>
+                            </div>
+
+                            <input type="hidden" name="contents[<?= $key ?>][type]" value="<?= htmlspecialchars($renderType) ?>">
+                            <input type="hidden" name="contents[<?= $key ?>][sort_order]" value="<?= (int)$row['sort_order'] ?>">
+                            <input type="hidden" name="contents[<?= $key ?>][id]" value="<?= (int)$row['id'] ?>">
                         </div>
-                    <?php else: ?>
-                        <div class="note">Bu modül için henüz video eklenmemiş.</div>
-                    <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
 
-                    <label class="block text-sm mb-1">Yeni video yükle (opsiyonel)</label>
-                    <input type="file" name="video_file" accept="video/*" class="form-input">
-
-                    <input type="hidden" name="video_existing_path" value="<?= htmlspecialchars($video_path) ?>">
-                    <label class="inline-flex items-center gap-2 text-sm mt-2">
-                        <input type="checkbox" name="video_clear" value="1"> Videoyu kaldır
-                    </label>
+                <div class="flex gap-4 mt-6 border-t pt-4">
+                    <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="text"><i data-lucide="type" class="w-4 h-4 mr-1"></i>Metin</button>
+                    <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="video"><i data-lucide="video" class="w-4 h-4 mr-1"></i>Video</button>
+                    <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="document"><i data-lucide="file-plus" class="w-4 h-4 mr-1"></i>Döküman</button>
                 </div>
             </div>
-
-            <!-- DÖKÜMAN -->
-            <div class="content-item">
-                <div class="content-item-header">
-                    <div class="flex items-center gap-2"><i data-lucide="file-text"></i> Döküman</div>
-                </div>
-                <div class="content-item-body space-y-3">
-                    <?php if (!empty($document_path)): ?>
-                        <div class="note">Mevcut döküman: <code><?= htmlspecialchars(basename($document_path)) ?></code></div>
-                        <div class="upload-preview">
-                            <?php if (str_ends_with(strtolower($document_path), '.pdf')): ?>
-                                <iframe src="<?= htmlspecialchars((str_starts_with($document_path,'http') ? $document_path : ('/'.ltrim($document_path,'/')))) ?>" style="width:100%;height:60vh;border:0"></iframe>
-                            <?php else: ?>
-                                <a class="text-blue-600 underline" target="_blank" href="<?= htmlspecialchars((str_starts_with($document_path,'http') ? $document_path : ('/'.ltrim($document_path,'/')))) ?>">Dökümanı aç</a>
-                            <?php endif; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="note">Bu modül için henüz döküman eklenmemiş.</div>
-                    <?php endif; ?>
-
-                    <label class="block text-sm mb-1">Yeni döküman yükle (opsiyonel)</label>
-                    <input type="file" name="document_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" class="form-input">
-
-                    <input type="hidden" name="document_existing_path" value="<?= htmlspecialchars($document_path) ?>">
-                    <label class="inline-flex items-center gap-2 text-sm mt-2">
-                        <input type="checkbox" name="document_clear" value="1"> Dökümanı kaldır
-                    </label>
-                </div>
-            </div>
-
         </div>
 
-        <div class="text-right mt-8">
-            <button type="submit" class="btn text-lg">
-                <i data-lucide="save" class="w-5 h-5"></i> Bölümü Kaydet
-            </button>
+        <div class="flex justify-between items-center mt-8">
+            <a href="panel.php" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Panele Geri Dön</a>
+            <button type="submit" class="btn text-lg"><i data-lucide="save" class="mr-2"></i>İçeriği Kaydet</button>
         </div>
     </form>
 </div>
 
-<!-- Basit link modalı yerine prompt kullanıyoruz -->
+<!-- Link Modal -->
+<div id="link-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="p-6">
+            <h2 class="text-xl font-bold mb-4">Link Ekle/Düzenle</h2>
+            <div class="space-y-2">
+                <label for="link-url" class="font-medium text-gray-700">URL Adresi</label>
+                <input type="url" id="link-url" class="form-input p-2 border" placeholder="https://www.example.com">
+            </div>
+        </div>
+        <div class="bg-gray-100 p-4 flex justify-end gap-4 rounded-b-lg">
+            <button type="button" id="cancel-link-btn" class="btn btn-secondary">İptal</button>
+            <button type="button" id="apply-link-btn" class="btn">Linki Uygula</button>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div id="preview-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div id="preview-modal-content" class="bg-black"></div>
+        <div class="bg-gray-100 p-4 flex justify-end gap-4 rounded-b-lg">
+            <button type="button" id="preview-modal-close" class="btn btn-secondary">Kapat</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', function () {
         lucide.createIcons();
 
-        const editable = document.getElementById('editable');
-        const hidden   = document.getElementById('text_body');
+        // === Çoklu içerik desteği ===
+        const TYPE_LIMITS = { text: 999, video: 999, document: 999 };
 
-        if (editable && hidden) {
-            hidden.value = editable.innerHTML;
-            editable.addEventListener('input', () => hidden.value = editable.innerHTML);
+        const contentContainer = document.getElementById('content-items');
+        const addBtns = document.querySelectorAll('.add-content-btn');
 
-            document.querySelectorAll('.editor-button[data-command]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    editable.focus();
-                    document.execCommand(btn.dataset.command, false, null);
-                    hidden.value = editable.innerHTML;
-                });
-            });
-
-            const linkBtn = document.getElementById('link-btn');
-            if (linkBtn) {
-                linkBtn.addEventListener('click', () => {
-                    const sel = window.getSelection();
-                    if (!sel || sel.toString().length === 0) { alert('Lütfen link vermek için metin seçin.'); return; }
-                    const url = prompt('Bağlantı URL\'si (https://):', 'https://');
-                    if (!url) return;
-                    editable.focus();
-                    document.execCommand('createLink', false, url);
-                    hidden.value = editable.innerHTML;
-                });
-            }
-
-            document.getElementById('module-form').addEventListener('submit', () => {
-                hidden.value = editable.innerHTML;
+        // Helpers
+        function getTypeCount(type) {
+            return contentContainer.querySelectorAll(`input[name*="[type]"][value="${type}"]`).length;
+        }
+        function canAdd(type) {
+            const limit = TYPE_LIMITS[type] ?? Infinity;
+            return getTypeCount(type) < limit;
+        }
+        function refreshAddButtons() {
+            addBtns.forEach(btn => {
+                const type = btn.dataset.type;
+                const allowed = canAdd(type);
+                btn.disabled = !allowed;
+                btn.classList.toggle('opacity-50', !allowed);
+                btn.classList.toggle('cursor-not-allowed', !allowed);
             });
         }
+
+        // Mevcutları bağla
+        contentContainer.querySelectorAll('.content-item').forEach(item => {
+            const type = item.querySelector('input[name*="[type]"]').value;
+            attachContentItemListeners(item, type);
+        });
+        refreshAddButtons();
+        updateSortOrder(contentContainer);
+
+        // Ekleme
+        addBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                if (!canAdd(type)) {
+                    alert(`"${type}" için maksimum ${TYPE_LIMITS[type]} öğe eklenebilir.`);
+                    return;
+                }
+                addContentItem(type);
+                refreshAddButtons();
+            });
+        });
+
+        function addContentItem(type, contentData = {}) {
+            const key = `new_${Date.now()}_${Math.floor(Math.random()*1e6)}`;
+            const typeText = type === 'text' ? 'Metin İçeriği' : (type === 'video' ? 'Video' : 'Döküman');
+            const icon = type === 'text' ? 'type' : (type === 'video' ? 'video' : 'file-text');
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'content-item';
+            let bodyHTML = '';
+
+            if (type === 'text') {
+                const editorData = contentData.data || '<p>Metninizi buraya yazın...</p>';
+                bodyHTML = `
+                <div class="editor-toolbar">
+                    <div class="toolbar-group flex gap-1">
+                        <button type="button" class="editor-button" data-action="bold" title="Kalın"><i data-lucide="bold"></i></button>
+                        <button type="button" class="editor-button" data-action="italic" title="İtalik"><i data-lucide="italic"></i></button>
+                    </div>
+                    <div class="toolbar-group flex gap-1">
+                        <button type="button" class="editor-button" data-action="insertUnorderedList" title="Liste"><i data-lucide="list"></i></button>
+                        <button type="button" class="editor-button" data-action="insertOrderedList" title="Numaralı Liste"><i data-lucide="list-ordered"></i></button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button type="button" class="editor-button" data-action="createLink" title="Link"><i data-lucide="link"></i></button>
+                    </div>
+                </div>
+                <div class="editable-content" contenteditable="true" spellcheck="false">${editorData}</div>
+                <textarea class="hidden" name="contents[${key}][paragraph]">${editorData}</textarea>
+            `;
+            } else {
+                const accept = type === 'video' ? 'video/*' : '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx';
+                bodyHTML = `
+                <div class="upload-container">
+                    <div class="file-display hidden"></div>
+                    <div class="horizontal-upload-card">
+                        <div class="upload-preview-thumb"><i data-lucide="${icon}"></i></div>
+                        <div class="upload-drop-area"><p>Dosyayı buraya sürükleyin veya <span class="font-bold text-yellow-600">tıklayın</span></p></div>
+                    </div>
+                </div>
+                <input type="file" class="hidden-file-input" name="contents[${key}][file]" accept="${accept}" style="display:none;">
+                <input type="hidden" name="contents[${key}][existing_file]" value="">
+            `;
+            }
+
+            wrapper.innerHTML = `
+            <div class="content-item-header">
+                <i class="text-gray-500"></i><span class="content-item-title">${typeText}</span>
+                <div class="ml-auto flex items-center gap-2">
+                    <button type="button" class="action-button move-up-btn" title="Yukarı Taşı"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="action-button move-down-btn" title="Aşağı Taşı"><i data-lucide="chevron-down"></i></button>
+                    <button type="button" class="action-button delete-content-btn text-red-500" title="Sil"><i data-lucide="trash-2"></i></button>
+                </div>
+            </div>
+            <div class="content-item-body">${bodyHTML}</div>
+            <input type="hidden" name="contents[${key}][type]" value="${type}">
+            <input type="hidden" name="contents[${key}][sort_order]" value="">
+        `;
+
+            contentContainer.appendChild(wrapper);
+            attachContentItemListeners(wrapper, type);
+            updateSortOrder(contentContainer);
+            lucide.createIcons({nodes:[wrapper]});
+        }
+
+        // Listener & Editor
+        let activeEditor = null, savedSelection = null;
+
+        function attachContentItemListeners(itemElement, type) {
+            itemElement.querySelector('.delete-content-btn').addEventListener('click', () => {
+                if (confirm('İçeriği silmek istiyor musunuz?')) {
+                    itemElement.remove();
+                    updateSortOrder(contentContainer);
+                    refreshAddButtons();
+                }
+            });
+            itemElement.querySelector('.move-up-btn').addEventListener('click', (e) => moveContent(e.currentTarget, 'up'));
+            itemElement.querySelector('.move-down-btn').addEventListener('click', (e) => moveContent(e.currentTarget, 'down'));
+
+            if (type === 'text') {
+                const editor = itemElement.querySelector('.editable-content');
+                const toolbar = itemElement.querySelector('.editor-toolbar');
+                const textarea = itemElement.querySelector('textarea');
+                editor.addEventListener('focus', () => { activeEditor = editor; });
+                editor.addEventListener('blur', () => { savedSelection = saveSelection(); });
+                editor.addEventListener('input', () => { textarea.value = editor.innerHTML; });
+                editor.addEventListener('keyup', () => updateToolbarState(toolbar));
+                editor.addEventListener('mouseup', () => updateToolbarState(toolbar));
+                toolbar.addEventListener('click', (e) => {
+                    const button = e.target.closest('button');
+                    if (button) handleEditorCommand(button.dataset.action);
+                });
+            } else {
+                const dropArea = itemElement.querySelector('.upload-drop-area');
+                const fileInput = itemElement.querySelector('.hidden-file-input');
+                const fileDisplay = itemElement.querySelector('.file-display');
+                const uploadCard = itemElement.querySelector('.horizontal-upload-card');
+
+                if (dropArea) {
+                    dropArea.addEventListener('click', () => fileInput.click());
+                    dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+                    dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+                    dropArea.addEventListener('drop', (e) => {
+                        e.preventDefault(); dropArea.classList.remove('drag-over');
+                        if (e.dataTransfer.files.length) {
+                            fileInput.files = e.dataTransfer.files;
+                            showFileInPreview(itemElement, fileInput.files[0]);
+                        }
+                    });
+                }
+                if (fileInput) {
+                    fileInput.addEventListener('change', () => {
+                        if (fileInput.files.length) showFileInPreview(itemElement, fileInput.files[0]);
+                    });
+                }
+
+                const previewBtn = fileDisplay?.querySelector('.preview-btn');
+                const changeBtn  = fileDisplay?.querySelector('.change-btn');
+                if (previewBtn) previewBtn.addEventListener('click', () => showPreview(previewBtn.dataset.prev, previewBtn.dataset.kind));
+                if (changeBtn)  changeBtn.addEventListener('click', () => fileInput.click());
+            }
+        }
+
+        function moveContent(button, direction) {
+            const item = button.closest('.content-item');
+            const container = item.parentElement;
+            if (direction === 'up' && item.previousElementSibling) {
+                container.insertBefore(item, item.previousElementSibling);
+            } else if (direction === 'down' && item.nextElementSibling) {
+                container.insertBefore(item.nextElementSibling, item);
+            }
+            updateSortOrder(container);
+        }
+        function updateSortOrder(container) {
+            const items = container.querySelectorAll('.content-item');
+            items.forEach((item, index) => {
+                item.querySelector('input[name*="[sort_order]"]').value = index;
+                item.querySelector('.move-up-btn').classList.toggle('disabled', index === 0);
+                item.querySelector('.move-down-btn').classList.toggle('disabled', index === items.length - 1);
+            });
+        }
+
+        // Önizleme
+        function showFileInPreview(itemElement, fileObject) {
+            const type = itemElement.querySelector('input[name*="[type]"]').value;
+            const uploadContainer = itemElement.querySelector('.upload-container');
+            const fileDisplay = uploadContainer.querySelector('.file-display');
+            const uploadCard = uploadContainer.querySelector('.horizontal-upload-card');
+            const filePath = URL.createObjectURL(fileObject);
+
+            fileDisplay.innerHTML = `
+            <div class="upload-preview-thumb">
+                ${type === 'video' ? `<video src="${filePath}"></video>` : '<i data-lucide="file-text"></i>'}
+            </div>
+            <div class="flex-grow min-w-0">
+                <div class="file-name" title="${fileObject.name}">${fileObject.name}</div>
+                <div class="file-size">${(fileObject.size / 1024 / 1024).toFixed(2)} MB</div>
+            </div>
+            <div class="file-actions">
+                <button type="button" class="action-button preview-btn" title="Önizle"><i data-lucide="eye"></i></button>
+                <button type="button" class="action-button change-btn" title="Değiştir"><i data-lucide="refresh-cw"></i></button>
+            </div>
+        `;
+            fileDisplay.querySelector('.preview-btn').addEventListener('click', () => showPreview(filePath, type));
+            fileDisplay.querySelector('.change-btn').addEventListener('click', () => itemElement.querySelector('.hidden-file-input').click());
+            uploadCard.classList.add('hidden');
+            fileDisplay.classList.remove('hidden');
+            lucide.createIcons({nodes:[fileDisplay]});
+        }
+
+        function showPreview(filePath, fileType) {
+            let content = '';
+            const ext = (filePath.split('.').pop() || '').toLowerCase();
+            if (fileType === 'video') {
+                content = `<video src="${filePath}" controls autoplay></video>`;
+            } else if (fileType === 'document') {
+                if (ext === 'pdf' || filePath.startsWith('blob:')) {
+                    content = `<iframe src="${filePath}"></iframe>`;
+                } else if (['doc','docx','ppt','pptx','xls','xlsx'].includes(ext) && !filePath.startsWith('blob:')) {
+                    const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(window.location.origin + '/' + filePath)}&embedded=true`;
+                    content = `<iframe src="${viewerUrl}"></iframe>`;
+                } else {
+                    content = `<div class="p-8 text-center"><h3>Bu dosya türü için önizleme desteklenmiyor veya dosyanın önce kaydedilmesi gerekiyor.</h3></div>`;
+                }
+            }
+            document.getElementById('preview-modal-content').innerHTML = content;
+            document.getElementById('preview-modal').classList.add('show');
+        }
+        document.getElementById('preview-modal-close').addEventListener('click', () => {
+            document.getElementById('preview-modal').classList.remove('show');
+            document.getElementById('preview-modal-content').innerHTML = '';
+        });
+
+        // Metin editörü komutları
+        function saveSelection() {
+            if (window.getSelection) {
+                const sel = window.getSelection();
+                if (sel.getRangeAt && sel.rangeCount) return sel.getRangeAt(0);
+            }
+            return null;
+        }
+        function restoreSelection(range) {
+            if (range && window.getSelection) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+        function handleEditorCommand(command, value = null) {
+            if (!command || !activeEditor) return;
+            activeEditor.focus();
+            if (command === 'createLink') {
+                savedSelection = saveSelection();
+                if(!savedSelection || savedSelection.collapsed) { alert("Lütfen link eklemek için bir metin seçin."); return; }
+                document.getElementById('link-modal').classList.add('show'); return;
+            }
+            document.execCommand(command, false, value);
+            const toolbar = activeEditor.closest('.content-item-body').querySelector('.editor-toolbar');
+            updateToolbarState(toolbar);
+        }
+        function updateToolbarState(toolbar) {
+            if (!toolbar) return;
+            toolbar.querySelectorAll('[data-action]').forEach(btn => {
+                if (btn.tagName !== 'SELECT' && document.queryCommandState(btn.dataset.action)) {
+                    btn.classList.add('is-active');
+                } else {
+                    btn.classList.remove('is-active');
+                }
+            });
+        }
+        document.getElementById('apply-link-btn').addEventListener('click', () => {
+            const url = (document.getElementById('link-url').value || '').trim();
+            if (url && activeEditor) {
+                activeEditor.focus();
+                restoreSelection(savedSelection);
+                document.execCommand('createLink', false, url);
+            }
+            document.getElementById('link-modal').classList.remove('show');
+            document.getElementById('link-url').value = '';
+        });
+        document.getElementById('cancel-link-btn').addEventListener('click', () => {
+            document.getElementById('link-modal').classList.remove('show');
+        });
+
+        // Delegation: contenteditable → textarea
+        contentContainer.addEventListener('input', (e) => {
+            const editor = e.target.closest('.editable-content');
+            if (editor) {
+                const textarea = editor.parentElement.querySelector('textarea');
+                if (textarea) textarea.value = editor.innerHTML;
+            }
+        });
     });
 </script>
 </body>

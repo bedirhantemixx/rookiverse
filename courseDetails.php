@@ -1,6 +1,6 @@
 <?php
 require_once "config.php";
-
+session_start();
 if(!isset($_GET['course'])){
     header("location: courses.php");
     exit();
@@ -115,7 +115,7 @@ require_once 'navbar.php';
 <div class="min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-6">
-            <a href="courses.html" class="inline-flex items-center text-custom-yellow hover:bg-custom-yellow/10 p-2 rounded-md">
+            <a href="courses.php" class="inline-flex items-center text-custom-yellow hover:bg-custom-yellow/10 p-2 rounded-md">
                 <i data-lucide="arrow-left" class="mr-2" style="width: 18px; height: 18px;"></i>
                 Kurslara Geri Dön
             </a>
