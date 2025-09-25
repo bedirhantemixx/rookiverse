@@ -29,86 +29,14 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
         <a href="view_curriculum.php?id=<?= (int)$course_id ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Geri Dön</a>
     </div>
 
-    <form id="module-form" action="save_module.php" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="action" value="add_module">
-        <input type="hidden" name="course_id" value="<?= (int)$course_id ?>">
-
-        <div class="card space-y-6">
-
-            <!-- Başlık -->
-            <div class="content-item">
-                <div class="content-item-header">
-                    <div class="flex items-center gap-2"><i data-lucide="heading-1"></i> Bölüm Başlığı</div>
-                </div>
-                <div class="content-item-body">
-                    <input type="text" name="title" class="form-input" placeholder="Bölüm başlığı" required>
-                </div>
-            </div>
-
-            <!-- Metin -->
-            <div class="content-item">
-                <div class="content-item-header">
-                    <div class="flex items-center gap-2"><i data-lucide="type"></i> Metin</div>
-                </div>
-                <div class="content-item-body space-y-2">
-                    <div class="editor-toolbar">
-                        <button type="button" class="editor-button" data-command="bold" title="Kalın"><b>B</b></button>
-                        <button type="button" class="editor-button" data-command="italic" title="İtalik"><i>I</i></button>
-                        <button type="button" class="editor-button" id="link-btn" title="Link Ekle"><i data-lucide="link"></i></button>
-                        <button type="button" class="editor-button" data-command="insertUnorderedList" title="Madde İşaretli">
-                            <i data-lucide="list"></i>
-                        </button>
-                        <button type="button" class="editor-button" data-command="insertOrderedList" title="Numaralı">
-                            <i data-lucide="list-ordered"></i>
-                        </button>
-                    </div>
-                    <div id="editable" class="editable-content" contenteditable="true" placeholder="Metin içeriği"></div>
-                    <textarea style="width: 100%" name="text_body" id="text_body" class="hidden"></textarea>
-                </div>
-            </div>
-
-            <!-- Video (opsiyonel) -->
-            <div class="content-item">
-                <div class="content-item-header">
-                    <div class="flex items-center gap-2"><i data-lucide="video"></i> Video (opsiyonel)</div>
-                </div>
-                <div class="content-item-body">
-                    <div class="horizontal-upload-card">
-                        <div class="upload-preview-thumb" id="video-thumb"><i data-lucide="video"></i></div>
-                        <div class="upload-drop-area" id="video-drop">
-                            <input type="file" name="video_file" id="video_input" class="hidden-input" accept="video/*">
-                            <p>Dosyayı buraya sürükleyin veya tıklayın</p>
-                            <div class="text-xs text-gray-500 mt-1">Maks. ~500MB önerilir</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Döküman (opsiyonel) -->
-            <div class="content-item">
-                <div class="content-item-header">
-                    <div class="flex items-center gap-2"><i data-lucide="file-text"></i> Döküman (opsiyonel)</div>
-                </div>
-                <div class="content-item-body">
-                    <div class="horizontal-upload-card">
-                        <div class="upload-preview-thumb" id="doc-thumb"><i data-lucide="file-text"></i></div>
-                        <div class="upload-drop-area" id="doc-drop">
-                            <input type="file" name="document_file" id="doc_input" class="hidden-input"
-                                   accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">
-                            <p>Dosyayı buraya sürükleyin veya tıklayın</p>
-                            <div class="text-xs text-gray-500 mt-1">PDF/Office dosyaları desteklenir</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+    <form id="curriculum-form" action="save_module.php" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="course_id" value="<?php echo $course_id; ?>">
+        <div id="modules-container"></div>
+        <div id="add-module-area" class="mt-6">
+            <div id="add-module-prompt" class="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-yellow-500 hover:text-yellow-600 transition flex items-center justify-center gap-2 cursor-pointer"><i data-lucide="plus"></i> Bölüm Ekle</div>
+            <div id="add-module-form" class="card hidden"><label for="new_module_title" class="font-bold text-lg mb-2 block">Bölüm Adı</label><input type="text" id="new_module_title" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Örn: Giriş ve Temel Kavramlar"><div class="flex gap-4 mt-4"><button type="button" id="add-module-btn" class="btn">Bölümü Ekle</button><button type="button" id="cancel-add-module-btn" class="btn btn-secondary">İptal</button></div></div>
         </div>
-
-        <div class="text-right mt-8">
-            <button type="submit" class="btn text-lg">
-                <i data-lucide="save" class="mr-2"></i> Bölümü Kaydet ve Onaya Gönder
-            </button>
-        </div>
+        <div class="text-right mt-8"><button type="submit" class="btn text-lg"><i data-lucide="save" class="w-5 h-5 mr-2"></i>İçeriği Kaydet ve Bitir</button></div>
     </form>
 </div>
 
@@ -130,95 +58,256 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
 </div>
 
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <script>
-    // --- Iconlar
-    document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
+    document.addEventListener('DOMContentLoaded', function() {
 
-    // --- Basit WYSIWYG
-    const editable = document.getElementById('editable');
-    const hidden   = document.getElementById('text_body');
-    let lastFocusedEditor = editable;
-    let savedSelection = null;
+        // === TÜR LİMİTLERİ ===
+// Hepsinden max 1: istersen 'text' için 999 yapıp sınırsız gibi kullanabilirsin.
+        const TYPE_LIMITS = { text: 100, video: 50, document: 50 };
 
-    editable.addEventListener('input', () => hidden.value = editable.innerHTML);
-    editable.addEventListener('focus', () => lastFocusedEditor = editable);
+// Yardımcılar
+        function getTypeCount(container, type) {
+            return container.querySelectorAll(`input[name*="[type]"][value="${type}"]`).length;
+        }
+        function canAdd(container, type) {
+            const limit = TYPE_LIMITS[type] ?? Infinity;
+            return getTypeCount(container, type) < limit;
+        }
+        function refreshAddButtons(moduleEl) {
+            const container = moduleEl.querySelector('.content-items-container');
+            moduleEl.querySelectorAll('.add-content-btn').forEach((btn) => {
+                const type = btn.dataset.type;
+                const allowed = canAdd(container, type);
+                btn.disabled = !allowed;
+                btn.classList.toggle('opacity-50', !allowed);
+                btn.classList.toggle('cursor-not-allowed', !allowed);
+            });
+        }
 
-    // toolbar
-    document.querySelectorAll('.editor-button[data-command]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (!lastFocusedEditor) return;
-            lastFocusedEditor.focus();
-            document.execCommand(btn.dataset.command, false, null);
-            hidden.value = editable.innerHTML;
+
+        lucide.createIcons();
+        const curriculumForm = document.getElementById('curriculum-form');
+        const modulesContainer = document.getElementById('modules-container');
+        const addModuleArea = document.getElementById('add-module-area');
+        const addModulePrompt = document.getElementById('add-module-prompt');
+        const addModuleForm = document.getElementById('add-module-form');
+        const addModuleBtn = document.getElementById('add-module-btn');
+        const cancelAddModuleBtn = document.getElementById('cancel-add-module-btn');
+        const newModuleTitleInput = document.getElementById('new_module_title');
+
+        let isFormDirty = false, activeEditor = null, savedSelection = null;
+        const linkModal = document.getElementById('link-modal');
+        const pasteModal = document.getElementById('paste-modal');
+        const previewModal = document.getElementById('preview-modal');
+
+        // === GÜVENLİK VE SAYFA AKIŞI ===
+        curriculumForm.addEventListener('input', () => { isFormDirty = true; });
+        window.addEventListener('beforeunload', (e) => { if (isFormDirty) { e.preventDefault(); e.returnValue = ''; } });
+        curriculumForm.addEventListener('submit', () => { isFormDirty = false; });
+
+        // === BÖLÜM YÖNETİMİ ===
+        addModulePrompt.addEventListener('click', () => { addModulePrompt.classList.add('hidden'); addModuleForm.classList.remove('hidden'); newModuleTitleInput.focus(); });
+        cancelAddModuleBtn.addEventListener('click', () => { addModuleForm.classList.add('hidden'); addModulePrompt.classList.remove('hidden'); });
+        addModuleBtn.addEventListener('click', () => {
+            const title = newModuleTitleInput.value.trim();
+            if (title) { createModule({ title: title }); addModuleArea.style.display = 'none'; }
+            else { alert('Bölüm adı boş bırakılamaz.'); }
         });
-    });
 
-    // link modal
-    const linkBtn = document.getElementById('link-btn');
-    const linkModal = document.getElementById('link-modal');
-    const linkUrlInput = document.getElementById('link-url');
+        function createModule(moduleData) {
+            const moduleKey = `new_${Date.now()}`;
+            const moduleElement = document.createElement('div');
+            moduleElement.className = 'module-card';
+            moduleElement.innerHTML = `<div class="module-header"><h3 class="flex-grow">${moduleData.title}</h3><input type="hidden" name="modules[${moduleKey}][title]" value="${moduleData.title}"></div><div class="module-content"><div class="content-items-container space-y-4"></div><div class="flex gap-4 mt-6 border-t pt-4"><button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="text"><i data-lucide="type" class="w-4 h-4 mr-1"></i>Metin</button><button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="video"><i data-lucide="video" class="w-4 h-4 mr-1"></i>Video</button><button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="document"><i data-lucide="file-plus" class="w-4 h-4 mr-1"></i>Döküman</button></div></div>`;
+            modulesContainer.innerHTML = '';
+            modulesContainer.appendChild(moduleElement);
+            attachModuleListeners(moduleElement, moduleKey);
+            lucide.createIcons();
+            refreshAddButtons(moduleElement);
 
-    linkBtn.addEventListener('click', () => {
-        if (!lastFocusedEditor) return;
-        const sel = window.getSelection();
-        if (!sel || sel.toString().length === 0) { alert('Lütfen link vermek için metin seçin.'); return; }
-        savedSelection = sel.getRangeAt(0).cloneRange();
-        linkModal.classList.add('show');
-        linkUrlInput.value = '';
-        linkUrlInput.focus();
-    });
-    document.getElementById('cancel-link-btn').addEventListener('click', () => linkModal.classList.remove('show'));
-    document.getElementById('apply-link-btn').addEventListener('click', () => {
-        const url = (linkUrlInput.value || '').trim();
-        if (!url || !savedSelection) return;
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(savedSelection);
-        document.execCommand('createLink', false, url);
-        linkModal.classList.remove('show');
-        hidden.value = editable.innerHTML;
-    });
+        }
 
-    // --- Basit sürükle-bırak + önizleme (video & doküman)
-    setupDrop('video-drop', 'video_input', 'video', 'video-thumb');
-    setupDrop('doc-drop',   'doc_input',   'doc',   'doc-thumb');
+        // === İÇERİK YÖNETİMİ ===
+        function attachModuleListeners(moduleElement, moduleKey) {
+            const contentContainer = moduleElement.querySelector('.content-items-container');
+            makeSortable(contentContainer);
+            moduleElement.querySelectorAll('.add-content-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const type = btn.dataset.type;
+                    const contentContainer = moduleElement.querySelector('.content-items-container');
 
-    function setupDrop(dropId, inputId, mode, thumbId) {
-        const drop = document.getElementById(dropId);
-        const input = document.getElementById(inputId);
-        const thumb = document.getElementById(thumbId);
+                    // LİMİT KONTROLÜ: Eklenebiliyor mu?
+                    if (!canAdd(contentContainer, type)) {
+                        alert(`Bu modülde "${type}" içeriği en fazla ${TYPE_LIMITS[type]} kez eklenebilir.`);
+                        return;
+                    }
 
-        drop.addEventListener('click', () => input.click());
-        drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag-over'); });
-        drop.addEventListener('dragleave', () => drop.classList.remove('drag-over'));
-        drop.addEventListener('drop', e => {
-            e.preventDefault(); drop.classList.remove('drag-over');
-            if (e.dataTransfer.files.length) {
-                input.files = e.dataTransfer.files;
-                preview(input.files[0], mode, thumb, drop);
+                    if (type === 'text') {
+                        try {
+                            const clipboardText = await navigator.clipboard.readText();
+                            if (clipboardText.trim() && clipboardText.length < 750) {
+                                pasteModal.classList.add('show');
+                                document.getElementById('paste-confirm-btn').onclick = () => {
+                                    addContentItem(contentContainer, type, moduleKey, { data: clipboardText });
+                                    pasteModal.classList.remove('show');
+                                    refreshAddButtons(moduleElement);
+                                };
+                                document.getElementById('paste-cancel-btn').onclick = () => {
+                                    addContentItem(contentContainer, type, moduleKey);
+                                    pasteModal.classList.remove('show');
+                                    refreshAddButtons(moduleElement);
+                                };
+                            } else { throw new Error("Pano boş veya limit aşıldı"); }
+                        } catch (err) {
+                            addContentItem(contentContainer, type, moduleKey);
+                            refreshAddButtons(moduleElement);
+                        }
+                    } else {
+                        addContentItem(contentContainer, type, moduleKey);
+                        refreshAddButtons(moduleElement);
+                    }
+                });
+
+            });
+        }
+
+        function addContentItem(container, type, moduleKey, contentData = {}) {
+            const contentKey = `new_c_${Date.now()}`;
+            const itemElement = document.createElement('div');
+            itemElement.className = 'content-item';
+            const data = contentData.data || '';
+            const typeText = type === 'text' ? 'Metin İçeriği' : (type === 'video' ? 'Video' : 'Döküman');
+            const icon = type === 'text' ? 'type' : (type === 'video' ? 'video' : 'file-text');
+            let bodyHTML = '';
+
+            if (type === 'text') {
+                const editorData = data || '<p>Metninizi buraya yazın...</p>';
+                bodyHTML = `<div class="editor-toolbar"><div class="toolbar-group flex gap-1"><button type="button" class="editor-button" data-action="bold" title="Kalın"><i data-lucide="bold"></i></button><button type="button" class="editor-button" data-action="italic" title="İtalik"><i data-lucide="italic"></i></button></div><div class="toolbar-group flex gap-1"><button type="button" class="editor-button" data-action="insertUnorderedList" title="Liste"><i data-lucide="list"></i></button><button type="button" class="editor-button" data-action="insertOrderedList" title="Numaralı Liste"><i data-lucide="list-ordered"></i></button></div><div class="toolbar-group"><button type="button" class="editor-button" data-action="createLink" title="Link"><i data-lucide="link"></i></button></div></div><div class="editable-content" contenteditable="true" spellcheck="false">${editorData}</div><textarea class="hidden" name="modules[${moduleKey}][contents][${contentKey}][paragraph]">${editorData}</textarea>`;
+            } else {
+                const accept = type === 'video' ? 'video/*' : '.pdf,.doc,.docx,.ppt,.pptx';
+                bodyHTML = `<div class="upload-container"><div class="file-display hidden"></div><div class="horizontal-upload-card"><div class="upload-preview-thumb"><i data-lucide="${icon}"></i></div><div class="upload-drop-area"><p>Dosyayı buraya sürükleyin veya <span class="font-bold text-yellow-600">tıklayın</span></p></div></div></div><input type="file" class="hidden-file-input" name="modules[${moduleKey}][contents][${contentKey}][file]" accept="${accept}" style="display:none;"><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][existing_file]" value="${data}">`;
             }
-        });
-        input.addEventListener('change', () => {
-            if (input.files.length) preview(input.files[0], mode, thumb, drop);
-        });
-    }
+            itemElement.innerHTML = `<div class="content-item-header"><i  class="text-gray-500"></i><span class="content-item-title">${typeText}</span><div class="ml-auto flex items-center gap-2"><button type="button" class="action-button move-up-btn" title="Yukarı Taşı"><i data-lucide="chevron-up"></i></button><button type="button" class="action-button move-down-btn" title="Aşağı Taşı"><i data-lucide="chevron-down"></i></button><button type="button" class="action-button delete-content-btn text-red-500" title="Sil"><i data-lucide="trash-2"></i></button></div></div><div class="content-item-body">${bodyHTML}</div><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][type]" value="${type}"><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][sort_order]" value="">`;
 
-    function preview(file, mode, thumb, drop) {
-        drop.innerHTML = `
-        <div class="upload-info">
-            <div class="file-name">${file.name}</div>
-            <div class="file-size">${(file.size/1024/1024).toFixed(2)} MB</div>
-        </div>
-    `;
-        if (mode === 'video' && file.type.startsWith('video')) {
-            const reader = new FileReader();
-            reader.onload = () => { thumb.innerHTML = `<video src="${reader.result}" class="w-full h-full object-cover" controls></video>`; };
-            reader.readAsDataURL(file);
-        } else {
-            thumb.innerHTML = `<i data-lucide="file-check-2"></i>`;
+            container.appendChild(itemElement);
+            updateSortOrder(container);
+            attachContentItemListeners(itemElement, type);
             lucide.createIcons();
         }
-    }
-</script>
-</body>
+
+        function attachContentItemListeners(itemElement, type) {
+            itemElement.querySelector('.delete-content-btn').addEventListener('click', () => {
+                if (confirm('İçeriği sil?')) {
+                    const moduleEl = itemElement.closest('.module-card');
+                    itemElement.remove();
+                    updateSortOrder(itemElement.parentElement);
+                    // SİLİNDİ: Ekleme butonlarını güncelle
+                    refreshAddButtons(moduleEl);
+                }
+            });
+            itemElement.querySelector('.move-up-btn').addEventListener('click', (e) => moveContent(e.currentTarget, 'up'));
+            itemElement.querySelector('.move-down-btn').addEventListener('click', (e) => moveContent(e.currentTarget, 'down'));
+
+            if (type === 'text') {
+                const editor = itemElement.querySelector('.editable-content');
+                const toolbar = itemElement.querySelector('.editor-toolbar');
+                const textarea = itemElement.querySelector('textarea');
+                editor.addEventListener('focus', () => { activeEditor = editor; });
+                editor.addEventListener('blur', () => { savedSelection = saveSelection(); });
+                editor.addEventListener('input', () => { textarea.value = editor.innerHTML; isFormDirty = true; });
+                editor.addEventListener('keyup', () => updateToolbarState(toolbar));
+                editor.addEventListener('mouseup', () => updateToolbarState(toolbar));
+                toolbar.addEventListener('change', (e) => handleEditorCommand(e.target.dataset.action, e.target.value));
+                toolbar.addEventListener('click', (e) => { const button = e.target.closest('button'); if (button) handleEditorCommand(button.dataset.action); });
+            } else {
+                const dropArea = itemElement.querySelector('.upload-drop-area');
+                const fileInput = itemElement.querySelector('.hidden-file-input');
+                dropArea.addEventListener('click', () => fileInput.click());
+                dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+                dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+                dropArea.addEventListener('drop', (e) => { e.preventDefault(); dropArea.classList.remove('drag-over'); if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; showFileInPreview(itemElement, fileInput.files[0]); } });
+                fileInput.addEventListener('change', () => { if (fileInput.files.length) showFileInPreview(itemElement, fileInput.files[0]); });
+            }
+        }
+
+        // === SIRALAMA FONKSİYONLARI ===
+        function makeSortable(container) {
+            let draggingElement = null;
+            container.addEventListener('dragstart', e => { if (e.target.closest('.drag-handle')) { draggingElement = e.target.closest('.content-item'); setTimeout(() => draggingElement.classList.add('dragging'), 0); } });
+            container.addEventListener('dragend', () => { if (draggingElement) { draggingElement.classList.remove('dragging'); draggingElement = null; updateSortOrder(container); } });
+            container.addEventListener('dragover', e => { e.preventDefault(); const afterElement = getDragAfterElement(container, e.clientY); if(draggingElement) container.insertBefore(draggingElement, afterElement); });
+        }
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.content-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => { const box = child.getBoundingClientRect(); const offset = y - box.top - box.height / 2; if (offset < 0 && offset > closest.offset) { return { offset, element: child }; } else { return closest; } }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+        function moveContent(button, direction) {
+            const item = button.closest('.content-item'); if (button.classList.contains('disabled')) return;
+            const container = item.parentElement;
+            if (direction === 'up' && item.previousElementSibling) { container.insertBefore(item, item.previousElementSibling); }
+            else if (direction === 'down' && item.nextElementSibling) { container.insertBefore(item.nextElementSibling, item); }
+            updateSortOrder(container);
+        }
+        function updateSortOrder(container) {
+            const items = container.querySelectorAll('.content-item');
+            items.forEach((item, index) => {
+                item.querySelector('input[name*="[sort_order]"]').value = index;
+                item.querySelector('.move-up-btn').classList.toggle('disabled', index === 0);
+                item.querySelector('.move-down-btn').classList.toggle('disabled', index === items.length - 1);
+            });
+        }
+
+        // === DOSYA ÖNİZLEME FONKSİYONLARI ===
+        function showFileInPreview(itemElement, fileObject) {
+            const type = itemElement.querySelector('input[name*="[type]"]').value;
+            const uploadContainer = itemElement.querySelector('.upload-container');
+            const fileDisplay = uploadContainer.querySelector('.file-display');
+            const uploadCard = uploadContainer.querySelector('.horizontal-upload-card');
+            const filePath = URL.createObjectURL(fileObject);
+            fileDisplay.innerHTML = `<div class="upload-preview-thumb">${type === 'video' ? `<video src="${filePath}"></video>` : '<i data-lucide="file-text"></i>'}</div><div class="flex-grow min-w-0"><div class="file-name" title="${fileObject.name}">${fileObject.name}</div><div class="file-size">${(fileObject.size / 1024 / 1024).toFixed(2)} MB</div></div><div class="file-actions"><button type="button" class="action-button preview-btn" title="Önizle"><i data-lucide="eye"></i></button><button type="button" class="action-button change-btn" title="Değiştir"><i data-lucide="refresh-cw"></i></button></div>`;
+            fileDisplay.querySelector('.preview-btn').addEventListener('click', () => showPreview(filePath, type));
+            fileDisplay.querySelector('.change-btn').addEventListener('click', () => itemElement.querySelector('.hidden-file-input').click());
+            uploadCard.classList.add('hidden');
+            fileDisplay.classList.remove('hidden');
+            lucide.createIcons({nodes: [fileDisplay]});
+        }
+        function showPreview(filePath, fileType) {
+            let content = '';
+            const fileExtension = filePath.split('.').pop().toLowerCase();
+            if (fileType === 'video') { content = `<video src="${filePath}" controls autoplay></video>`; }
+            else if (fileType === 'document') {
+                if (fileExtension === 'pdf') { content = `<iframe src="${filePath}"></iframe>`; }
+                else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(fileExtension) && !filePath.startsWith('blob:')) {
+                    const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(window.location.origin + '/' + filePath)}&embedded=true`;
+                    content = `<iframe src="${viewerUrl}"></iframe>`;
+                } else { content = `<div class="p-8 text-center text-white"><h3>Bu dosya türü için önizleme desteklenmiyor veya dosyanın önce kaydedilmesi gerekiyor.</h3></div>`; }
+            }
+            document.getElementById('preview-modal-content').innerHTML = content;
+            previewModal.classList.remove('hidden');
+        }
+        document.getElementById('preview-modal-close').addEventListener('click', () => previewModal.classList.add('hidden'));
+
+        // === METİN EDİTÖRÜ FONKSİYONLARI ===
+        function saveSelection() { if (window.getSelection) { const sel = window.getSelection(); if (sel.getRangeAt && sel.rangeCount) return sel.getRangeAt(0); } return null; }
+        function restoreSelection(range) { if (range && window.getSelection) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range); } }
+        function handleEditorCommand(command, value = null) {
+            if (!command || !activeEditor) return; activeEditor.focus();
+            if (command === 'createLink') {
+                savedSelection = saveSelection();
+                if(!savedSelection || savedSelection.collapsed) { alert("Lütfen link eklemek için bir metin seçin."); return; }
+                linkModal.classList.add('show'); return;
+            }
+            document.execCommand(command, false, value);
+            updateToolbarState(activeEditor.closest('.content-item-body').querySelector('.editor-toolbar'));
+        }
+        function updateToolbarState(toolbar) { if (!toolbar) return; toolbar.querySelectorAll('[data-action]').forEach(button => { if (button.tagName !== 'SELECT' && document.queryCommandState(button.dataset.action)) { button.classList.add('is-active'); } else { button.classList.remove('is-active'); } }); }
+        document.getElementById('apply-link-btn').addEventListener('click', () => {
+            const url = document.getElementById('link-url').value;
+            if (url && activeEditor) { activeEditor.focus(); restoreSelection(savedSelection); document.execCommand('createLink', false, url); }
+            linkModal.classList.remove('show'); document.getElementById('link-url').value = '';
+        });
+        document.getElementById('cancel-link-btn').addEventListener('click', () => { linkModal.classList.remove('show'); });
+    });
+</script></body>
 </html>
