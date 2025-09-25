@@ -98,7 +98,7 @@ session_start();
               </div>
 
               <div class="text-center mt-12">
-                  <a href="<?php echo BASE_URL; ?>/courses" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-md">
+                  <a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-md">
                       Tüm Kursları Görüntüle
                   </a>
               </div>
@@ -112,19 +112,22 @@ session_start();
             <div class="logo-slider-container">
                 <button id="prevBtn" class="slider-arrow left"><i data-lucide="chevron-left" class="text-gray-700"></i></button>
                 <div class="logo-slider-track">
-                     <div class="logo-slide"><a href="https://www.thebluealliance.com/team/27" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/fotopng" alt="Team RUSH"></a></div>
-                    <div class="logo-slide"><a href="https://www.thebluealliance.com/team/254" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/x.png" alt="Cheesy Poofs"></a></div>
-                    <div class="logo-slide"><a href="https://www.thebluealliance.com/team/67" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/x.png" alt="The HOT Team"></a></div>
-                    <div class="logo-slide"><a href="https://www.thebluealliance.com/team/6228" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/x.png" alt="Mat"></a></div>
-                    <div class="logo-slide"><a href="https://www.thebluealliance.com/team/118" target="_blank"><img src="<?php echo BASE_URL; ?>/assets/images/x.png" alt="Robonauts"></a></div>
-                </div>
+                    <?php
+                    $contributors = getContributors();
+                    foreach ($contributors as $cont):
+                        $id = $cont['id']
+
+                    ?>
+                        <div class="logo-slide"><a href="<?= $cont['website'] ? $cont['website'] : "teamsCourses?id=$id]" ?>" target="_blank"><img src="<?= $cont['profile_pic_path'] ?>" alt="<?=$cont['team_name']?>"></a></div>
+                    <?php endforeach;?>
+                    </div>
                 <button id="nextBtn" class="slider-arrow right"><i data-lucide="chevron-right" class="text-gray-700"></i></button>
             </div>
         </div>
     </section>
 
     <section class="bg-custom-yellow py-20">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"><div class="space-y-6"><h2 class="text-3xl lg:text-4xl font-bold text-white">FRC Maceranıza İlk Adımı Atmaya Hazır mısınız?</h2><p class="text-xl text-white/90 max-w-2xl mx-auto">Robotik dünyasında yol gösterecek tüm kaynaklar burada. Ücretsiz eğitim içeriklerimiz ve takım destek programlarımızla hem bireysel katılımcıları hem de takımları başarıya taşıyoruz.</p><div class="flex flex-col sm:flex-row gap-4 justify-center"><a href="<?php echo BASE_URL; ?>/courses" class="inline-flex items-center justify-center bg-white text-custom-yellow hover:bg-gray-100 px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="book-open" class="mr-2 w-5 h-5"></i>Ücretsiz Başla</a><a href="<?php echo BASE_URL; ?>/team-login" class="inline-flex items-center justify-center border-2 border-white text-white hover:bg-white hover:text-custom-yellow px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="log-in" class="mr-3 w-5 h-5"></i>Takım Girişi</a></div></div></div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"><div class="space-y-6"><h2 class="text-3xl lg:text-4xl font-bold text-white">FRC Maceranıza İlk Adımı Atmaya Hazır mısınız?</h2><p class="text-xl text-white/90 max-w-2xl mx-auto">Robotik dünyasında yol gösterecek tüm kaynaklar burada. Ücretsiz eğitim içeriklerimiz ve takım destek programlarımızla hem bireysel katılımcıları hem de takımları başarıya taşıyoruz.</p><div class="flex flex-col sm:flex-row gap-4 justify-center"><a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center bg-white text-custom-yellow hover:bg-gray-100 px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="book-open" class="mr-2 w-5 h-5"></i>Ücretsiz Başla</a><a href="<?php echo BASE_URL; ?>/team-login.php" class="inline-flex items-center justify-center border-2 border-white text-white hover:bg-white hover:text-custom-yellow px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="log-in" class="mr-3 w-5 h-5"></i>Takım Girişi</a></div></div></div>
     </section>
   </div>
 
