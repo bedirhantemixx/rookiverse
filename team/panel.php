@@ -29,6 +29,50 @@ $page_title = "Takım Paneli";
         })();
     </script>
 
+    <style>
+        .logo-preview {
+            width: 65px;
+            height: 65px;
+            border-radius: 18px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            background: #fff;
+            display: block;
+            flex-shrink: 0;
+        }
+        .notification-button {
+            position: relative;
+            background: none;
+            border: none;
+            color: black;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .notification-button .lucide {
+            color: black; /* İkon rengini siyah yap */
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: 8px;
+            background-color: #ffc107;
+            color: black;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid white;
+        }
+
+    </style>
 
 
 <aside class="sidebar">
@@ -36,8 +80,7 @@ $page_title = "Takım Paneli";
         <span class="rookieverse">FRC ROOKIEVERSE</span>
     </a>
     <div class="sidebar-profile">
-        <div class="icon"><i data-lucide="users"></i></div>
-        <h2>Hoş Geldin,</h2>
+        <img src="http://localhost/rookiverse/rookiverse/uploads/team_3/logo_1758778191_d746d8b2.jpg" class="logo-preview" id="logoPreview" alt="Takım Logosu">        <h2>Hoş Geldin,</h2>
         <p>Takım #<?php echo htmlspecialchars($_SESSION['team_number']); ?></p>
     </div>
     <nav class="sidebar-nav">
@@ -50,7 +93,14 @@ $page_title = "Takım Paneli";
 
 <main class="main-content">
     <div class="top-bar">
-        <div class="font-bold">Takım #<?php echo htmlspecialchars($_SESSION['team_number']); ?> Yönetim Paneli</div>
+        <div class="font-bold">Takım #<?php echo $_SESSION['team_number']; ?> Paneli</div>
+        <div class="actions">
+            <button class="notification-button">
+                <i data-lucide="bell"></i>
+                <div class="notification-badge">3</div>
+            </button>
+            <a href="panel.php" class="btn btn-sm"><i data-lucide="arrow-left"></i> Panele Dön</a>
+        </div>
     </div>
     <div class="content-area">
         <div class="page-header"><h1>Panelim</h1></div>

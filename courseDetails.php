@@ -292,24 +292,34 @@ require_once 'navbar.php';
                             <img src="<?= $team['profile_pic_path']?>" alt="Takım Logosu" class="w-16 h-16 rounded-full object-cover">
                             <div>
 
-                                <a id="team_panel_url" href="teampanel/6228.html" class="font-semibold text-gray-900 hover:text-custom-yellow transition-colors">
+                                <a id="team_panel_url" href="teamCourses.php?team_number=<?=$team['team_number']?>" class="font-semibold text-gray-900 hover:text-custom-yellow transition-colors">
                                     <h4 id="team_name_with_number"><?=$team['team_name']?></h4>
                                 </a>
 
-                                <a href="#" class="text-sm text-gray-600 mt-2 block hover:text-gray-800 transition-colors">
+                                <a href="teamCourses.php?team_number=<?=$team['team_number']?>" class="text-sm text-gray-600 mt-2 block hover:text-gray-800 transition-colors">
                                     Bu takımın tüm kurslarını görmek için <span class="font-semibold text-custom-yellow underline">tıklayın</span>.
                                 </a>
 
                                 <div class="flex items-center space-x-3 mt-3">
+                                    <?php if ($team['website']):?>
+                                        <a id="team_linkedin_url" href="<?=$team['website']?>" target="_blank" class="text-gray-500 hover:text-green-700 transition-colors"><i data-lucide="globe"></i></a>
+                                    <?php endif;?>
+
+                                    <?php if ($team['linkedin']):?>
+                                        <a id="team_linkedin_url" href="<?=$team['linkedin']?>" target="_blank" class="text-gray-500 hover:text-blue-700 transition-colors"><i data-lucide="linkedin"></i></a>
+                                    <?php endif;?>
+
                                     <?php if ($team['instagram']):?>
                                         <a id="team_instagram_url" href="<?=$team['instagram']?>" target="_blank" class="text-gray-500 hover:text-pink-600 transition-colors"><i data-lucide="instagram"></i></a>
-                                    <?php elseif ($team['youtube']):?>
-                                        <a id="team_youtube_url" href="<?=$team['youtube']?>" target="_blank" class="text-gray-500 hover:text-red-600 transition-colors"><i data-lucide="youtube"></i></a>
-                                    <?php elseif ($team['linkedin']):?>
-                                        <a id="team_linkedin_url" href="<?=$team['linkedin']?>" target="_blank" class="text-gray-500 hover:text-blue-700 transition-colors"><i data-lucide="linkedin"></i></a>
-                                    <?php elseif ($team['website']):?>
-                                        <a id="team_linkedin_url" href="<?=$team['website']?>" target="_blank" class="text-gray-500 hover:text-green-700 transition-colors"><i data-lucide="link"></i></a>
                                     <?php endif;?>
+
+                                    <?php if ($team['youtube']):?>
+                                        <a id="team_youtube_url" href="<?=$team['youtube']?>" target="_blank" class="text-gray-500 hover:text-red-600 transition-colors"><i data-lucide="youtube"></i></a>
+                                    <?php endif;?>
+
+
+
+
 
                                 </div>
 

@@ -441,7 +441,7 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
 </style>
 
 <aside class="sidebar">
-    <div class="sidebar-header"><a href="panel.php"><span class="rookieverse">TAKIM PANELI</span></a></div>
+    <a href="panel.php"><span class="rookieverse">FRC ROOKIEVERSE</span></a>
     <div class="sidebar-profile">
         <div class="icon"><i data-lucide="users"></i></div>
         <h2>Hoş Geldin,</h2>
@@ -494,7 +494,7 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
                             <input class="input" type="email" id="contact_email" name="contact_email" placeholder="ornek@takim.com" value="<?php echo htmlspecialchars($team['email'] ?? ''); ?>">
                         </div>
                         <div class="field col-span-2">
-                            <label class="label" for="bio">Kısa Tanım / Biyografi</label>
+                            <label class="label" for="bio">Hakkınızda</label>
                             <textarea class="textarea" id="bio" name="bio" placeholder="Takımınız hakkında kısa bir açıklama yazın..." maxlength="1000"><?php echo htmlspecialchars($team['bio'] ?? ''); ?></textarea>
                             <span class="help">En fazla 1000 karakter önerilir.</span>
                         </div>

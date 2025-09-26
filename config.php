@@ -56,6 +56,26 @@ function getCourseDetails($id)
     return $stmt->fetch(PDO::FETCH_ASSOC);
 
 }
+function getTeamsCourses($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM courses WHERE team_db_id = ? AND status = 'approved'";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function sumUpStudents($courses){
+    $total = 0;
+    foreach ($courses as $course){
+        $total += $course['student'];
+    }
+    return $total;
+}
+
 function getTopCourses()
 {
     $db = get_db_connection();
@@ -93,6 +113,19 @@ function getApprovedCategories()
 
 }
 
+function getCategory($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM categories WHERE id = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+}
+
 function getModules($id)
 {
     $db = get_db_connection();
@@ -109,7 +142,7 @@ function getContributors()
 {
     $db = get_db_connection();
 
-    $sql = "SELECT t.team_name, t.profile_pic_path, t.website, t.id
+    $sql = "SELECT t.team_name, t.profile_pic_path, t.website, t.id, t.team_number
 FROM teams AS t
 INNER JOIN courses AS c ON c.team_db_id = t.id
 WHERE c.status = 'approved';
@@ -143,6 +176,19 @@ function getTeam($id)
 
     $stmt = $db->prepare($sql);
     $stmt->execute([$id]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+}
+
+function getTeambyNumber($nmbr)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM teams WHERE team_number = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$nmbr]);
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
 

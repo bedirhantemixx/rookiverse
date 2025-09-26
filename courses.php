@@ -4,7 +4,12 @@
 session_start();
 $courses = getCourses();
 $categories = getApprovedCategories();
-
+$approvedCourses = 0;
+foreach ($courses as $course) {
+    if ($course['status'] == 'approved') {
+        $approvedCourses++;
+    }
+}
 
 
 ?>
@@ -65,13 +70,13 @@ $categories = getApprovedCategories();
 
         <div class="flex flex-wrap justify-center gap-4 mb-12">
             <button data-filter="all" class="px-6 py-2 font-medium bg-custom-yellow text-white rounded-md">Tümü</button>
-            <button data-filter="frc"
-                    class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md">FRC
-                Temelleri</button>
-            <button data-filter="coding"
-                    class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md">Kodlama</button>
-            <button data-filter="electronics"
-                    class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md">Elektronik</button>
+            <?php
+            foreach ($categories as $category):
+            ?>
+                <button data-filter="<?=$category['id']?>"
+                        class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md"><?=$category['name']?>
+                </button>
+            <?php endforeach;?>
         </div>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-2 mb-8 px-4">
@@ -86,11 +91,11 @@ $categories = getApprovedCategories();
         <!-- Mevcut Metrikler -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div class="text-center border-2 border-custom-yellow/20 p-6 rounded-lg">
-                <h3 class="text-3xl font-bold text-custom-yellow">6</h3>
+                <h3 class="text-3xl font-bold text-custom-yellow"><?=$approvedCourses?></h3>
                 <p class="text-lg text-gray-500">Toplam Kurs</p>
             </div>
             <div class="text-center border-2 border-custom-yellow/20 p-6 rounded-lg">
-                <h3 class="text-3xl font-bold text-custom-yellow">3</h3>
+                <h3 class="text-3xl font-bold text-custom-yellow"><?=count($categories)?></h3>
                 <p class="text-lg text-gray-500">Kategori</p>
             </div>
             <div class="text-center border-2 border-custom-yellow/20 p-6 rounded-lg">
@@ -105,8 +110,9 @@ $categories = getApprovedCategories();
             <?php
             foreach ($categories as $category):
             ?>
+            <div data-category="<?=$category['id']?>">
                 <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                    <div class="w-1 h-8 bg-custom-yellow mr-4 rounded-full"></div> <?= $category['name']?>
+                    <div class="w-1 h-8 bg-custom-yellow mr-4 rounded-full"> <?= $category['name']?></div>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <?php
@@ -167,235 +173,13 @@ $categories = getApprovedCategories();
                         <?php endif;?>
                     <?php endforeach;?>
 
-                    </div>
+                </div>
+            </div>
             <?php endforeach;?>
 
 
 
-            <!-- FRC Temelleri -->
-            <div data-category="frc">
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                    <div class="w-1 h-8 bg-custom-yellow mr-4 rounded-full"></div> FRC Temelleri
-                </h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div
-                        class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg">
-                        <div class="aspect-video relative overflow-hidden group">
-                            <img src="guncel_takim.png" alt="FRC'ye Giriş"
-                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                            <div
-                                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <a href="#"
-                                   class="inline-flex items-center justify-center px-4 py-2 bg-white text-custom-yellow hover:bg-gray-100 rounded-md">
-                                    <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> Kurs Tanıtımı
-                                </a>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold text-gray-900 line-clamp-2">FRC'ye Giriş ve Temel Kavramlar</h3>
-                                <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 whitespace-nowrap">Başlangıç</span>
-                            </div>
-                            <p class="text-gray-600 line-clamp-3 mb-4">FRC dünyasına ilk adımı atın. Yarışma formatı, kurallar ve
-                                takım yapısı hakkında her şeyi öğrenin.</p>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="clock" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> 2 saat</div>
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> Başlangıç</div>
-                            </div>
-                            <a href="#"
-                               class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md">Kursa
-                                Başla</a>
-                        </div>
-                    </div>
-
-                    <div
-                        class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg">
-                        <div class="aspect-video relative overflow-hidden group">
-                            <img src="guncel_takim.png" alt="Strateji"
-                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                            <div
-                                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <a href="#"
-                                   class="inline-flex items-center justify-center px-4 py-2 bg-white text-custom-yellow hover:bg-gray-100 rounded-md">
-                                    <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> Kurs Takınıtımı
-                                </a>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold text-gray-900 line-clamp-2">Maç Stratejisi ve Analizi</h3>
-                                <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-800 bg-yellow-100 border-0 whitespace-nowrap">Orta</span>
-                            </div>
-                            <p class="text-gray-600 line-clamp-3 mb-4">Kazanan bir FRC takımı için oyun analizi ve strateji
-                                geliştirme teknikleri. Rakip analizi ve oyun senaryoları.</p>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="clock" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> 4 saat</div>
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> Orta</div>
-                            </div>
-                            <a href="#"
-                               class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md">Kursa
-                                Başla</a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Kodlama -->
-            <div data-category="coding">
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                    <div class="w-1 h-8 bg-custom-yellow mr-4 rounded-full"></div> Kodlama
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div
-                        class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg">
-                        <div class="aspect-video relative overflow-hidden group">
-                            <img src="guncel_takim.png" alt="Java Programlama"
-                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                            <div
-                                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <a href="#"
-                                   class="inline-flex items-center justify-center px-4 py-2 bg-white text-custom-yellow hover:bg-gray-100 rounded-md">
-                                    <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> Kurs Takınıtımı
-                                </a>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold text-gray-900 line-clamp-2">Java ile Robot Programlama</h3>
-                                <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 whitespace-nowrap">Başlangıç</span>
-                            </div>
-                            <p class="text-gray-600 line-clamp-3 mb-4">Sıfırdan başlayarak FRC robotları için Java programlamanın
-                                temelleri. WPILib kütüphanesi ve kullanımı.</p>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="clock" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> 8 saat</div>
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> Başlangıç</div>
-                            </div>
-                            <a href="#"
-                               class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md">Kursa
-                                Başla</a>
-                        </div>
-                    </div>
-
-                    <div
-                        class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg">
-                        <div class="aspect-video relative overflow-hidden group">
-                            <img src="guncel_takim.png" alt="Sensörler"
-                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                            <div
-                                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <a href="#"
-                                   class="inline-flex items-center justify-center px-4 py-2 bg-white text-custom-yellow hover:bg-gray-100 rounded-md">
-                                    <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> Kurs Takınıtımı
-                                </a>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold text-gray-900 line-clamp-2">Otonom Kodlama ve Sensörler</h3>
-                                <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-red-800 bg-red-100 border-0 whitespace-nowrap">İleri</span>
-                            </div>
-                            <p class="text-gray-600 line-clamp-3 mb-4">Robotunuzu otonom hareket ettirin. Gyro, encoder ve kameralar
-                                gibi sensörleri kullanarak otonom periyodu programlama.</p>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="clock" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> 10 saat</div>
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> İleri</div>
-                            </div>
-                            <a href="#"
-                               class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md">Kursa
-                                Başla</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Elektronik -->
-            <div data-category="electronics">
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                    <div class="w-1 h-8 bg-custom-yellow mr-4 rounded-full"></div> Elektronik
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div
-                        class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg">
-                        <div class="aspect-video relative overflow-hidden group">
-                            <img src="guncel_takim.png" alt="Devreler"
-                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                            <div
-                                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <a href="#"
-                                   class="inline-flex items-center justify-center px-4 py-2 bg-white text-custom-yellow hover:bg-gray-100 rounded-md">
-                                    <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> Kurs Takınıtımı
-                                </a>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold text-gray-900 line-clamp-2">Robot Elektroniği Temelleri</h3>
-                                <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 whitespace-nowrap">Başlangıç</span>
-                            </div>
-                            <p class="text-gray-600 line-clamp-3 mb-4">Motor kontrolcüleri, RoboRIO, güç dağıtım paneli (PDP) ve
-                                diğer temel elektronik bileşenlerin bağlantıları.</p>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="clock" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> 5 saat</div>
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> Başlangıç</div>
-                            </div>
-                            <a href="#"
-                               class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md">Kursa
-                                Başla</a>
-                        </div>
-                    </div>
-
-                    <div
-                        class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg">
-                        <div class="aspect-video relative overflow-hidden group">
-                            <img src="guncel_takim.png" alt="CAN Bus"
-                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                            <div
-                                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <a href="#"
-                                   class="inline-flex items-center justify-center px-4 py-2 bg-white text-custom-yellow hover:bg-gray-100 rounded-md">
-                                    <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> Kurs Takınıtımı
-                                </a>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold text-gray-900 line-clamp-2">CAN Bus ve Pnömatik Sistemler</h3>
-                                <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-800 bg-yellow-100 border-0 whitespace-nowrap">Orta</span>
-                            </div>
-                            <p class="text-gray-600 line-clamp-3 mb-4">CAN iletişim protokolü ve robot üzerindeki pnömatik
-                                sistemlerin kurulumu, kontrolü ve sorun giderme yöntemleri.</p>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="clock" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> 6 saat</div>
-                                <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
-                                                                                        style="width: 16px; height: 16px;"></i> Orta</div>
-                            </div>
-                            <a href="#"
-                               class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md">Kursa
-                                Başla</a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
 
         </div>
     </div>

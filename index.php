@@ -118,7 +118,7 @@ session_start();
                         $id = $cont['id']
 
                     ?>
-                        <div class="logo-slide"><a href="<?= $cont['website'] ? $cont['website'] : "teamsCourses?id=$id]" ?>" target="_blank"><img src="<?= $cont['profile_pic_path'] ?>" alt="<?=$cont['team_name']?>"></a></div>
+                        <div class="logo-slide"><a href="teamCourses.php?team_number=<?=$cont['team_number']?>" target="_blank"><img src="<?= $cont['profile_pic_path'] ?>" alt="<?=$cont['team_name']?>"></a></div>
                     <?php endforeach;?>
                     </div>
                 <button id="nextBtn" class="slider-arrow right"><i data-lucide="chevron-right" class="text-gray-700"></i></button>
