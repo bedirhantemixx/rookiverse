@@ -102,11 +102,15 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col md:flex-row md:items-center gap-6">
                 <!-- Profil görseli -->
-                <img
-                    src="<?=$team['profile_pic_path'] ?>"
-                    alt="Takım Profil Fotoğrafı"
-                    class="w-24 h-24 rounded-2xl object-cover bg-slate-100 border"
-                />
+                <?php
+                if (!empty($team['profile_pic_path'])):
+                ?>
+                    <img
+                        src="<?=$team['profile_pic_path'] ?>"
+                        alt="Takım Profil Fotoğrafı"
+                        class="w-24 h-24 rounded-2xl object-cover bg-slate-100 border"
+                    />
+                <?php endif;?>
 
                 <!-- Temel bilgiler -->
                 <div class="flex-1">

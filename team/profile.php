@@ -443,7 +443,6 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
 <aside class="sidebar">
     <a href="panel.php"><span class="rookieverse">FRC ROOKIEVERSE</span></a>
     <div class="sidebar-profile">
-        <div class="icon"><i data-lucide="users"></i></div>
         <h2>Hoş Geldin,</h2>
         <p>Takım #<?php echo $teamNumber; ?></p>
     </div>

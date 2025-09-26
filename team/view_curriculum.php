@@ -99,6 +99,7 @@ $page_title = "Bölüm Yönetimi";
         const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const courseId = <?php echo (int)$course_id; ?>;
         let draggingEl = null;
+        saveOrder();
 
         // Toast
         function showToast(msg){

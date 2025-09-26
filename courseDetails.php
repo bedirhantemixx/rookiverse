@@ -289,7 +289,11 @@ require_once 'navbar.php';
                         $team = getTeam($course['team_db_id'])
                         ?>
                         <div class="flex items-start space-x-4">
-                            <img src="<?= $team['profile_pic_path']?>" alt="Takım Logosu" class="w-16 h-16 rounded-full object-cover">
+                            <?php
+                            if (!empty($team['profile_pic_path'])):
+                            ?>
+                                <img src="<?= $team['profile_pic_path']?>" alt="Takım Logosu" class="w-16 h-16 rounded-full object-cover">
+                            <?php endif;?>
                             <div>
 
                                 <a id="team_panel_url" href="teamCourses.php?team_number=<?=$team['team_number']?>" class="font-semibold text-gray-900 hover:text-custom-yellow transition-colors">

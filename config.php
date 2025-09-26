@@ -130,7 +130,7 @@ function getModules($id)
 {
     $db = get_db_connection();
 
-    $sql = "SELECT * FROM course_modules WHERE course_id = ?";
+    $sql = "SELECT * FROM course_modules WHERE course_id = ? ORDER BY sort_order ASC";
 
     $stmt = $db->prepare($sql);
     $stmt->execute([$id]);
@@ -159,10 +159,10 @@ function getModuleContent($id, $i)
 {
     $db = get_db_connection();
 
-    $sql = "SELECT * FROM module_contents WHERE module_id = ? AND sort_order = ?";
+    $sql = "SELECT * FROM module_contents WHERE module_id = ?";
 
     $stmt = $db->prepare($sql);
-    $stmt->execute([$id, $i]);
+    $stmt->execute([$id]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 

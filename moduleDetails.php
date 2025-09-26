@@ -167,7 +167,7 @@ require_once 'navbar.php';
                 ?>
                     <div class="bg-black rounded-lg overflow-hidden relative aspect-video">
                         <video class="w-full h-full" controls autoplay>
-                            <source src="<?=$cont['data']?>" type="video/mp4">
+                            <source src="../<?=$cont['data']?>" type="video/mp4">
                             Tarayıcınız video etiketini desteklemiyor.
                         </video>
                     </div>
@@ -176,7 +176,7 @@ require_once 'navbar.php';
                         $empty = false;
 
                 ?>
-                    <div class="p-6 space-y-3">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
                         <div class="flex items-center justify-between p-3 border rounded-lg">
                             <div class="min-w-0">
                                 <div class="font-medium text-gray-900 truncate"><?= e($doc['title'] ?? 'Doküman') ?></div>
@@ -185,10 +185,10 @@ require_once 'navbar.php';
                                 <?php endif; ?>
                             </div>
                             <div class="flex items-center gap-2">
-                                <a href="<?= $cont['data'] ?>" download class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
+                                <a href="../<?= $cont['data'] ?>" download class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
                                     İndir
                                 </a>
-                                <a href="<?= $cont['data'] ?>" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
+                                <a href="../<?= $cont['data'] ?>" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
                                     Yeni Sekmede Aç
                                 </a>
                             </div>
@@ -212,7 +212,7 @@ require_once 'navbar.php';
                         $i = 0;
                         foreach ($modules as $m):
                             ?>
-                            <a href="moduleDetails.php?course=<?=$_GET['course']?>&id=<?=$_GET['id']?>&ord=<?=$i?>"
+                            <a href="moduleDetails.php?course=<?=$_GET['course']?>&id=<?=$m['id']?>&ord=<?=$i?>"
                                class="flex items-center space-x-4 p-3 rounded-lg transition-colors
                                <?= $i == $_GET['ord'] ? 'bg-yellow-100/60 border-l-4 border-yellow-500' : 'hover:bg-gray-50' ?>">
                                 <div class="flex items-center justify-center w-8 h-8 rounded-full flex-shrink-0

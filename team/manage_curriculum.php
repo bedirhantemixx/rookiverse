@@ -13,8 +13,9 @@ $pdo = get_db_connection();
 $stmt_check = $pdo->prepare("SELECT COUNT(*) as module_count FROM course_modules WHERE course_id = ?");
 $stmt_check->execute([$course_id]);
 $result = $stmt_check->fetch(PDO::FETCH_ASSOC);
+
 if ($result && $result['module_count'] > 0) {
-    header('Location: edit_module.php?id=' . $course_id);
+    header('Location: view_curriculum.php?id=' . $course_id);
     exit();
 }
 

@@ -7,7 +7,7 @@ if (!isset($_SESSION['team_logged_in'])) { header("Location: ../team-login.php")
 require_once($projectRoot . '/config.php');
 $pdo = get_db_connection();
 
-
+$team = getTeam($_SESSION['team_number']);
 
 // Takıma ait kursları çek
 $stmt = $pdo->prepare("SELECT id, title, status FROM courses WHERE team_db_id = ? ORDER BY id DESC");
@@ -80,7 +80,7 @@ $page_title = "Takım Paneli";
         <span class="rookieverse">FRC ROOKIEVERSE</span>
     </a>
     <div class="sidebar-profile">
-        <img src="http://localhost/rookiverse/rookiverse/uploads/team_3/logo_1758778191_d746d8b2.jpg" class="logo-preview" id="logoPreview" alt="Takım Logosu">        <h2>Hoş Geldin,</h2>
+        <h2>Hoş Geldin,</h2>
         <p>Takım #<?php echo htmlspecialchars($_SESSION['team_number']); ?></p>
     </div>
     <nav class="sidebar-nav">
