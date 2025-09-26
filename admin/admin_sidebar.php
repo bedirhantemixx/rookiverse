@@ -1,11 +1,9 @@
+
 <aside class="sidebar">
     <div class="sidebar-header">
         <a style="text-decoration: none" href="panel.php"><span class="rookieverse">FRC ROOKIEVERSE</span></a>
     </div>
-    <div class="sidebar-search">
-        <input type="text" id="menu-search" class="search-input" placeholder="Menüde Ara...">
-        <i data-lucide="search" class="search-icon"></i>
-    </div>
+    
     <nav class="sidebar-nav">
         <div class="menu-item">
             <div class="menu-title"><div class="flex items-center"><i data-lucide="home" class="menu-icon"></i>Dashboard</div><i data-lucide="chevron-right" class="menu-arrow"></i></div>

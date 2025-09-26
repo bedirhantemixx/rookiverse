@@ -1,8 +1,22 @@
 <?php require_once 'config.php';
 session_start();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $subject = $_POST['subject'];
+    $message = $_POST['message'];
+
+    try {
+        $pdo = get_db_connection();
+
+        $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$name, $email, $subject, $message]);
+    }catch (Throwable $e) {
+        http_response_code(500);
+        echo 'DB error: ' . htmlspecialchars($e->getMessage());
+    }
 }
 
 ?>
@@ -39,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-custom-yellow/50 transition-all duration-300">
           <h2 class="text-2xl font-bold text-gray-900 flex items-center mb-1"><i data-lucide="send" class="mr-3 text-custom-yellow h-7 w-7"></i> Bize Mesaj Gönderin</h2>
           <p class="text-base text-gray-600 mb-6">Formu doldurun, en kısa sürede size geri dönüş yapalım.</p>
-          <form id="contact-form" class="space-y-6">
+          <form method="post" id="contact-form" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2"><label for="name" class="font-medium text-gray-700">Ad Soyad *</label><input id="name" name="name" type="text" required placeholder="Adınızı ve soyadınızı girin" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-custom-yellow focus:ring-custom-yellow"></div>
               <div class="space-y-2"><label for="email" class="font-medium text-gray-700">E-posta *</label><input id="email" name="email" type="email" required placeholder="E-posta adresinizi girin" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-custom-yellow focus:ring-custom-yellow"></div>

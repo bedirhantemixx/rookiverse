@@ -12,6 +12,7 @@ $notification_count = $pending_approvals;
 ?>
 
     <main class="main-content">
+
         <div class="top-bar">
             <div class="top-bar-actions">
                 <div class="top-bar-item">
