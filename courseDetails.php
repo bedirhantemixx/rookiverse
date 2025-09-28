@@ -2,10 +2,36 @@
 require_once "config.php";
 session_start();
 if(!isset($_GET['course'])){
-    header("location: courses.php");
+    header("location: course_actions.php");
     exit();
 }
-$course = getCourseDetails($_GET['course'])
+$preview = false;
+if (isset($_GET['preview'])) {
+    if ($_GET['preview'] == '1'){
+        if (!isset($_SESSION['admin_logged_in'])){
+            header("location: courses.php");
+        }
+        else{
+            $preview = true;
+        }
+    }
+}
+
+$course = getCourseDetails($_GET['course']);
+$anonId = $_COOKIE['rv_anon'] ?? null;
+$isEnrolled = false;
+$pdo = get_db_connection();
+if ($anonId) {
+    $stmt = $pdo->prepare("
+        SELECT 1 FROM course_guest_enrollments 
+        WHERE course_id = ? AND anon_id = ? 
+        LIMIT 1
+    ");
+    $stmt->execute([$course['id'], $anonId]);
+    $isEnrolled = (bool)$stmt->fetchColumn();
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -13,7 +39,7 @@ $course = getCourseDetails($_GET['course'])
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurs Detayı - RobotikTR</title>
+    <title>Kurs Detayı - <?=$course['title']?></title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/index.css">
 
 
@@ -114,14 +140,74 @@ require_once 'navbar.php';
 
 <div class="min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <?php if (!$preview):?>
         <div class="mb-6">
             <a href="courses.php" class="inline-flex items-center text-custom-yellow hover:bg-custom-yellow/10 p-2 rounded-md">
                 <i data-lucide="arrow-left" class="mr-2" style="width: 18px; height: 18px;"></i>
                 Kurslara Geri Dön
             </a>
         </div>
-
+        <?php endif;?>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <?php if ($preview): ?>
+                <!-- ÖNİZLEME HAVA PANELİ (SAĞ ÜST) -->
+                <div
+                        class="fixed top-16 left-3 z-50 w-[320px] max-w-[90vw] border-2 border-custom-yellow/30 rounded-xl p-4 bg-white shadow-xl"
+                        role="region" aria-label="Önizleme Kontrolleri"
+                >
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="shield-check"></i>
+                        <h3 class="font-bold text-gray-900">Önizleme Modu</h3>
+                    </div>
+
+                    <p class="text-sm text-gray-700 mb-4">
+                        Bu sayfa <span class="font-semibold text-custom-yellow">önizleme</span> modunda.
+                    </p>
+
+                    <div class="space-y-2">
+                        <a href="admin/course_actions.php"
+                           class="w-full inline-flex items-center justify-center rounded-md border-2 border-custom-yellow/40 px-4 py-2 font-semibold text-custom-yellow hover:bg-custom-yellow/10">
+                            <i data-lucide="arrow-left" class="mr-2" style="width:18px;height:18px;"></i>
+                            Panele Geri Dön
+                        </a>
+
+                        <?php
+                        // CSRF yoksa üret
+                        if (empty($_SESSION['csrf'])) {
+                            $_SESSION['csrf'] = bin2hex(random_bytes(32));
+                        }
+                        $csrf = htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8');
+                        ?>
+
+                        <!-- ONAYLA (POST) -->
+                        <form method="post" action="admin/course_actions.php" class="space-y-0">
+                            <input type="hidden" name="csrf" value="<?= $csrf ?>">
+                            <input type="hidden" name="action" value="approve_course">
+                            <input type="hidden" name="course_id" value="<?= (int)$course['id'] ?>">
+                            <button type="submit"
+                                    class="w-full inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 font-semibold text-white hover:bg-green-700">
+                                <i data-lucide="check-circle" class="mr-2" style="width:18px;height:18px;"></i>
+                                Onayla
+                            </button>
+                        </form>
+
+                        <!-- REDDET (POST) -->
+                        <form method="post" action="admin/course_actions.php" class="space-y-0 mt-2">
+                            <input type="hidden" name="csrf" value="<?= $csrf ?>">
+                            <input type="hidden" name="action" value="reject_course">
+                            <input type="hidden" name="course_id" value="<?= (int)$course['id'] ?>">
+                            <button type="submit"
+                                    class="w-full inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700">
+                                <i data-lucide="x-circle" class="mr-2" style="width:18px;height:18px;"></i>
+                                Reddet
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            <?php endif; ?>
+
+
             <div class="lg:col-span-2 space-y-8">
                 <div class="overflow-hidden border-2 border-custom-yellow/20 rounded-lg">
 
@@ -197,77 +283,106 @@ require_once 'navbar.php';
                     <div class="p-6">
                         <h2 class="text-2xl font-bold text-gray-900">Kurs İçeriği</h2>
                         <?php
-                        $modules = getModules($course['id']);
-                        $count = count($modules);
-                        ?>
-                        <p class="text-gray-500"><?=$count?> modül • Toplam 8 saat</p>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <div class="space-y-4">
-                            <?php
-                            $i = 0;
-                            foreach ($modules as $module):
-                                $i++
+                            if (!$preview):
+                            $modules = getModules($course['id']);
+                            $count = is_array($modules) ? count($modules) : 0;
+
                             ?>
-                                <div data-course="<?=$course['course_uid']?>" data-moduleid="<?=$module['id']?>" data-ord="<?=$i?>" class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 modulePlayer">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="flex items-center justify-center w-8 h-8 bg-custom-yellow/10 rounded-full flex-shrink-0">
-                                            <span class="text-custom-yellow font-semibold text-sm"><?=$i?></span>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-medium text-gray-900"><?=$module['title']?></h4>
-                                            <div class="flex items-center text-sm text-gray-500 mt-1"><i data-lucide="clock" class="mr-1" style="width: 14px; height: 14px;"></i>30 dakika</div>
-                                        </div>
-                                    </div>
-                                    <button class="p-2 text-custom-yellow hover:bg-custom-yellow/10 rounded-full"><i data-lucide="play" style="width: 16px; height: 16px;"></i></button>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
+
+                            <p class="text-gray-500"><?=$count?> modül • Toplam 8 saat</p>
+                        <?php endif; ?>
                     </div>
+
+                    <?php if ($preview): ?>
+                        <!-- ÖNİZLEMEDE LİSTE YOK, UYARI + BUTON -->
+                        <div class="p-6 pt-0">
+                            <div class="rounded-lg border border-yellow-300 bg-yellow-50 p-4">
+                                <div class="flex items-start gap-3">
+                                    <i data-lucide="eye-off" class="mt-0.5" style="width:20px;height:20px;"></i>
+                                    <div>
+                                        <p class="text-sm text-yellow-800">
+                                            Modülleri önizlemek için <span class="font-semibold">panele geri dön</span> ve
+                                            oradan modül detayına gir.
+                                        </p>
+                                        <a href="course_actions.php"
+                                           class="mt-3 inline-flex items-center rounded-md border-2 border-yellow-300 px-3 py-2 text-sm font-semibold text-yellow-800 hover:bg-yellow-100">
+                                            <i data-lucide="arrow-left" class="mr-2" style="width:16px;height:16px;"></i>
+                                            Panele Geri Dön
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <!-- NORMALDE MODÜL LİSTESİ -->
+                        <div class="p-6 pt-0">
+                            <div class="space-y-4">
+                                <?php
+                                $i = 0;
+                                foreach ($modules as $module):
+                                    $i++;
+                                    ?>
+                                    <div data-course="<?=$course['course_uid']?>"
+                                         data-moduleid="<?=$module['id']?>"
+                                         data-ord="<?=$i?>"
+                                         class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 modulePlayer">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="flex items-center justify-center w-8 h-8 bg-custom-yellow/10 rounded-full flex-shrink-0">
+                                                <span class="text-custom-yellow font-semibold text-sm"><?=$i?></span>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-gray-900"><?=$module['title']?></h4>
+                                                <div class="flex items-center text-sm text-gray-500 mt-1">
+                                                    <i data-lucide="clock" class="mr-1" style="width:14px;height:14px;"></i>
+                                                    30 dakika
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="p-2 text-custom-yellow hover:bg-custom-yellow/10 rounded-full">
+                                            <i data-lucide="play" style="width:16px;height:16px;"></i>
+                                        </button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                 </div>
             </div>
 
             <div class="space-y-6">
-                <div id="enrollment-card" class="border-2 border-custom-yellow bg-custom-yellow/5 rounded-lg">
-                    <div class="p-6 text-center space-y-4">
-                        <div>
+                <?php if (!$isEnrolled): ?>
+                    <div id="enrollment-card" class="border-2 border-custom-yellow bg-custom-yellow/5 rounded-lg">
+                        <div class="p-6 text-center space-y-4">
+                            <div>
+                                <p class="text-gray-600">Tam erişim ile</p>
+                            </div>
 
-                            <p class="text-gray-600">Tam erişim ile</p>
-                        </div>
-
-                        <div id="enroll-button-container">
-                            <button id="enroll-btn" onclick="handleEnroll()" class="w-full bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-3 rounded-md flex items-center justify-center transition-colors duration-200">
-                    <span id="enroll-btn-content" class="flex items-center justify-center">
-                      <i data-lucide="book-open" class="mr-2" style="width: 18px; height: 18px;"></i>
-                      Ücretsiz Kayıt Ol
-                    </span>
-                                <span id="enroll-btn-loading" class="hidden">
-                      <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <div id="enroll-button-container">
+                                <button id="enroll-btn" class="w-full bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-3 rounded-md flex items-center justify-center transition-colors duration-200">
+                <span id="enroll-btn-content" class="flex items-center justify-center">
+                    <i data-lucide="book-open" class="mr-2" style="width: 18px; height: 18px;"></i>
+                    Ücretsiz Kayıt Ol
+                </span>
+                                    <span id="enroll-btn-loading" class="hidden">
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    </span>
-                            </button>
-                        </div>
-
-                        <div id="enrolled-container" class="hidden space-y-3">
-                            <div class="flex items-center justify-center text-green-600 font-semibold">
-                                <i data-lucide="check-circle" class="mr-2" style="width: 20px; height: 20px;"></i>
-                                Kursa Kayıtlısınız
+                    </svg>
+                </span>
+                                </button>
                             </div>
-                            <button onclick="continueCourse()" class="w-full bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-3 rounded-md flex items-center justify-center">
-                                <i data-lucide="play" class="mr-2" style="width: 18px; height: 18px;"></i>
-                                Kursa Başla
-                            </button>
-                        </div>
+                            <div id="enrolled-container" class="hidden space-y-3"> <div class="flex items-center justify-center text-green-600 font-semibold"> <i data-lucide="check-circle" class="mr-2" style="width: 20px; height: 20px;"></i> Kursa Kayıtlısınız </div> <button onclick="continueCourse()" class="w-full bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-3 rounded-md flex items-center justify-center"> <i data-lucide="play" class="mr-2" style="width: 18px; height: 18px;"></i> Kursa Başla </button> </div>
 
-                        <div class="text-sm text-gray-600 space-y-1">
-                            <div>✓ Sınırsız erişim</div>
-                            <div>✓ Tüm materyaller dahil</div>
-                            <div>✓ Topluluk desteği</div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div>✓ Sınırsız erişim</div>
+                                <div>✓ Tüm materyaller dahil</div>
+                                <div>✓ Topluluk desteği</div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                <?php endif; ?>
+
 
                 <div class="border-2 border-custom-yellow/20 rounded-lg">
                     <div class="p-6 border-b border-custom-yellow/20"><h3 class="text-lg font-bold">Kurs İstatistikleri</h3></div>
@@ -407,14 +522,44 @@ require_once 'navbar.php';
         closeEnrollModal();
     });
 
+
+
     // Vazgeç
     modalCancelBtn.addEventListener('click', closeEnrollModal);
 
     lucide.createIcons();
 
-    let isEnrolled = false;
+    let isEnrolled = <?php echo $isEnrolled ? 'true' : 'false'; ?>;
 
 
+    // İlk modüle gitmek için güvenli fonksiyon:
+    function continueCourse() {
+        // Enroll olmayan biri butona basarsa modal aç (emniyet)
+        if (!isEnrolled) {
+            openEnrollModal();
+            return;
+        }
+
+        // Modül kartlarını bul
+        const firstModule = document.querySelector('.modulePlayer');
+        if (!firstModule) {
+            // Modül yoksa kurs sayfasında kal ya da uygun bir fallback yap
+            console.warn('Bu kursta henüz modül yok.');
+            return;
+        }
+
+        // Data attributeları al (sen zaten modulePlayer üzerinde bunları basmışsın)
+        const moduleId = firstModule.dataset.moduleid;   // örn: "123"
+        const courseUid = firstModule.dataset.course;    // örn: "rv-abcdef"
+        let ord = parseInt(firstModule.dataset.ord, 10); // 1-based geliyor
+        if (Number.isNaN(ord)) ord = 1;
+
+        // Sen modül tıklamasında ord-1 yapıyorsun; aynı mantığı koruyalım:
+        const zeroBasedOrd = ord - 1;
+
+        // İlk modüle yönlendir
+        window.location.href = `moduleDetails.php?course=${encodeURIComponent(courseUid)}&id=${encodeURIComponent(moduleId)}&ord=${encodeURIComponent(zeroBasedOrd)}`;
+    }
     let video = document.querySelector('#intro-video')
 
 
@@ -503,6 +648,11 @@ require_once 'navbar.php';
     // ## VİDEO KONTROL DEĞİŞİKLİKLERİNİN SONU ##
 
 
+    const enrollBtn = document.getElementById('enroll-btn');
+    enrollBtn.addEventListener('click', () =>{
+        handleEnroll()
+    })
+
     function playIntroVideo() {
         thumbnailContainer.classList.add('hidden');
         introVideo.classList.remove('hidden');
@@ -510,8 +660,8 @@ require_once 'navbar.php';
     }
 
     async function handleEnroll() {
-        const enrollBtn = document.getElementById('enroll-btn');
         const enrollBtnContent = document.getElementById('enroll-btn-content');
+        const enrolledContainer = document.getElementById('enrolled-container')
         const enrollBtnLoading = document.getElementById('enroll-btn-loading');
         let course_id = <?=$course['id']?>;
         fetch('addStudent.php', {
@@ -537,41 +687,14 @@ require_once 'navbar.php';
 
         isEnrolled = true;
 
+
         enrollButtonContainer.classList.add('hidden');
         enrolledContainer.classList.remove('hidden');
     }
 
 
 
-    function continueCourse() {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = res.json();
-        console.log('Created:', data);
 
-        const teamNameElement = document.getElementById('team_name_with_number');
-        const teamId = "team" + teamNameElement.textContent.split('#')[1].trim();
-
-        const courseNameElement = document.querySelector('h1');
-        const courseName = courseNameElement.textContent.trim();
-
-        function createCourseSlug(name) {
-            return name.toLowerCase()
-                .replace(/ /g, '-')
-                .replace(/ı/g, 'i')
-                .replace(/ğ/g, 'g')
-                .replace(/ü/g, 'u')
-                .replace(/ş/g, 's')
-                .replace(/ö/g, 'o')
-                .replace(/ç/g, 'c')
-                .replace(/[^\w-]+/g, '');
-        }
-
-        const courseSlug = createCourseSlug(courseName);
-        const finalURL = `${teamId}/${courseSlug}.html`;
-
-        console.log("Yönlendiriliyor:", finalURL);
-        window.location.href = finalURL;
-    }
 </script>
 
 </body>

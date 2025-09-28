@@ -114,9 +114,13 @@ session_start();
                 <div class="logo-slider-track">
                     <?php
                     $contributors = getContributors();
+                    $conts = [];
                     foreach ($contributors as $cont):
-                        $id = $cont['id']
-
+                        $id = $cont['id'];
+                        if (in_array($id, $conts)) {
+                            continue;
+                        }
+                        array_push($conts, $id);
                     ?>
                         <div class="logo-slide"><a href="teamCourses.php?team_number=<?=$cont['team_number']?>" target="_blank"><img src="<?= $cont['profile_pic_path'] ?>" alt="<?=$cont['team_name']?>"></a></div>
                     <?php endforeach;?>

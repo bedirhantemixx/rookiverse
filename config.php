@@ -113,6 +113,20 @@ function getApprovedCategories()
 
 }
 
+function rv_get_or_set_anon_id(): string
+{
+    $cookieName = 'rv_anon';
+    if (!empty($_COOKIE[$cookieName])) {
+        // güvenlik için basit filtre
+        return preg_replace('/[^a-zA-Z0-9_\-]/', '', $_COOKIE[$cookieName]);
+    }
+    $new = 'guest_' . bin2hex(random_bytes(12)); // 24 hex ≈ 12 byte
+    // 1 yıl geçerli, HttpOnly
+    setcookie($cookieName, $new, time() + 3600 * 24 * 365, "/", "", false, true);
+    return $new;
+}
+
+
 function getCategory($id)
 {
     $db = get_db_connection();
