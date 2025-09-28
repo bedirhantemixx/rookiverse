@@ -56,6 +56,18 @@ function getCourseDetails($id)
     return $stmt->fetch(PDO::FETCH_ASSOC);
 
 }
+function getCourseDetailsById($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM courses WHERE id = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+}
 function getTeamsCourses($id)
 {
     $db = get_db_connection();
@@ -66,6 +78,16 @@ function getTeamsCourses($id)
     $stmt->execute([$id]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function notify($id, $team, $type, $action)
+{
+    $db = get_db_connection();
+
+    $sql = "INSERT INTO notifications (content_id, team_id, type, action) VALUES(?, ?, ?, ?)";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id, $team, $type, $action]);
+
 }
 
 function sumUpStudents($courses){
@@ -144,12 +166,24 @@ function getModules($id)
 {
     $db = get_db_connection();
 
-    $sql = "SELECT * FROM course_modules WHERE course_id = ? ORDER BY sort_order ASC";
+    $sql = "SELECT * FROM course_modules WHERE course_id = ? AND status = 'approved' ORDER BY sort_order ASC";
 
     $stmt = $db->prepare($sql);
     $stmt->execute([$id]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+function getModule($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM course_modules WHERE id = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 
 }
 function getContributors()
@@ -166,8 +200,28 @@ WHERE c.status = 'approved';
     $stmt->execute();
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 }
+
+function getTeamIdByModule($id)
+{
+    $db = get_db_connection();
+
+    $sql = "
+        SELECT c.team_db_id
+        FROM courses AS c
+        INNER JOIN course_modules AS m ON c.id = m.course_id
+        WHERE m.id = ?
+        LIMIT 1
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetchColumn(); // sadece team_db_id değerini döndürür
+}
+
+
+
 
 function getModuleContent($id, $i)
 {

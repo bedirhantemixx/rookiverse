@@ -5,6 +5,7 @@ $projectRoot = dirname(__DIR__);
 require_once $projectRoot . '/config.php';
 require_once 'team_header.php';
 
+
 if (!isset($_SESSION['team_logged_in'])) {
     $base = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
     header('Location: ' . $base . '/team-login.php');
@@ -441,7 +442,13 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
 </style>
 
 <aside class="sidebar">
-    <a href="panel.php"><span class="rookieverse">FRC ROOKIEVERSE</span></a>
+    <?php
+    if (!isset($_SESSION['admin_panel_view'])):
+        ?>
+        <a class="flex items-center space-x-2" href="<?php echo BASE_URL; ?>">
+            <span class="rookieverse">FRC ROOKIEVERSE</span>
+        </a>
+    <?php endif;?>
     <div class="sidebar-profile">
         <h2>Hoş Geldin,</h2>
         <p>Takım #<?php echo $teamNumber; ?></p>
@@ -450,7 +457,12 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
         <a href="panel.php"><i data-lucide="layout-dashboard"></i> Panelim</a>
         <a href="create_course.php"><i data-lucide="plus-square"></i> Yeni Kurs Oluştur</a>
         <a href="profile.php" class="active"><i data-lucide="settings"></i> Profilimi Düzenle</a>
-        <a href="logout.php" class="logout-link"><i data-lucide="log-out"></i> Güvenli Çıkış</a>
+        <a href="notifications.php" ><i data-lucide="bell"></i> Bildirimler</a>
+        <?php
+        if (!isset($_SESSION['admin_panel_view'])):
+            ?>
+            <a href="logout.php" class="logout-link"><i data-lucide="log-out"></i> Güvenli Çıkış</a>
+        <?php endif;?>
     </nav>
 </aside>
 
@@ -462,7 +474,11 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
                 <i data-lucide="bell"></i>
                 <div class="notification-badge">3</div>
             </button>
-            <a href="panel.php" class="btn btn-sm"><i data-lucide="arrow-left"></i> Panele Dön</a>
+            <?php
+            if (isset($_SESSION['admin_panel_view'])):
+                ?>
+                <a href="../admin/accessTeamPanel.php?exit=1" class="btn btn-sm"><i data-lucide="arrow-left"></i>Admin Paneline Dön</a>
+            <?php endif;?>
         </div>
     </div>
 

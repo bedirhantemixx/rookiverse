@@ -76,9 +76,13 @@ $page_title = "Takım Paneli";
 
 
 <aside class="sidebar">
-    <a class="flex items-center space-x-2" href="<?php echo BASE_URL; ?>">
-        <span class="rookieverse">FRC ROOKIEVERSE</span>
-    </a>
+    <?php
+    if (!isset($_SESSION['admin_panel_view'])):
+        ?>
+        <a class="flex items-center space-x-2" href="<?php echo BASE_URL; ?>">
+            <span class="rookieverse">FRC ROOKIEVERSE</span>
+        </a>
+    <?php endif;?>
     <div class="sidebar-profile">
         <h2>Hoş Geldin,</h2>
         <p>Takım #<?php echo htmlspecialchars($_SESSION['team_number']); ?></p>
@@ -87,7 +91,13 @@ $page_title = "Takım Paneli";
         <a href="panel.php" class="active"><i data-lucide="layout-dashboard"></i> Panelim</a>
         <a href="create_course.php"><i data-lucide="plus-square"></i> Yeni Kurs Oluştur</a>
         <a href="profile.php"><i data-lucide="settings"></i> Profilimi Düzenle</a>
-        <a href="logout.php" class="logout-link"><i data-lucide="log-out"></i> Güvenli Çıkış</a>
+        <a href="notifications.php"><i data-lucide="bell"></i> Bildirimler</a>
+
+        <?php
+        if (!isset($_SESSION['admin_panel_view'])):
+            ?>
+            <a href="logout.php" class="logout-link"><i data-lucide="log-out"></i> Güvenli Çıkış</a>
+        <?php endif;?>
     </nav>
 </aside>
 
@@ -99,7 +109,11 @@ $page_title = "Takım Paneli";
                 <i data-lucide="bell"></i>
                 <div class="notification-badge">3</div>
             </button>
-            <a href="panel.php" class="btn btn-sm"><i data-lucide="arrow-left"></i> Panele Dön</a>
+            <?php
+            if (isset($_SESSION['admin_panel_view'])):
+            ?>
+                <a href="../admin/accessTeamPanel.php?exit=1" class="btn btn-sm"><i data-lucide="arrow-left"></i>Admin Paneline Dön</a>
+            <?php endif;?>
         </div>
     </div>
     <div class="content-area">

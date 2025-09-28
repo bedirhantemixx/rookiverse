@@ -1,24 +1,21 @@
 <?php
-$pending_courses = 0;
-try {
-    if (!isset($pdo)) {
-        $projectRoot = dirname(__DIR__); // admin/ içinden çalışıyorsan doğru
-        require_once $projectRoot . '/config.php';
-        $pdo = get_db_connection();
-    }
-    $pending_courses = (int)$pdo->query("SELECT COUNT(*) FROM courses WHERE status='pending'")->fetchColumn();
-} catch (Throwable $e) {
-    $pending_courses = 0; // hata olursa sessizce 0
-}
+$pdo = get_db_connection();
+
+$pending_approvals = $pdo->query("SELECT count(*) FROM courses WHERE status='pending'")->fetchColumn();
+$pending_approvals += $pdo->query("SELECT count(*) FROM course_modules WHERE status='pending' OR status='draft'")->fetchColumn();
+
 // Rozette aşırı uzun görünmesin diye:
-$pending_badge = $pending_courses > 99 ? '99+' : (string)$pending_courses;
+$pending_badge = $pending_approvals > 99 ? '99+' : (string)$pending_approvals;
+
+
+
 ?>
 
 <style>
     .menu-label-with-badge{display:inline-flex;align-items:center;gap:8px}
     .menu-badge{
         background:#ef4444;color:#fff;border-radius:9999px;
-        font-size:11px;line-height:1;padding:4px 6px;min-width:20px;
+        font-size:11px;line-height:1;padding:4px 6px;min-height: 15px;
         display:inline-flex;align-items:center;justify-content:center;
         font-weight:600;
     }
@@ -27,7 +24,7 @@ $pending_badge = $pending_courses > 99 ? '99+' : (string)$pending_courses;
 
 <aside class="sidebar">
     <div class="sidebar-header">
-        <a style="text-decoration: none" href="panel.php"><span class="rookieverse">FRC ROOKIEVERSE</span></a>
+        <a style="text-decoration: none" href="../index.php"><span class="rookieverse">FRC ROOKIEVERSE</span></a>
     </div>
 
     <nav class="sidebar-nav">
@@ -55,7 +52,7 @@ $pending_badge = $pending_courses > 99 ? '99+' : (string)$pending_courses;
             <div class="menu-title">
                 <div class="menu-label-with-badge">
                     <i data-lucide="book-open" class="menu-icon"></i>Kurslar
-                    <?php if ($pending_courses > 0): ?>
+                    <?php if ($pending_approvals > 0): ?>
                         <span class="menu-badge"><?php echo $pending_badge; ?></span>
                     <?php endif; ?>
                 </div>

@@ -22,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($admin && password_verify($password, $admin['password_hash'])) {
         // GİRİŞ BAŞARILI
         $_SESSION['admin_logged_in'] = true;
+
         $_SESSION['admin_username'] = $admin['username'];
         header("Location: panel.php"); // Ana panele yönlendir
         exit();

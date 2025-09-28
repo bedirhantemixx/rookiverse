@@ -7,9 +7,9 @@ require_once($projectRoot . '/admin/admin_sidebar.php');
 
 $pdo = get_db_connection();
 $total_teams = $pdo->query("SELECT count(*) FROM teams")->fetchColumn();
-$pending_approvals = $pdo->query("SELECT count(*) FROM courses WHERE status='pending'")->fetchColumn();
 $course_count = $pdo->query("SELECT count(*) FROM courses WHERE status='approved'")->fetchColumn();
-$pending_approvals += $pdo->query("SELECT count(*) FROM course_modules WHERE status='pending' OR status='draft'")->fetchColumn();
+
+
 $notification_count = $pending_approvals;
 ?>
 

@@ -2,7 +2,6 @@
 $projectRoot = dirname(__DIR__);
 require_once($projectRoot . '/config.php');
 require_once 'admin_header.php'; // session_start() burada çağrıldığı için başka yerde çağırmaya gerek yok
-
 $page_title = "Takım Yönetimi";
 $pdo = get_db_connection();
 $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM teams ORDER BY team_number ASC")->fetchAll(PDO::FETCH_ASSOC);
@@ -73,12 +72,12 @@ $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM 
             background-color: var(--primary-dark-color);
             transform: translateY(-2px);
         }
-        
+
         .btn-sm {
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
         }
-        
+
         .btn-info {
             background-color: var(--info-color);
         }
@@ -99,7 +98,7 @@ $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM 
             border-collapse: separate;
             border-spacing: 0 1rem;
         }
-        
+
         thead th {
             font-weight: 700;
             color: #6B7280;
@@ -113,7 +112,7 @@ $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM 
             text-align: left;
             vertical-align: middle;
         }
-        
+
         tbody tr {
             background-color: var(--card-background-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -177,7 +176,7 @@ $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM 
         .modal-close-btn:hover {
             color: #4B5563;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -197,7 +196,7 @@ $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM 
             width: 100%;
             transition: border-color 0.3s;
         }
-        
+
         input:focus {
             outline: none;
             border-color: var(--primary-color);
@@ -288,7 +287,7 @@ $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM 
                                             </div>
                                         </td>
                                         <td data-label="İşlemler" class="actions justify-end">
-                                            <a href="../team/panel.php?team_id=<?php echo htmlspecialchars($team['team_id_generated']); ?>" class="btn btn-sm btn-info">
+                                            <a href="accessTeamPanel.php?team_id=<?php echo htmlspecialchars($team['id']); ?>" class="btn btn-sm btn-info">
                                                 <i data-lucide="arrow-right" class="w-4 h-4 mr-2"></i>Panele Git
                                             </a>
                                             <form action="team_actions.php" method="POST" onsubmit="return confirm('Bu takımı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.');">

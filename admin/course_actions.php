@@ -1,6 +1,6 @@
 <?php
 $projectRoot = dirname(__DIR__);
-require_once($projectRoot . '/config.php');
+require_once('../config.php');
 require_once 'admin_header.php'; // session_start burada
 
 $page_title = "Kurs Yönetimi";
@@ -64,27 +64,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     switch ($action) {
         case 'approve_module':
             $mid = (int)($_POST['module_id'] ?? 0);
+            $tid = getTeamIdByModule($mid);
+
             $stmt = $pdo->prepare("UPDATE course_modules SET status = 'approved' WHERE id = ?");
             $stmt->execute([$mid]);
+            notify($mid, $tid,'module', 'approve');
             header('Location: ' . 'course_actions.php');
             exit;
 
         case 'reject_module':
             $mid = (int)($_POST['module_id'] ?? 0);
+            $tid = getTeamIdByModule($mid);
+
             $stmt = $pdo->prepare("UPDATE course_modules SET status = 'rejected' WHERE id = ?");
             $stmt->execute([$mid]);
+            notify($mid, $tid,'module', 'reject');
             header('Location: ' . 'course_actions.php');
             exit;
 
         case 'approve_course':
             $cid = (int)($_POST['course_id'] ?? 0);
+            $crs = getCourseDetailsById($cid);
+            $tid = $crs['team_db_id'];
+
             $pdo->prepare("UPDATE courses SET status = 'approved' WHERE id = ?")->execute([$cid]);
+            notify($cid, $tid, 'course', 'approve');
             header('Location: ' . 'course_actions.php');
             exit;
 
         case 'reject_course':
             $cid = (int)($_POST['course_id'] ?? 0);
+            $crs = getCourseDetailsById($cid);
+            $tid = $crs['team_db_id'];
+
             $pdo->prepare("UPDATE courses SET status = 'rejected' WHERE id = ?")->execute([$cid]);
+            notify($cid, $tid,'course', 'reject');
             header('Location: ' . 'course_actions.php');
             exit;
 
