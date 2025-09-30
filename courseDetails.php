@@ -252,7 +252,7 @@ require_once 'navbar.php';
                                 <span
                                         class="text-sm font-semibold inline-block py-1 px-2 uppercase rounded-full text-red-800 bg-red-100 border-0 whitespace-nowrap">İleri</span>
                             <?php endif;?>                            <div class="flex items-center text-sm text-gray-600">
-                                
+
                             </div>
                             <div class="flex items-center text-sm text-gray-600">
                                 <i data-lucide="users" class="mr-1" style="width: 16px; height: 16px;"></i>

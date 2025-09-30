@@ -76,7 +76,7 @@ $pending_badge = $pending_approvals > 99 ? '99+' : (string)$pending_approvals;
         <div class="menu-item">
             <div class="menu-title">
                 <div class="menu-label-with-badge">
-                    <i data-lucide="user-cog" class="menu-icon"></i>İletişim
+                    <i data-lucide="send" class="menu-icon"></i>İletişim
                 </div>
                 <i data-lucide="chevron-right" class="menu-arrow"></i>
             </div>
