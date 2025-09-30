@@ -49,7 +49,7 @@ $team = getTeambyNumber($teamNumber);
 $courses = getTeamsCourses($team['id']);
 $sum = sumUpStudents($courses);
 $categories = getApprovedCategories();
-
+$teamCourses = true;
 // ÖRNEK: Backend’inizden veri çekiyorsanız şu tarz kullanın:
 // $teamId     = (int)($_GET['team'] ?? 0);
 // $team       = getTeamById($teamId);
@@ -74,8 +74,9 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#E5AE32', ink: '#0f172a' },
-                    boxShadow: { soft: '0 10px 30px -12px rgba(0,0,0,.12)' }
+                    colors: { primary: '#E5AE32', ink: '#0f172a', 'custom-yellow': '#E5AE32' },
+                    boxShadow: { soft: '0 10px 30px -12px rgba(0,0,0,.12)' },
+
                 }
             }
         }
@@ -128,7 +129,7 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
                     <div class="flex flex-wrap items-center gap-2 mt-4">
                         <?php if (!empty($team['website'])): ?>
                             <a href="<?= e($team['website']) ?>" target="_blank"
-                               class="inline-flex items-center gap-2 text-sm bg-ink text-white hover:opacity-90 px-3 py-1.5 rounded-lg focus-ring">
+                               class="inline-flex items-center gap-2 text-sm bg-primary text-white hover:opacity-90 px-3 py-1.5 rounded-lg focus-ring">
                                 <i data-lucide="globe" class="w-4 h-4"></i><span>Web Sitesi</span>
                             </a>
                         <?php endif; ?>
@@ -170,10 +171,12 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
             </div>
 
             <!-- Sekmeler -->
-            <div class="mt-6 border-b border-slate-200 flex items-center gap-6">
-                <button id="tab-courses" class="tab-btn border-b-2 border-ink font-semibold pb-3">Kurslar</button>
-                <button id="tab-about" class="tab-btn pb-3 text-slate-600">Hakkında</button>
+            <!-- Sekmeler (küçük bir iyileştirme: role/tab ekledim) -->
+            <div class="mt-6 border-b border-slate-200 flex items-center gap-6" role="tablist">
+                <button id="tab-courses" role="tab" class="tab-btn border-b-2 border-ink font-semibold pb-3 text-ink" aria-selected="true">Kurslar</button>
+                <button id="tab-about" role="tab" class="tab-btn pb-3 text-slate-600 border-b-2 border-transparent" aria-selected="false">Hakkında</button>
             </div>
+
         </div>
     </section>
 
@@ -307,7 +310,6 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
         </div>
     </section>
 </main>
-<?php require_once 'footer.php'?>
 
 
 <script>
@@ -317,18 +319,44 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
     const secCourses = document.getElementById('courses-section');
     const secAbout   = document.getElementById('about-section');
 
-    function setTab(which){
-        const isCourses = which === 'courses';
-        tabCourses.classList.toggle('border-b-2', isCourses);
-        tabCourses.classList.toggle('border-ink', isCourses);
-        tabCourses.classList.toggle('font-semibold', isCourses);
-        tabAbout.classList.toggle('text-slate-600', isCourses);
-        secCourses.classList.toggle('hidden', !isCourses);
-        secAbout.classList.toggle('hidden', isCourses);
+    function applyInactive(btn){
+        btn.classList.remove('border-ink','font-semibold','text-ink');
+        btn.classList.add('border-transparent','text-slate-600');
+        btn.setAttribute('aria-selected','false');
+        btn.tabIndex = -1;
     }
+
+    function applyActive(btn){
+        btn.classList.remove('border-transparent','text-slate-600');
+        btn.classList.add('border-ink','font-semibold','text-ink');
+        btn.setAttribute('aria-selected','true');
+        btn.tabIndex = 0;
+    }
+
+    function setTab(which){
+        // her iki tabın ortak tab-bordur ayarı dursun
+        [tabCourses, tabAbout].forEach(btn=>{
+            btn.classList.add('border-b-2', 'pb-3'); // güvence
+        });
+
+        if (which === 'courses'){
+            applyActive(tabCourses);
+            applyInactive(tabAbout);
+            secCourses.classList.remove('hidden');
+            secAbout.classList.add('hidden');
+        } else {
+            applyActive(tabAbout);
+            applyInactive(tabCourses);
+            secAbout.classList.remove('hidden');
+            secCourses.classList.add('hidden');
+        }
+    }
+
     tabCourses.addEventListener('click', ()=>setTab('courses'));
     tabAbout.addEventListener('click', ()=>setTab('about'));
 
+    // Varsayılan
+    setTab('courses');
     // Filtreler
     let activeCategory = '';
     let searchTerm = '';
@@ -383,8 +411,8 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
     // Icons
     lucide.createIcons();
     // Varsayılan: Kurslar sekmesi
-    setTab('courses');
 </script>
+<?php require_once 'footer.php'?>
 
 </body>
 </html>

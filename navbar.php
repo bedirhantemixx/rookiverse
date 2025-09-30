@@ -8,6 +8,7 @@
             </a>
             <div class="hidden md:flex items-center space-x-8">
                 <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?php echo BASE_URL; ?>/courses.php">Kurslar</a>
+                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?php echo BASE_URL; ?>/teams.php">Takımlar</a>
                 <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?php echo BASE_URL; ?>/games.php">Oyunlar</a>
                 <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?php echo BASE_URL; ?>/season.php">2026 Sezonu</a>
                 <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?php echo BASE_URL; ?>/contact.php">İletişim</a>

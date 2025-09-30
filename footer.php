@@ -1,12 +1,18 @@
-<script>
-    tailwind.config = {
-        theme: { extend: { colors: { 'custom-yellow': '#E5AE32' } } }
-    }
-</script>
+
+<?php
+if (!isset($teamCourses)):
+?>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { 'custom-yellow': '#E5AE32' } } }
+        }
+    </script>
+<?php endif; ?>
+
 
 <footer style="<?php
     if (!isset($index)){
-        echo 'margin-top: 10vh';
+        echo 'margin-top: 20vh';
     }
 ?>" class="relative bg-white ">
     <!-- üstte ince sarı parıltı -->
@@ -34,17 +40,17 @@
 
             <!-- Öğren -->
             <div>
-                <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Öğren</h4>
+                <h4 style="color: #E5AE32; font-weight: 700" class="text-sm font-semibold text-gray-700 tracking-wider uppercase">Öğren</h4>
                 <ul class="mt-4 space-y-3 text-gray-600">
                     <li><a class="hover:text-custom-yellow" href="<?php echo BASE_URL; ?>/courses.php">Kurslar</a></li>
-                    <li><a class="hover:text-custom-yellow" href="<?php echo BASE_URL; ?>/games">Oyunlar</a></li>
+                    <li><a class="hover:text-custom-yellow" href="<?php echo BASE_URL; ?>/games.php">Oyunlar</a></li>
                     <li><a class="hover:text-custom-yellow" href="<?php echo BASE_URL; ?>/teams.php">Takımlar</a></li>
                 </ul>
             </div>
 
             <!-- Topluluk -->
             <div>
-                <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Topluluk</h4>
+                <h4 style="color: #E5AE32; font-weight: 700" class="text-sm font-semibold text-gray-700 tracking-wider uppercase">Topluluk</h4>
                 <ul class="mt-4 space-y-3 text-gray-600">
                     <li><a class="hover:text-custom-yellow" href="<?php echo BASE_URL; ?>/#contributors">Destekleyen Takımlar</a></li>
                     <li><a class="hover:text-custom-yellow" href="<?php echo BASE_URL; ?>/contact.php#sss">SSS</a></li>
@@ -54,7 +60,7 @@
 
             <!-- Yasal -->
             <div>
-                <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Yasal</h4>
+                <h4 style="color: #E5AE32; font-weight: 700" class="text-sm font-semibold text-gray-700 tracking-wider uppercase">Yasal</h4>
                 <ul class="mt-4 space-y-3 text-gray-600">
                     <li><a class="hover:text-custom-yellow" href="<?php echo BASE_URL; ?>/privacy.php">Gizlilik</a></li>
                     <li><a class="hover:text-custom-yellow" href="<?php echo BASE_URL; ?>/terms.php">Kullanım Şartları</a></li>

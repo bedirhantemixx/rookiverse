@@ -403,9 +403,7 @@ require_once 'navbar.php';
                         <div class="space-y-4">
                             <div class="flex justify-between"><span class="text-gray-600">Seviye:</span><span class="font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 text-xs">Başlangıç</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">Öğrenci:</span><span class="font-medium"><?=$course['student']?></span></div>
-                            <div class="flex justify-between"><span class="text-gray-600">Dil:</span><span class="font-medium">Türkçe</span></div>
-                            <div class="flex justify-between"><span class="text-gray-600">Sertifika:</span><span class="font-medium text-custom-yellow">Mevcut</span></div>
-                        </div>
+                            </div>
                     </div>
                 </div>
 
