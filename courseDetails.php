@@ -252,8 +252,7 @@ require_once 'navbar.php';
                                 <span
                                         class="text-sm font-semibold inline-block py-1 px-2 uppercase rounded-full text-red-800 bg-red-100 border-0 whitespace-nowrap">İleri</span>
                             <?php endif;?>                            <div class="flex items-center text-sm text-gray-600">
-                                <i data-lucide="clock" class="mr-1" style="width: 16px; height: 16px;"></i>
-                                8 saat
+                                
                             </div>
                             <div class="flex items-center text-sm text-gray-600">
                                 <i data-lucide="users" class="mr-1" style="width: 16px; height: 16px;"></i>
@@ -303,7 +302,7 @@ require_once 'navbar.php';
 
                             ?>
 
-                            <p class="text-gray-500"><?=$count?> modül • Toplam 8 saat</p>
+                            <p class="text-gray-500"><?=$count?> modül</p>
                         <?php endif; ?>
                     </div>
 
@@ -403,7 +402,6 @@ require_once 'navbar.php';
                     <div class="p-6">
                         <div class="space-y-4">
                             <div class="flex justify-between"><span class="text-gray-600">Seviye:</span><span class="font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 text-xs">Başlangıç</span></div>
-                            <div class="flex justify-between"><span class="text-gray-600">Süre:</span><span class="font-medium">8 saat</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">Öğrenci:</span><span class="font-medium"><?=$course['student']?></span></div>
                             <div class="flex justify-between"><span class="text-gray-600">Dil:</span><span class="font-medium">Türkçe</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">Sertifika:</span><span class="font-medium text-custom-yellow">Mevcut</span></div>
