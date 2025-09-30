@@ -131,7 +131,15 @@ $page_title = "Takım Paneli";
                         <tr>
                             <td><?php echo htmlspecialchars($course['title']); ?></td>
                             <td><span class="text-xs font-semibold px-2 py-1 rounded-full bg-yellow-100 text-yellow-800"><?php echo htmlspecialchars($course['status']); ?></span></td>
-                            <td><a href="view_curriculum.php?id=<?php echo $course['id']; ?>" class="btn btn-sm">İçeriği Yönet</a></td>
+                            <td class="space-x-2">
+                                <a href="editCourse.php?id=<?= (int)$course['id'] ?>" class="btn btn-sm btn-outline">
+                                    <i data-lucide="edit-3"></i> Kursu Düzenle
+                                </a>
+                                <a href="view_curriculum.php?id=<?= (int)$course['id'] ?>" class="btn btn-sm">
+                                    <i data-lucide="list"></i> İçeriği Yönet
+                                </a>
+                            </td>
+
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // === TÜR LİMİTLERİ ===
 // Hepsinden max 1: istersen 'text' için 999 yapıp sınırsız gibi kullanabilirsin.
-    const TYPE_LIMITS = { text: 1, video: 1, document: 1 };
+    const TYPE_LIMITS = { text: 999, video: 50, document: 100 };
 
 // Yardımcılar
     function getTypeCount(container, type) {

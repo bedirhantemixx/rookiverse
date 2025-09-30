@@ -99,8 +99,11 @@ foreach ($courses as $course) {
                 <p class="text-lg text-gray-500">Kategori</p>
             </div>
             <div class="text-center border-2 border-custom-yellow/20 p-6 rounded-lg">
-                <h3 class="text-3xl font-bold text-custom-yellow">30+ saat</h3>
-                <p class="text-lg text-gray-500">Toplam İçerik</p>
+                <?php
+                $studentcount = getStudents();
+                ?>
+                <h3 class="text-3xl font-bold text-custom-yellow"><?=$studentcount?></h3>
+                <p class="text-lg text-gray-500">Toplam Öğrenci</p>
             </div>
         </div>
 
@@ -158,8 +161,7 @@ foreach ($courses as $course) {
                                     </div>
                                 <p class="text-gray-600 line-clamp-3 mb-4"><?=$course['goal_text']?></p>
                                 <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center text-sm text-gray-500"><i data-lucide="clock" class="mr-1"
-                                                                                            style="width: 16px; height: 16px;"></i> 2 saat</div>
+
 
                                         <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
                                                                                                 style="width: 16px; height: 16px;"></i> <?= $course['level']?></div>
@@ -184,6 +186,9 @@ foreach ($courses as $course) {
         </div>
     </div>
 </div>
+
+<?php require_once 'footer.php'; ?>
+
 
 <script>
     lucide.createIcons();

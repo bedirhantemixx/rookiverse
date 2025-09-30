@@ -1,5 +1,27 @@
 RewriteEngine On
 
+# -----------------------------------
+# 🔸 404 Hata Sayfası Yönlendirmesi
+# -----------------------------------
+
+# Sunucuya özel hata sayfası tanımı
+ErrorDocument 404 /404.php
+
+
+# Temel URL yönlendirmeleri için önerilen ayarlar
+<IfModule mod_rewrite.c>
+
+  # Gerekiyorsa kök dizini belirt
+  # RewriteBase /rookieverse/
+
+  # Eğer istenen dosya ya da dizin yoksa 404'e düş
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /404.php [L]
+</IfModule>
+
+
+
 RewriteBase /frc_rookieverse/
 
 DirectoryIndex login.php index.php

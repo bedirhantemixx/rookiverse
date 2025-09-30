@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['file']) && isset($_PO
         $pdo = get_db_connection();
         $db_column = ($upload_type === 'cover') ? 'cover_image_url' : 'intro_video_url';
         
-        $stmt = $pdo->prepare("UPDATE courses SET $db_column = ? WHERE id = ? AND team_db_id = ?");
+        $stmt = $pdo->prepare("UPDATE courses SET $db_column = ?, status = 'pending' WHERE id = ? AND team_db_id = ?");
         $stmt->execute(["uploads/" . ($upload_type === 'cover' ? 'covers/' : 'intros/') . $new_file_name, $course_id, $_SESSION['team_db_id']]);
         
         $response = ['success' => true, 'message' => 'Dosya başarıyla yüklendi.'];

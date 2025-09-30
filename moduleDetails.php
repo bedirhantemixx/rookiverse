@@ -405,7 +405,10 @@ require_once 'navbar.php';
 
     </div>
 </div>
+<?php require_once 'footer.php'?>
+
 </body>
+
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
     // DOM hazır olduğunda ikonları çiz

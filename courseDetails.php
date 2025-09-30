@@ -277,6 +277,20 @@ require_once 'navbar.php';
 
                         </p>
                     </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Kurs Amacı</h2>
+                    <div class="prose max-w-none text-gray-700">
+                        <p class="text-lg leading-relaxed mb-4">
+                            <?=$course['goal_text']?>
+
+                        </p>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Ne Öğreneceksiniz?</h2>
+                    <div class="prose max-w-none text-gray-700">
+                        <p class="text-lg leading-relaxed mb-4">
+                            <?=$course['learnings_text']?>
+
+                        </p>
+                    </div>
                 </div>
 
                 <div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg">
@@ -490,6 +504,7 @@ require_once 'navbar.php';
         </div>
     </div>
 </div>
+<?php require_once 'footer.php'?>
 
 
 <script>

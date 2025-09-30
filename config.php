@@ -186,6 +186,17 @@ function getModule($id)
     return $stmt->fetch(PDO::FETCH_ASSOC);
 
 }
+function getStudents()
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT COUNT(*) FROM course_guest_enrollments";
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchColumn(); // returns the number directly
+}
+
 function getContributors()
 {
     $db = get_db_connection();

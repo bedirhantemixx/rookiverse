@@ -1,6 +1,6 @@
 <?php require_once 'config.php';
 //a
-
+$index = true;
 $courses = getTopCourses();
 session_start();
 ?>
@@ -10,7 +10,8 @@ session_start();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anasayfa - FRC Rookieverse</title>
-  
+
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
@@ -22,6 +23,81 @@ session_start();
       theme: { extend: { colors: { 'custom-yellow': '#E5AE32' } } }
     }
   </script>
+
+  <style>
+      .hero-ss-track {
+          scroll-snap-stop: always; /* slide ortasında mutlaka durur */
+      }
+
+      .hero-ss-container {
+          position: relative;
+          border-radius: 1rem;
+          overflow: hidden;
+      }
+      .hero-ss-slide img {
+          width: 100%;
+          max-height: 400px;        /* sabit yükseklik buradan */
+          object-fit: cover;    /* görüntü bozulmadan kırpılır */
+          display: block;
+      }
+
+      .hero-ss-arrow {
+          opacity: 0;
+          transition: opacity 0.3s ease;
+      }
+
+      .hero-ss-container:hover .hero-ss-arrow {
+          opacity: 1;
+      }
+
+
+      .hero-ss-track {
+          display: flex;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          scroll-behavior: smooth;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none; /* Firefox */
+      }
+      .hero-ss-track::-webkit-scrollbar { display: none; } /* WebKit */
+
+      .hero-ss-slide {
+          flex: 0 0 100%;
+          scroll-snap-align: center;
+          position: relative;
+      }
+      .hero-ss-slide img {
+          display: block;
+          width: 100%;
+          height: clamp(300px, 45vw, 480px); /* responsive yükseklik */
+          object-fit: cover;
+      }
+
+      /* Oklar */
+      .hero-ss-arrow {
+          position: absolute; top: 50%; transform: translateY(-50%);
+          background: rgba(17,24,39,.6); color:#fff;
+          width:44px; height:44px; border-radius:9999px;
+          display:grid; place-items:center; border:none; cursor:pointer;
+      }
+      .hero-ss-arrow.left { left: 10px; } .hero-ss-arrow.right { right: 10px; }
+      .hero-ss-arrow:hover { background: rgba(17,24,39,.8); }
+
+      /* Noktalar */
+      .hero-ss-dots {
+          position: absolute; left:50%; transform:translateX(-50%);
+          bottom: 10px; display:flex; gap:8px;
+      }
+      .hero-ss-dot {
+          width:10px; height:10px; border-radius:9999px;
+          background: rgba(255,255,255,.6); border:1px solid rgba(0,0,0,.1);
+          cursor:pointer;
+      }
+      .hero-ss-dot.active { background:#E5AE32; }
+
+
+  </style>
+
 </head>
 <body class="bg-white">
 
@@ -42,17 +118,22 @@ session_start();
               <a href="<?php echo BASE_URL; ?>/games" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-lg"><i data-lucide="gamepad-2" class="mr-2 w-5 h-5"></i>Oyunları Keşfet</a>
             </div>
           </div>
-          <div class="hero-slider-container">
-            <div class="hero-slider-track">
-                <div class="hero-slide"><img src="<?php echo BASE_URL; ?>/assets/images/guncel_takim.jpg" alt="FRC Robot 1"></div>
-                <div class="hero-slide"><img src="<?php echo BASE_URL; ?>/assets/images/guncel_takim.jpg" alt="FRC Robot 2"></div>
-                <div class="hero-slide"><img src="<?php echo BASE_URL; ?>/assets/images/guncel_takim.jpg" alt="FRC Robot 3"></div>
-                <div class="hero-slide"><img src="<?php echo BASE_URL; ?>/assets/images/guncel_takim.jpg" alt="FRC Robot 4"></div>
+            <div class="hero-ss-container">
+                <div class="hero-ss-track" id="heroSS">
+                    <div class="hero-ss-slide"><img src="assets/images/frcexapmle.png" alt=""></div>
+                    <div class="hero-ss-slide"><img src="assets/images/frcexampleimage2.jpg" alt=""></div>
+                    <div class="hero-ss-slide"><img src="assets/images/frcexampleimage3.jpg" alt=""></div>
+                    <div class="hero-ss-slide"><img src="assets/images/frcexample7.jpg" alt=""></div>
+                    <div class="hero-ss-slide"><img src="assets/images/frcexampleimage4.jpg" alt=""></div>
+                    <div class="hero-ss-slide"><img src="assets/images/frcexampleimage5.webp" alt=""></div>
+                    <div class="hero-ss-slide"><img src="assets/images/frcexampleimage6.jpeg" alt=""></div>
+                </div>
+
+                <button class="hero-ss-arrow left" id="prevSS"><i data-lucide="chevron-left"></i></button>
+                <button class="hero-ss-arrow right" id="nextSS"><i data-lucide="chevron-right"></i></button>
+                <div class="hero-ss-dots" id="dotsSS"></div>
             </div>
-            <button class="hero-slider-arrow left"><i data-lucide="chevron-left"></i></button>
-            <button class="hero-slider-arrow right"><i data-lucide="chevron-right"></i></button>
-            <div class="hero-slider-dots"></div>
-          </div>
+
         </div>
       </div>
     </section>
@@ -106,7 +187,7 @@ session_start();
       </section>
 
 
-      <section class="bg-white py-20">
+      <section id="contributors" class="bg-white py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16"><h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Destekleyen Takımlar</h2><p class="text-xl text-gray-600">Bu platformun gelişimine katkıda bulunan değerli FRC takımları</p></div>
             <div class="logo-slider-container">
@@ -134,50 +215,72 @@ session_start();
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"><div class="space-y-6"><h2 class="text-3xl lg:text-4xl font-bold text-white">FRC Maceranıza İlk Adımı Atmaya Hazır mısınız?</h2><p class="text-xl text-white/90 max-w-2xl mx-auto">Robotik dünyasında yol gösterecek tüm kaynaklar burada. Ücretsiz eğitim içeriklerimiz ve takım destek programlarımızla hem bireysel katılımcıları hem de takımları başarıya taşıyoruz.</p><div class="flex flex-col sm:flex-row gap-4 justify-center"><a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center bg-white text-custom-yellow hover:bg-gray-100 px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="book-open" class="mr-2 w-5 h-5"></i>Ücretsiz Başla</a><a href="<?php echo BASE_URL; ?>/team-login.php" class="inline-flex items-center justify-center border-2 border-white text-white hover:bg-white hover:text-custom-yellow px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="log-in" class="mr-3 w-5 h-5"></i>Takım Girişi</a></div></div></div>
     </section>
   </div>
+  <?php require_once 'footer.php'?>
 
   <script>
-    lucide.createIcons();
+      document.addEventListener('DOMContentLoaded', () => {
+          lucide.createIcons();
+          const container = document.querySelector('.hero-ss-container');
+          const track     = document.getElementById('heroSS');
+          if (!container || !track) return;
 
-    // ## GÜNCELLENMİŞ VE TAM SLIDER SCRIPT'İ ##
-    // Hero Slider
-    document.addEventListener('DOMContentLoaded', function () {
-        // ... Hero Slider Script ...
-    });
+          const slides = Array.from(track.children);
+          const prev   = document.getElementById('prevSS');
+          const next   = document.getElementById('nextSS');
+          const dots   = Array.from(document.querySelectorAll('#dotsSS .hero-ss-dot'));
 
-    // Logo Slider
-    document.addEventListener('DOMContentLoaded', function () {
-      const sliderContainer = document.querySelector('.logo-slider-container');
-      if (!sliderContainer) return;
-      const track = sliderContainer.querySelector('.logo-slider-track');
-      const slides = Array.from(track.children);
-      const nextButton = document.getElementById('nextBtn');
-      const prevButton = document.getElementById('prevBtn');
-      let currentIndex = 0;
-      let autoPlayInterval;
-      
-      const goToSlide = (index) => {
-        track.style.transform = 'translateX(' + (-100 * index) + '%)';
-        currentIndex = index;
-      };
-      const nextSlide = () => {
-        const nextIndex = (currentIndex + 1) % slides.length;
-        goToSlide(nextIndex);
-      };
-      const prevSlide = () => {
-        const prevIndex = (currentIndex - 1 + slides.length) % slides.length;
-        goToSlide(prevIndex);
-      };
-      const startAutoPlay = () => {
-        stopAutoPlay();
-        autoPlayInterval = setInterval(nextSlide, 1500);
-      };
-      const stopAutoPlay = () => clearInterval(autoPlayInterval);
-      nextButton.addEventListener('click', () => { stopAutoPlay(); nextSlide(); startAutoPlay(); });
-      prevButton.addEventListener('click', () => { stopAutoPlay(); prevSlide(); startAutoPlay(); });
-      sliderContainer.addEventListener('mouseenter', stopAutoPlay);
-      sliderContainer.addEventListener('mouseleave', startAutoPlay);
-      startAutoPlay();
-    });
+          const AUTO_MS = 4000;               // her 4 sn'de geç
+          let timer = null;
+
+          const width = () => track.clientWidth;
+          const idx   = () => Math.round(track.scrollLeft / width());
+
+          function goTo(i, smooth = true) {
+              track.scrollTo({ left: i * width(), behavior: smooth ? 'smooth' : 'auto' });
+              updateDots(i);
+          }
+
+          function updateDots(i = idx()) {
+              dots.forEach((d, k) => d.classList.toggle('active', k === i));
+          }
+
+          function nextSlide() { goTo((idx() + 1) % slides.length); }
+          function prevSlide() { goTo((idx() - 1 + slides.length) % slides.length); }
+
+          function start() {
+              stop();
+              // motion azaltmayı tercih eden kullanıcıları otomatik oynatma ile yormayalım
+              const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+              if (!prefersReduced) timer = setInterval(nextSlide, AUTO_MS);
+          }
+          function stop() { if (timer) clearInterval(timer); timer = null; }
+
+          // Butonlar
+          if (next) next.addEventListener('click', () => { stop(); nextSlide(); start(); });
+          if (prev) prev.addEventListener('click', () => { stop(); prevSlide(); start(); });
+
+          // Hover’da dur, çıkınca devam et
+          container.addEventListener('mouseenter', stop);
+          container.addEventListener('mouseleave', start);
+
+          // Dokunmada sürüklerken durdur
+          track.addEventListener('pointerdown', stop);
+          track.addEventListener('pointerup',   start);
+
+          // Sekme görünmezse durdur, geri gelince devam
+          document.addEventListener('visibilitychange', () => {
+              if (document.hidden) stop(); else start();
+          });
+
+          // Resize’da hizayı koru (sub-pixel kaçmasın)
+          new ResizeObserver(() => goTo(idx(), false)).observe(track);
+
+          // Başlat
+          updateDots(0);
+          start();
+      });
   </script>
+
+
 </body>
 </html>

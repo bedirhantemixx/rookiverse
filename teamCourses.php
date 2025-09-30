@@ -307,6 +307,7 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
         </div>
     </section>
 </main>
+<?php require_once 'footer.php'?>
 
 
 <script>
