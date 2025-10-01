@@ -25,6 +25,57 @@ session_start();
   </script>
 
   <style>
+      /* Konteyner sabit çerçeve */
+      .logo-slider-container { position: relative; overflow: hidden; }
+
+      /* Track artık kaymaz—sahnede üst üste durur */
+      .logo-slider-track {
+          position: relative;
+          width: 100%;
+          height: 30vh;            /* logo yüksekliğine göre ayarla */
+          overflow: hidden;         /* kaydırma kapalı */
+      }
+
+      /* Her slide sahnede aynı noktada */
+      .logo-slide {
+          position: absolute;
+          inset: 0;                 /* top:0 right:0 bottom:0 left:0 */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;               /* varsayılan görünmez */
+          pointer-events: none;
+          transition: opacity 300ms ease;
+      }
+
+      /* Sahnede görünen tek logo */
+      .logo-slide.is-active {
+          opacity: 1;
+          pointer-events: auto;
+      }
+
+      /* Logonun ölçüsü */
+      .logo-slide img {
+          max-height: 100%;
+          max-width: 80%;
+          object-fit: contain;
+      }
+
+      /* Ok butonları */
+      .slider-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 9999px;
+          padding: .5rem;
+          box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      }
+      .slider-arrow.left  { left: 8px; }
+      .slider-arrow.right { right: 8px; }
+      .slider-arrow:hover { background: #f9fafb; }
+
       .hero-ss-track {
           scroll-snap-stop: always; /* slide ortasında mutlaka durur */
       }
@@ -203,7 +254,8 @@ session_start();
                         array_push($conts, $id);
                     ?>
                         <div class="logo-slide"><a href="teamCourses.php?team_number=<?=$cont['team_number']?>" target="_blank"><img src="<?= $cont['profile_pic_path'] ?>" alt="<?=$cont['team_name']?>"></a></div>
-                    <?php endforeach;?>
+                    <?php
+                    endforeach;?>
                     </div>
                 <button id="nextBtn" class="slider-arrow right"><i data-lucide="chevron-right" class="text-gray-700"></i></button>
             </div>
@@ -219,6 +271,10 @@ session_start();
   <script>
       document.addEventListener('DOMContentLoaded', () => {
           lucide.createIcons();
+
+
+
+
           const container = document.querySelector('.hero-ss-container');
           const track     = document.getElementById('heroSS');
           if (!container || !track) return;
@@ -278,7 +334,91 @@ session_start();
           updateDots(0);
           start();
       });
+
+
+
+
   </script>
+  <script>
+      (function () {
+          const section = document.getElementById('contributors');
+          if (!section) return;
+
+          const container = section.querySelector('.logo-slider-container');
+          const track     = section.querySelector('.logo-slider-track');
+          const prevBtn   = section.querySelector('#prevBtn, .slider-arrow.left');
+          const nextBtn   = section.querySelector('#nextBtn, .slider-arrow.right');
+          if (!container || !track || !prevBtn || !nextBtn) return;
+
+          // Tüm logolar
+          const slides = Array.from(track.querySelectorAll('.logo-slide'));
+          if (slides.length === 0) return;
+
+          // Resimler yüklenmeden başlamayalım (ölçü/yerleşim güvenli olsun)
+          function imagesReady(el) {
+              const imgs = Array.from(el.querySelectorAll('img'));
+              if (imgs.length === 0) return Promise.resolve();
+              return Promise.all(imgs.map(img => img.complete ? Promise.resolve() : new Promise(res => {
+                  img.addEventListener('load',  res, { once:true });
+                  img.addEventListener('error', res, { once:true });
+              })));
+          }
+
+          // Durum
+          const AUTO_MS = 3000;  // otomatik geçiş süresi
+          let cur = 0;
+          let timer = null;
+
+          // Yardımcılar
+          function setActive(i) {
+              slides.forEach((s, k) => s.classList.toggle('is-active', k === i));
+          }
+          function goTo(i) {
+              cur = (i + slides.length) % slides.length;
+              setActive(cur);
+          }
+          function next() { goTo(cur + 1); }
+          function prev() { goTo(cur - 1); }
+
+          function start() {
+              stop();
+              const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+              if (!prefersReduced && slides.length > 1) {
+                  timer = setInterval(next, AUTO_MS);
+              }
+          }
+          function stop() { if (timer) clearInterval(timer); timer = null; }
+
+          // Olaylar
+          nextBtn.addEventListener('click', () => { stop(); next(); start(); });
+          prevBtn.addEventListener('click', () => { stop(); prev(); start(); });
+
+          container.addEventListener('mouseenter', stop);
+          container.addEventListener('mouseleave', start);
+
+          // Klavye desteği (opsiyonel)
+          container.addEventListener('keydown', (e) => {
+              if (e.key === 'ArrowRight') { stop(); next(); start(); }
+              if (e.key === 'ArrowLeft')  { stop(); prev(); start(); }
+          });
+          container.tabIndex = 0; // klavye odaklanması için
+
+          // Başlat
+          imagesReady(track).then(() => {
+              // İlkini görünür yap
+              setActive(cur);
+
+              // Tek logo varsa okları gizle
+              const multi = slides.length > 1;
+              prevBtn.style.display = multi ? '' : 'none';
+              nextBtn.style.display = multi ? '' : 'none';
+
+              start();
+          });
+      })();
+  </script>
+
+
 
 
 </body>
