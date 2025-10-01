@@ -169,7 +169,6 @@ session_start();
                               </div>
                               <p class="text-base text-gray-600 mb-4"><?=$course['goal_text']?></p>
                               <div class="flex justify-between items-center">
-                                  <span class="text-sm text-gray-500">⏱️ 2 saat</span>
                                   <a href="courseDetails.php?course=<?=$course['course_uid']?>" class="px-3 py-1.5 text-sm bg-custom-yellow text-white rounded-md">Detayları Gör</a>
                               </div>
                           </div>

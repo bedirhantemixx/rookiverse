@@ -163,9 +163,9 @@
       </p>
 
       <div class="mt-6 flex flex-wrap items-center gap-3">
-        <a href="<?php echo BASE_URL; ?>/"
+        <a style="color: white" href="<?php echo BASE_URL; ?>/"
            class="inline-flex items-center gap-2 rounded-lg bg-custom-yellow text-slate-900 px-5 py-2.5 font-semibold hover:brightness-95">
-          <i data-lucide="home" class="w-5 h-5"></i> Ana Sayfaya Dön
+          <i data-lucide="home" style="color: white" class="w-5 h-5"></i> Ana Sayfaya Dön
         </a>
         <a href="<?php echo BASE_URL; ?>/courses.php"
            class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-5 py-2.5 font-semibold hover:border-custom-yellow/60">
