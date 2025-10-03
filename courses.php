@@ -82,10 +82,7 @@ foreach ($courses as $course) {
         <div class="flex flex-col sm:flex-row items-center justify-center gap-2 mb-8 px-4">
             <input type="text" placeholder="Kurslarda ara..."
                    class="w-full sm:w-auto flex-1 max-w-lg px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-custom-yellow" />
-            <button
-                class="inline-flex items-center justify-center px-6 py-2 bg-custom-yellow text-white font-semibold rounded-full shadow hover:bg-custom-yellow/90 transition">
-                <i data-lucide="search" class="mr-2 size-5"></i> Ara
-            </button>
+
         </div>
 
         <!-- Mevcut Metrikler -->
@@ -139,32 +136,33 @@ foreach ($courses as $course) {
                                 </div>
                             </div>
                             <div class="p-4">
+
+
                                 <div class="flex justify-between items-start mb-2">
                                     <h3 class="text-xl font-bold text-gray-900 line-clamp-2"><?=$course['title']?></h3>
                                     <?php
                                     if ($course['level'] == 'Başlangıç'):
                                         ?>
-                                        <span
-                                                class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 whitespace-nowrap">Başlangıç</span>
+                                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-800 bg-green-100 border-0 whitespace-nowrap">Başlangıç</span>
 
                                     <?php
                                     elseif ($course['level'] == 'Orta'):
                                         ?>
-                                        <span
-                                                class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-800 bg-yellow-100 border-0 whitespace-nowrap">Orta</span>
+                                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-800 bg-yellow-100 border-0 whitespace-nowrap">Orta</span>
                                     <?php
                                     elseif ($course['level'] == 'İleri'):
                                         ?>
-                                        <span
-                                                class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-red-800 bg-red-100 border-0 whitespace-nowrap">İleri</span>
+                                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-red-800 bg-red-100 border-0 whitespace-nowrap">İleri</span>
                                     <?php endif;?>
-                                    </div>
+                                </div>
                                 <p class="text-gray-600 line-clamp-3 mb-4"><?=$course['goal_text']?></p>
                                 <div class="flex items-center justify-between mb-4">
 
-
-                                        <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1"
-                                                                                                style="width: 16px; height: 16px;"></i> <?= $course['level']?></div>
+                                    <?php
+                                    $team = getTeam($course['team_db_id']);
+                                    ?>
+                                        <div data-team-number="<?= htmlspecialchars($team['team_number']) ?>" class="flex items-center text-sm text-gray-500 hover:cursor-pointer team-name-button"><i data-lucide="users" class="mr-1" style="width: 16px; height: 16px;"></i> <?= $team['team_name']?></div>
+                                        <div class="flex items-center text-sm text-gray-500"><i data-lucide="bar-chart-3" class="mr-1" style="width: 16px; height: 16px;"></i> <?= $course['level']?></div>
 
                                 </div>
                                 <a href="courseDetails.php?course=<?=$course['course_uid']?>"
@@ -194,6 +192,14 @@ foreach ($courses as $course) {
     lucide.createIcons();
     const buttons = document.querySelectorAll('button[data-filter]');
     const sections = document.querySelectorAll('div[data-category]');
+
+    document.querySelectorAll('.team-name-button').forEach(button =>{
+        button.addEventListener('click', () =>{
+            const teamNumberRel = button.dataset.teamNumber; // "data-team-number" -> teamNumber
+            window.location.href = `teamCourses.php?team_number=${teamNumberRel}`
+
+        })
+    })
 
     buttons.forEach(button => {
         button.addEventListener('click', () => {

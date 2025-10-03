@@ -72,7 +72,7 @@ function getTeamsCourses($id)
 {
     $db = get_db_connection();
 
-    $sql = "SELECT * FROM courses WHERE team_db_id = ? AND status = 'approved'";
+    $sql = "SELECT * FROM courses WHERE team_db_id = ? AND status = 'approved' ORDER BY created_at DESC";
 
     $stmt = $db->prepare($sql);
     $stmt->execute([$id]);

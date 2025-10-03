@@ -214,10 +214,16 @@ session_start();
                               </div>
                           </div>
                           <div class="p-4">
-                              <div class="flex justify-between items-start mb-2">
+                              <div class="flex justify-between items-start ">
                                   <h3 class="text-lg font-bold"><?=$course['title']?></h3>
                                   <span class="text-xs font-semibold py-1 px-2 uppercase rounded-full text-gray-700 bg-gray-200"><?=$course['level']?></span>
+
+
                               </div>
+                              <?php
+                              $team = getTeam($course['team_db_id']);
+                              ?>
+                              <a href="teamCourses.php?team_number=<?=$team['team_number']?>" style="font-weight: 600; color: rgb(229 174 50);" class="  "><?=$team['team_name']?></a>
                               <p class="text-base text-gray-600 mb-4"><?=$course['goal_text']?></p>
                               <div class="flex justify-between items-center">
                                   <a href="courseDetails.php?course=<?=$course['course_uid']?>" class="px-3 py-1.5 text-sm bg-custom-yellow text-white rounded-md">Detayları Gör</a>

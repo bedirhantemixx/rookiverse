@@ -143,6 +143,13 @@ $page_title = "Kursu Düzenle";
     <form id="meta-form" class="section-card grid grid-cols-1 lg:grid-cols-2 gap-5" method="POST" action="course_update_meta.php">
         <input type="hidden" name="id" value="<?= (int)$course_id ?>"/>
 
+
+        <!-- YouTube linkini meta-form'a taşıyan hidden alan -->
+        <input type="hidden" id="intro_video_url" name="intro_video_url"
+               value="<?= htmlspecialchars($course['intro_video_url'] ?? '') ?>">
+
+
+
         <div class="space-y-4">
             <div class="input-card">
                 <label for="title" class="font-semibold text-gray-800">Kurs Adı</label>
@@ -245,9 +252,40 @@ $page_title = "Kursu Düzenle";
         </div>
 
         <div class="section-card">
+
             <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2 mb-4">
                 <i data-lucide="video"></i> Tanıtım Videosu
             </h2>
+
+            <!-- YouTube Linki (opsiyonel) -->
+            <div class="mb-4 input-card">
+                <label for="yt-input" class="font-semibold text-gray-800">YouTube Tanıtım Linki (opsiyonel)</label>
+                <div class="flex gap-2 mt-2">
+                    <input id="yt-input" type="text" class="form-input flex-1"
+                           placeholder="Örn: https://youtu.be/dQw4w9WgXcQ veya video ID"
+                           value="<?= htmlspecialchars($course['intro_video_url'] ?? '') ?>">
+                    <button id="yt-apply" class="btn-sm btn-outline" type="button">
+                        <i data-lucide="check"></i> Kullan
+                    </button>
+                    <button id="yt-clear" class="btn-sm btn-outline text-red-600 border-red-300 hover:border-red-500" type="button">
+                        <i data-lucide="x"></i> Temizle
+                    </button>
+                </div>
+                <p id="yt-error" class="error-text" style="display:none;"></p>
+            </div>
+
+            <!-- YouTube önizleme (iframe) -->
+            <div id="yt-preview-container" class="preview-container hidden mt-3">
+                <div class="aspect-video">
+                    <iframe id="yt-iframe" class="w-full h-full" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen></iframe>
+                </div>
+                <div class="mt-3 text-sm text-gray-600">
+                    Dosya yükleme ile YouTube linki birbirini dışlar. YouTube kullandığınızda dosya yükleme gizlenir.
+                </div>
+            </div>
+
 
             <div id="video-drop-zone" class="drop-zone <?= !empty($course['intro_video_url']) ? 'hidden':'' ?>">
                 <input type="file" id="video-input" class="hidden-input" accept="video/mp4">
@@ -303,6 +341,138 @@ $page_title = "Kursu Düzenle";
 
 <script>
     lucide.createIcons();
+
+    // --- YouTube yardımcıları ---
+    function parseYouTubeId(input) {
+        if (!input) return null;
+        input = input.trim();
+
+        // Eğer sadece ID verdiyse (11-12 karakterlik tipik ID'ler)
+        if (/^[a-zA-Z0-9_-]{10,20}$/.test(input)) return input;
+
+        try {
+            const u = new URL(input);
+            // youtu.be/<id>
+            if (u.hostname.includes('youtu.be')) {
+                const id = u.pathname.split('/').filter(Boolean)[0];
+                return id || null;
+            }
+            // youtube.com/watch?v=<id>
+            if (u.hostname.includes('youtube.com')) {
+                // shorts -> /shorts/<id>
+                if (u.pathname.startsWith('/shorts/')) {
+                    const id = u.pathname.split('/').filter(Boolean)[1];
+                    return id || null;
+                }
+                const v = u.searchParams.get('v');
+                if (v) return v;
+                // /embed/<id>
+                if (u.pathname.startsWith('/embed/')) {
+                    const id = u.pathname.split('/').filter(Boolean)[1];
+                    return id || null;
+                }
+            }
+        } catch (_) {
+            // URL değilse ve regex tutmadıysa null dön
+        }
+        return null;
+    }
+
+    function setYouTubePreview(videoId) {
+        const ytPrev = document.getElementById('yt-preview-container');
+        const iframe = document.getElementById('yt-iframe');
+        const hidden = document.getElementById('intro_video_url');
+        const err = document.getElementById('yt-error');
+
+        if (videoId) {
+            iframe.src = 'https://www.youtube.com/embed/' + encodeURIComponent(videoId);
+            ytPrev.classList.remove('hidden');
+            hidden.value = 'https://youtu.be/' + videoId; // db'ye canonical bir değer yazalım
+            err.style.display = 'none';
+
+            // YouTube aktifken dosya yükleme UI'ını gizle
+            document.getElementById('video-drop-zone')?.classList.add('hidden');
+            document.getElementById('video-preview-container')?.classList.add('hidden');
+            document.getElementById('video-progress-container')?.classList.add('hidden');
+            document.getElementById('video-progress-text')?.classList.add('hidden');
+        } else {
+            iframe.removeAttribute('src');
+            ytPrev.classList.add('hidden');
+            hidden.value = '';
+
+            // YouTube kapalıyken dosya yükleme UI'ını göster (eğer dosya yoksa)
+            const hasFilePreview = document.getElementById('video-preview')?.getAttribute('src');
+            if (!hasFilePreview) {
+                document.getElementById('video-drop-zone')?.classList.remove('hidden');
+            }
+        }
+    }
+
+    function showYtError(msg) {
+        const err = document.getElementById('yt-error');
+        err.textContent = msg;
+        err.style.display = 'block';
+    }
+
+    // --- YouTube UI eventleri ---
+    (function initYouTubeControls() {
+        const ytInput = document.getElementById('yt-input');
+        const ytApply = document.getElementById('yt-apply');
+        const ytClear = document.getElementById('yt-clear');
+
+        if (!ytInput) return;
+
+        // Sayfa ilk yüklenirken (db'den dolu geldiyse) hazırla
+        const initial = ytInput.value;
+        const initialId = parseYouTubeId(initial);
+        if (initialId) {
+            setYouTubePreview(initialId);
+        }
+
+        ytApply?.addEventListener('click', function () {
+            const id = parseYouTubeId(ytInput.value);
+            if (!id) {
+                showYtError('Geçerli bir YouTube bağlantısı veya video ID girin.');
+                return;
+            }
+            setYouTubePreview(id);
+        });
+
+        ytClear?.addEventListener('click', function () {
+            ytInput.value = '';
+            setYouTubePreview(null);
+        });
+
+        // Kullanıcı yazarken hata mesajını sakla
+        ytInput?.addEventListener('input', function () {
+            const err = document.getElementById('yt-error');
+            if (err) err.style.display = 'none';
+        });
+    })();
+
+    // --- Dosya yükleme ile YouTube'un birbirini dışlaması ---
+    // Var olan setupDropZone'a küçük bir ek: dosya yüklenince YouTube'u sıfırla
+    (function hookUploadExclusivity(){
+        const origSetup = setupDropZone;
+        setupDropZone = function(o){
+            origSetup(o);
+            const inp = document.getElementById(o.inputId);
+            const hidden = document.getElementById('intro_video_url');
+            const ytInput = document.getElementById('yt-input');
+
+            if (o.uploadType === 'intro' && inp) {
+                // Dosya seçildiğinde YT'yi iptal et
+                inp.addEventListener('change', function(){
+                    if (inp.files && inp.files.length) {
+                        // YouTube görünümünü kapat
+                        document.getElementById('yt-clear')?.click();
+                        if (ytInput) ytInput.value = '';
+                        if (hidden) hidden.value = '';
+                    }
+                });
+            }
+        };
+    })();
 
     // ----- Unsaved changes guard -----
     (function(){

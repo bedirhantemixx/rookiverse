@@ -97,11 +97,23 @@ $page_title = "Bölüm İçeriğini Düzenle";
                     <?php foreach ($contents as $row):
                         $key = 'exist_' . (int)$row['id'];
                         // Frontend tipi: 'doc' → 'document'
-                        $renderType = ($row['type'] === 'doc') ? 'document' : $row['type'];
-                        $typeText = $renderType === 'text' ? 'Metin İçeriği' : ($renderType === 'video' ? 'Video' : 'Döküman');
-                        $icon = $renderType === 'text' ? 'type' : ($renderType === 'video' ? 'video' : 'file-text');
                         $data = (string)$row['data'];
-                        $isFile = ($renderType === 'video' || $renderType === 'document');
+
+
+                        // DB'de 'doc' → 'document', olası 'yt' → 'youtube'
+                        if ($row['type'] === 'doc')       { $renderType = 'document'; }
+                        elseif ($row['type'] === 'yt')     { $renderType = 'youtube';  }
+                        else                               { $renderType = $row['type']; }
+
+                        switch ($renderType) {
+                            case 'text':     $typeText = 'Metin İçeriği'; $icon = 'type';      break;
+                            case 'video':    $typeText = 'Video';         $icon = 'video';     break;
+                            case 'document': $typeText = 'Döküman';       $icon = 'file-text'; break;
+                            case 'youtube':  $typeText = 'YouTube';       $icon = 'link-2';    break;
+                            default:         $typeText = 'İçerik';        $icon = 'file';
+                        }
+                        $isFile = ($renderType === 'video' || $renderType === 'document'); // youtube dosya değil
+
                         ?>
                         <div class="content-item">
                             <div class="content-item-header">
@@ -131,6 +143,45 @@ $page_title = "Bölüm İçeriğini Düzenle";
                                     </div>
                                     <div class="editable-content" contenteditable="true" spellcheck="false"><?= $data !== '' ? $data : '<p>Metninizi buraya yazın...</p>' ?></div>
                                     <textarea class="hidden" name="contents[<?= $key ?>][paragraph]"><?= htmlspecialchars($data) ?></textarea>
+                                <?php elseif ($renderType === 'youtube'): ?>
+                                    <div class="space-y-2">
+                                        <label class="font-medium text-gray-700">YouTube URL veya Video ID</label>
+                                        <div class="flex gap-2">
+                                            <input type="text"
+                                                   class="yt-url-input w-full p-2 border border-gray-300 rounded-lg"
+                                                   placeholder="https://youtu.be/dQw4w9WgXcQ veya video ID"
+                                                   value="<?= htmlspecialchars($data) ?>">
+                                            <button type="button" class="yt-apply btn btn-sm">Uygula</button>
+                                            <button type="button" class="yt-clear btn btn-sm btn-secondary">Temizle</button>
+                                        </div>
+                                        <p class="yt-error text-red-600 text-sm" style="display:none;"></p>
+                                        <div class="yt-preview">
+                                            <?php
+                                            // sayfa ilk yüklenişte önizleme (varsa)
+                                            $ytId = '';
+                                            if (!empty($data)) {
+                                                // kaba ID çıkarımı: youtu.be / watch?v= / embed / shorts
+                                                if (preg_match('~youtu\.be/([^/?#]+)~', $data, $m))        $ytId = $m[1];
+                                                elseif (preg_match('~v=([^&#/]+)~', $data, $m))            $ytId = $m[1];
+                                                elseif (preg_match('~/embed/([^/?#]+)~', $data, $m))       $ytId = $m[1];
+                                                elseif (preg_match('~/shorts/([^/?#]+)~', $data, $m))      $ytId = $m[1];
+                                                elseif (preg_match('~^[A-Za-z0-9_-]{10,20}$~', $data))     $ytId = $data;
+                                            }
+                                            if ($ytId): ?>
+                                                <div class="mt-3">
+                                                    <div class="aspect-video">
+                                                        <iframe class="w-full h-full"
+                                                                src="https://www.youtube.com/embed/<?= htmlspecialchars($ytId) ?>"
+                                                                frameborder="0"
+                                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                allowfullscreen></iframe>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <input type="hidden" name="contents[<?= $key ?>][youtube_url]" class="yt-hidden"
+                                               value="<?= htmlspecialchars($data) ?>">
+                                    </div>
                                 <?php else: ?>
                                     <div class="upload-container">
                                         <div class="file-display <?= $data ? '' : 'hidden' ?>">
@@ -177,6 +228,8 @@ $page_title = "Bölüm İçeriğini Düzenle";
                     <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="text"><i data-lucide="type" class="w-4 h-4 mr-1"></i>Metin</button>
                     <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="video"><i data-lucide="video" class="w-4 h-4 mr-1"></i>Video</button>
                     <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="document"><i data-lucide="file-plus" class="w-4 h-4 mr-1"></i>Döküman</button>
+                    <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="youtube"><i data-lucide="link-2" class="w-4 h-4 mr-1"></i>YouTube</button>
+
                 </div>
             </div>
         </div>
@@ -220,8 +273,11 @@ $page_title = "Bölüm İçeriğini Düzenle";
     document.addEventListener('DOMContentLoaded', function () {
         lucide.createIcons();
 
+
+
+
         // === Çoklu içerik desteği ===
-        const TYPE_LIMITS = { text: 999, video: 999, document: 999 };
+        const TYPE_LIMITS = { text: 999, video: 999, document: 999, youtube: 999 };
 
         const contentContainer = document.getElementById('content-items');
         const addBtns = document.querySelectorAll('.add-content-btn');
@@ -266,67 +322,97 @@ $page_title = "Bölüm İçeriğini Düzenle";
         });
 
         function addContentItem(type, contentData = {}) {
+            // benzersiz form anahtarı
             const key = `new_${Date.now()}_${Math.floor(Math.random()*1e6)}`;
-            const typeText = type === 'text' ? 'Metin İçeriği' : (type === 'video' ? 'Video' : 'Döküman');
-            const icon = type === 'text' ? 'type' : (type === 'video' ? 'video' : 'file-text');
 
-            const wrapper = document.createElement('div');
-            wrapper.className = 'content-item';
-            let bodyHTML = '';
-
-            if (type === 'text') {
-                const editorData = contentData.data || '<p>Metninizi buraya yazın...</p>';
-                bodyHTML = `
-                <div class="editor-toolbar">
-                    <div class="toolbar-group flex gap-1">
-                        <button type="button" class="editor-button" data-action="bold" title="Kalın"><i data-lucide="bold"></i></button>
-                        <button type="button" class="editor-button" data-action="italic" title="İtalik"><i data-lucide="italic"></i></button>
-                    </div>
-                    <div class="toolbar-group flex gap-1">
-                        <button type="button" class="editor-button" data-action="insertUnorderedList" title="Liste"><i data-lucide="list"></i></button>
-                        <button type="button" class="editor-button" data-action="insertOrderedList" title="Numaralı Liste"><i data-lucide="list-ordered"></i></button>
-                    </div>
-                    <div class="toolbar-group">
-                        <button type="button" class="editor-button" data-action="createLink" title="Link"><i data-lucide="link"></i></button>
-                    </div>
-                </div>
-                <div class="editable-content" contenteditable="true" spellcheck="false">${editorData}</div>
-                <textarea class="hidden" name="contents[${key}][paragraph]">${editorData}</textarea>
-            `;
-            } else {
-                const accept = type === 'video' ? 'video/*' : '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx';
-                bodyHTML = `
-                <div class="upload-container">
-                    <div class="file-display hidden"></div>
-                    <div class="horizontal-upload-card">
-                        <div class="upload-preview-thumb"><i data-lucide="${icon}"></i></div>
-                        <div class="upload-drop-area"><p>Dosyayı buraya sürükleyin veya <span class="font-bold text-yellow-600">tıklayın</span></p></div>
-                    </div>
-                </div>
-                <input type="file" class="hidden-file-input" name="contents[${key}][file]" accept="${accept}" style="display:none;">
-                <input type="hidden" name="contents[${key}][existing_file]" value="">
-            `;
+            // başlık ve ikon
+            let typeText = '', icon = '';
+            switch (type) {
+                case 'text':     typeText = 'Metin İçeriği'; icon = 'type';      break;
+                case 'video':    typeText = 'Video';         icon = 'video';     break;
+                case 'document': typeText = 'Döküman';       icon = 'file-text'; break;
+                case 'youtube':  typeText = 'YouTube';       icon = 'link-2';    break;
+                default:         typeText = 'İçerik';        icon = 'file';
             }
 
+            // gövde HTML
+            let bodyHTML = '';
+            if (type === 'text') {
+                const editorData = (contentData.data || '<p>Metninizi buraya yazın...</p>');
+                bodyHTML = `
+      <div class="editor-toolbar">
+        <div class="toolbar-group flex gap-1">
+          <button type="button" class="editor-button" data-action="bold" title="Kalın"><i data-lucide="bold"></i></button>
+          <button type="button" class="editor-button" data-action="italic" title="İtalik"><i data-lucide="italic"></i></button>
+        </div>
+        <div class="toolbar-group flex gap-1">
+          <button type="button" class="editor-button" data-action="insertUnorderedList" title="Liste"><i data-lucide="list"></i></button>
+          <button type="button" class="editor-button" data-action="insertOrderedList" title="Numaralı Liste"><i data-lucide="list-ordered"></i></button>
+        </div>
+        <div class="toolbar-group">
+          <button type="button" class="editor-button" data-action="createLink" title="Link"><i data-lucide="link"></i></button>
+        </div>
+      </div>
+      <div class="editable-content" contenteditable="true" spellcheck="false">${editorData}</div>
+      <textarea class="hidden" name="contents[${key}][paragraph]">${editorData}</textarea>
+    `;
+            } else if (type === 'youtube') {
+                const initial = (contentData.data || '').trim();
+                bodyHTML = `
+      <div class="space-y-2">
+        <label class="font-medium text-gray-700">YouTube URL veya Video ID</label>
+        <div class="flex gap-2">
+          <input type="text" class="yt-url-input w-full p-2 border border-gray-300 rounded-lg"
+                 placeholder="https://youtu.be/dQw4w9WgXcQ veya video ID" value="${initial}">
+          <button type="button" class="yt-apply btn btn-sm">Uygula</button>
+          <button type="button" class="yt-clear btn btn-sm btn-secondary">Temizle</button>
+        </div>
+        <p class="yt-error text-red-600 text-sm" style="display:none;"></p>
+        <div class="yt-preview"></div>
+        <input type="hidden" name="contents[${key}][youtube_url]" class="yt-hidden" value="${initial}">
+      </div>
+    `;
+            } else {
+                // video / document yükleme
+                const accept = (type === 'video') ? 'video/*' : '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx';
+                bodyHTML = `
+      <div class="upload-container">
+        <div class="file-display hidden"></div>
+        <div class="horizontal-upload-card">
+          <div class="upload-preview-thumb"><i data-lucide="${icon}"></i></div>
+          <div class="upload-drop-area">
+            <p>Dosyayı buraya sürükleyin veya <span class="font-bold text-yellow-600">tıklayın</span></p>
+          </div>
+        </div>
+      </div>
+      <input type="file" class="hidden-file-input" name="contents[${key}][file]" accept="${accept}" style="display:none;">
+      <input type="hidden" name="contents[${key}][existing_file]" value="">
+    `;
+            }
+
+            // dış kap
+            const wrapper = document.createElement('div');
+            wrapper.className = 'content-item';
             wrapper.innerHTML = `
-            <div class="content-item-header">
-                <i class="text-gray-500"></i><span class="content-item-title">${typeText}</span>
-                <div class="ml-auto flex items-center gap-2">
-                    <button type="button" class="action-button move-up-btn" title="Yukarı Taşı"><i data-lucide="chevron-up"></i></button>
-                    <button type="button" class="action-button move-down-btn" title="Aşağı Taşı"><i data-lucide="chevron-down"></i></button>
-                    <button type="button" class="action-button delete-content-btn text-red-500" title="Sil"><i data-lucide="trash-2"></i></button>
-                </div>
-            </div>
-            <div class="content-item-body">${bodyHTML}</div>
-            <input type="hidden" name="contents[${key}][type]" value="${type}">
-            <input type="hidden" name="contents[${key}][sort_order]" value="">
-        `;
+    <div class="content-item-header">
+      <i class="text-gray-500"></i><span class="content-item-title">${typeText}</span>
+      <div class="ml-auto flex items-center gap-2">
+        <button type="button" class="action-button move-up-btn" title="Yukarı Taşı"><i data-lucide="chevron-up"></i></button>
+        <button type="button" class="action-button move-down-btn" title="Aşağı Taşı"><i data-lucide="chevron-down"></i></button>
+        <button type="button" class="action-button delete-content-btn text-red-500" title="Sil"><i data-lucide="trash-2"></i></button>
+      </div>
+    </div>
+    <div class="content-item-body">${bodyHTML}</div>
+    <input type="hidden" name="contents[${key}][type]" value="${type}">
+    <input type="hidden" name="contents[${key}][sort_order]" value="">
+  `;
 
             contentContainer.appendChild(wrapper);
             attachContentItemListeners(wrapper, type);
             updateSortOrder(contentContainer);
             lucide.createIcons({nodes:[wrapper]});
         }
+
 
         // Listener & Editor
         let activeEditor = null, savedSelection = null;
@@ -355,6 +441,42 @@ $page_title = "Bölüm İçeriğini Düzenle";
                     const button = e.target.closest('button');
                     if (button) handleEditorCommand(button.dataset.action);
                 });
+            } else if (type === 'youtube') {
+                const urlInput = itemElement.querySelector('.yt-url-input');
+                const applyBtn = itemElement.querySelector('.yt-apply');
+                const clearBtn = itemElement.querySelector('.yt-clear');
+                const err = itemElement.querySelector('.yt-error');
+                const prev = itemElement.querySelector('.yt-preview');
+                const hidden = itemElement.querySelector('.yt-hidden');
+
+                function setPreviewFromInput() {
+                    err.style.display = 'none';
+                    const id = parseYouTubeId(urlInput.value);
+                    if (!id) {
+                        prev.innerHTML = '';
+                        hidden.value = '';
+                        err.textContent = 'Geçerli bir YouTube bağlantısı veya video ID girin.';
+                        err.style.display = 'block';
+                        return;
+                    }
+                    hidden.value = `https://youtu.be/${id}`; // canonical
+                    prev.innerHTML = buildYouTubePreviewHTML(id);
+                }
+
+                applyBtn?.addEventListener('click', setPreviewFromInput);
+                urlInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); setPreviewFromInput(); } });
+                clearBtn?.addEventListener('click', () => {
+                    urlInput.value = '';
+                    hidden.value = '';
+                    err.style.display = 'none';
+                    prev.innerHTML = '';
+                });
+
+                // sayfa ilk yüklenişte data varsa önizle
+                if (urlInput && urlInput.value.trim()) {
+                    const id = parseYouTubeId(urlInput.value.trim());
+                    if (id) prev.innerHTML = buildYouTubePreviewHTML(id);
+                }
             } else {
                 const dropArea = itemElement.querySelector('.upload-drop-area');
                 const fileInput = itemElement.querySelector('.hidden-file-input');
@@ -506,6 +628,48 @@ $page_title = "Bölüm İçeriğini Düzenle";
         document.getElementById('cancel-link-btn').addEventListener('click', () => {
             document.getElementById('link-modal').classList.remove('show');
         });
+
+        function parseYouTubeId(input) {
+            if (!input) return null;
+            input = input.trim();
+            if (/^[a-zA-Z0-9_-]{10,20}$/.test(input)) return input; // çıplak ID
+
+            try {
+                const u = new URL(input);
+                if (u.hostname.includes('youtu.be')) {
+                    const id = u.pathname.split('/').filter(Boolean)[0];
+                    return id || null;
+                }
+                if (u.hostname.includes('youtube.com')) {
+                    if (u.pathname.startsWith('/shorts/')) {
+                        const id = u.pathname.split('/').filter(Boolean)[1];
+                        return id || null;
+                    }
+                    const v = u.searchParams.get('v');
+                    if (v) return v;
+                    if (u.pathname.startsWith('/embed/')) {
+                        const id = u.pathname.split('/').filter(Boolean)[1];
+                        return id || null;
+                    }
+                }
+            } catch (_) {}
+            return null;
+        }
+
+        function buildYouTubePreviewHTML(embedId) {
+            return `
+    <div class="mt-3">
+      <div class="aspect-video">
+        <iframe class="w-full h-full"
+                src="https://www.youtube.com/embed/${encodeURIComponent(embedId)}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+    </div>
+  `;
+        }
+
 
         // Delegation: contenteditable → textarea
         contentContainer.addEventListener('input', (e) => {

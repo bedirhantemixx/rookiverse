@@ -311,6 +311,40 @@ require_once 'navbar.php';
                         </video>
                     </div>
                     <?php
+                    elseif ($cont['type'] == 'youtube'):
+                    ?>
+                        <?php
+                        $raw = trim((string)$cont['data']); // DB'de tuttuğun değer (örn: https://youtu.be/dQw4w9WgXcQ)
+
+// ID'yi çek
+                        $ytId = '';
+                        if (preg_match('~^[A-Za-z0-9_-]{10,20}$~', $raw)) {
+                            $ytId = $raw; // zaten çıplak ID
+                        } elseif (preg_match('~youtu\.be/([^/?#]+)~', $raw, $m)) {
+                            $ytId = $m[1];
+                        } elseif (preg_match('~v=([^&#/]+)~', $raw, $m)) {
+                            $ytId = $m[1];
+                        } elseif (preg_match('~/embed/([^/?#]+)~', $raw, $m)) {
+                            $ytId = $m[1];
+                        } elseif (preg_match('~/shorts/([^/?#]+)~', $raw, $m)) {
+                            $ytId = $m[1];
+                        }
+                        ?>
+
+                        <?php if ($ytId): ?>
+                        <div class="aspect-video">
+                            <iframe
+                                    class="w-full h-full"
+                                    src="https://www.youtube.com/embed/<?= htmlspecialchars($ytId, ENT_QUOTES) ?>"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php
+
                     elseif ($cont['type'] == 'doc'):
                         $empty = false;
 

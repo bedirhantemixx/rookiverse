@@ -9,7 +9,7 @@ $pdo = get_db_connection();
 
 // ==== Ayarlar ====
 const DELETE_OLD_FILES_ON_REPLACE = true;   // yeni dosya yüklenince eskisini sil
-const DELETE_FILES_ON_ROW_DELETE  = true;   // içerik satırı silinince dosyayı da sil
+const DELETE_FILES_ON_ROW_DELETE  = true;   // içerik satırı silinince dosyayı da sil (yalnızca local uploads)
 
 // ---- Helpers ----
 function fail($msg, $code = 400) { http_response_code($code); die($msg); }
@@ -80,6 +80,45 @@ function safe_unlink_if_local(string $projectRoot, string $relPath, int $course_
     if (is_file($full)) @unlink($full);
 }
 
+/** NEW: YouTube ID ayrıştırıcı (URL veya çıplak ID kabul eder) */
+function parse_youtube_id(?string $input): ?string {
+    if (!$input) return null;
+    $input = trim($input);
+
+    // çıplak ID (11–20 arası güvenli aralık)
+    if (preg_match('/^[A-Za-z0-9_-]{10,20}$/', $input)) {
+        return $input;
+    }
+
+    // URL gibi gelirse
+    $parts = @parse_url($input);
+    if (!$parts || empty($parts['host'])) return null;
+
+    $host = strtolower($parts['host']);
+    $path = $parts['path'] ?? '';
+    $query= [];
+    if (!empty($parts['query'])) parse_str($parts['query'], $query);
+
+    // youtu.be/<id>
+    if (strpos($host, 'youtu.be') !== false) {
+        $segments = array_values(array_filter(explode('/', $path)));
+        return $segments[0] ?? null;
+    }
+
+    if (strpos($host, 'youtube.com') !== false) {
+        // /watch?v=<id>
+        if (!empty($query['v'])) return $query['v'];
+
+        // /embed/<id>
+        if (preg_match('~/embed/([^/?#]+)~', $path, $m)) return $m[1];
+
+        // /shorts/<id>
+        if (preg_match('~/shorts/([^/?#]+)~', $path, $m)) return $m[1];
+    }
+
+    return null;
+}
+
 // ---- Validate ----
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Geçersiz istek yöntemi.');
 $module_id = isset($_POST['module_id']) ? (int)$_POST['module_id'] : 0;
@@ -137,6 +176,7 @@ try {
             foreach ($toDelete as $delId) {
                 $info = $oldDataById[$delId] ?? null;
                 if ($info && $info['type'] !== 'text' && !empty($info['data'])) {
+                    // youtube URL'si local path ile başlamayacağından silinmeyecek (safe_unlink_if_local korur)
                     safe_unlink_if_local($projectRoot, $info['data'], $course_id, $module_id);
                 }
             }
@@ -148,14 +188,21 @@ try {
 
     // 2) Upsert loop
     foreach ($contents as $cKey => $cVal) {
-        $rawType  = $cVal['type'] ?? null;                  // 'text' | 'video' | 'document'
+        $rawType  = $cVal['type'] ?? null;                  // 'text' | 'video' | 'document' | 'youtube'
         $sort     = isset($cVal['sort_order']) ? (int)$cVal['sort_order'] : 0;
         $para     = $cVal['paragraph'] ?? null;             // text HTML
         $existId  = isset($cVal['id']) ? (int)$cVal['id'] : 0;
         $existing = $cVal['existing_file'] ?? null;         // eski dosya yolu
+        $ytRaw    = $cVal['youtube_url'] ?? null;           // youtube
 
         if (!$rawType) continue;
-        $dbType = ($rawType === 'document') ? 'doc' : $rawType;
+
+        // DB tip eşlemesi
+        switch ($rawType) {
+            case 'document': $dbType = 'doc';      break;
+            case 'youtube':  $dbType = 'youtube';  break;   // eski satırlarda 'yt' olabilir; update bu değeri normalize eder
+            default:         $dbType = $rawType;
+        }
 
         // --- file array (if any) ---
         $fileArr = null;
@@ -176,14 +223,35 @@ try {
             if ($dbType === 'text') {
                 $clean = trim((string)$para);
                 if ($clean === '') {
-                    // boş text gönderildiyse satırı silelim (alternatif: skip)
+                    // boş text gönderildiyse satırı silelim
                     $del = $pdo->prepare("DELETE FROM module_contents WHERE id = ? AND module_id = ?");
                     $del->execute([$existId, $module_id]);
                     continue;
                 }
                 $up = $pdo->prepare("UPDATE module_contents SET type='text', title=NULL, data=?, sort_order=? WHERE id=? AND module_id=?");
                 $up->execute([$para, $sort, $existId, $module_id]);
-            } else {
+            }
+            elseif ($dbType === 'youtube') {
+                $ytRaw = trim((string)$ytRaw);
+                if ($ytRaw === '') {
+                    // boşsa tamamen sil
+                    $del = $pdo->prepare("DELETE FROM module_contents WHERE id = ? AND module_id = ?");
+                    $del->execute([$existId, $module_id]);
+                    continue;
+                }
+                $ytId = parse_youtube_id($ytRaw);
+                if (!$ytId) {
+                    // geçersiz ise satırı olduğu gibi bırakmak istiyorsan continue; (ben sileceğim)
+                    $del = $pdo->prepare("DELETE FROM module_contents WHERE id = ? AND module_id = ?");
+                    $del->execute([$existId, $module_id]);
+                    continue;
+                }
+                $canon = "https://youtu.be/" . $ytId;
+                $up = $pdo->prepare("UPDATE module_contents SET type='youtube', title=NULL, data=?, sort_order=? WHERE id=? AND module_id=?");
+                $up->execute([$canon, $sort, $existId, $module_id]);
+            }
+            else {
+                // video/document
                 $newPath = null;  // yeni upload path
                 if ($fileArr && $fileArr['error'] === UPLOAD_ERR_OK) {
                     $mime = detect_mime($fileArr['tmp_name']);
@@ -223,8 +291,17 @@ try {
                 if ($clean === '') continue; // boş text ekleme
                 $ins = $pdo->prepare("INSERT INTO module_contents (module_id, type, title, data, sort_order) VALUES (?, 'text', NULL, ?, ?)");
                 $ins->execute([$module_id, $para, $sort]);
-
-            } else {
+            }
+            elseif ($dbType === 'youtube') {
+                $ytRaw = trim((string)$ytRaw);
+                if ($ytRaw === '') continue;
+                $ytId = parse_youtube_id($ytRaw);
+                if (!$ytId) continue;
+                $canon = "https://youtu.be/" . $ytId;
+                $ins = $pdo->prepare("INSERT INTO module_contents (module_id, type, title, data, sort_order) VALUES (?, 'youtube', NULL, ?, ?)");
+                $ins->execute([$module_id, $canon, $sort]);
+            }
+            else {
                 $dataToStore = null;
 
                 if ($fileArr && $fileArr['error'] === UPLOAD_ERR_OK) {

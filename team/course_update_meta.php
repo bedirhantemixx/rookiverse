@@ -27,6 +27,7 @@ try {
     $course_id     = isset($_POST['id']) ? (int)$_POST['id'] : 0;
     $title         = trim($_POST['title'] ?? '');
     $about_text    = trim($_POST['about_text'] ?? '');
+    $intro_video_url    = trim($_POST['intro_video_url'] ?? '');
     $goal_text     = trim($_POST['goal_text'] ?? '');
     $learnings     = trim($_POST['learnings_text'] ?? '');
     $category_id   = isset($_POST['category_id']) ? (int)$_POST['category_id'] : 0;
@@ -50,23 +51,49 @@ try {
         json_response(false, ['message'=>'Kategori bulunamadı'], 422);
     }
 
-    // Güncelle
-    $u = $pdo->prepare('UPDATE courses
+    if (isset($intro_video_url) && !empty($intro_video_url)) {
+        // Güncelle
+        $u = $pdo->prepare("UPDATE courses
+    SET title=:title, status=:status, about_text=:about, goal_text=:goal, intro_video_url=:intro,learnings_text=:learn,
+        category_id=:cat, level=:lvl, updated_at=NOW()
+    WHERE id=:id AND team_db_id=:team");
+
+        $u->execute([
+            ':title'=>$title,
+            ':about'=>$about_text,
+            ':goal'=>$goal_text,
+            ':learn'=>$learnings,
+            ':cat'=>$category_id,
+            ':lvl'=>$level,
+            ':id'=>$course_id,
+            ':intro'=>$intro_video_url,
+            ':team'=>$_SESSION['team_db_id'],
+            ':status'=>'pending',
+        ]);
+
+    }else{
+        // Güncelle
+        $u = $pdo->prepare("UPDATE courses
     SET title=:title, status=:status, about_text=:about, goal_text=:goal, learnings_text=:learn,
         category_id=:cat, level=:lvl, updated_at=NOW()
-    WHERE id=:id AND team_db_id=:team');
+    WHERE id=:id AND team_db_id=:team");
 
-    $u->execute([
-        ':title'=>$title,
-        ':about'=>$about_text,
-        ':goal'=>$goal_text,
-        ':learn'=>$learnings,
-        ':cat'=>$category_id,
-        ':lvl'=>$level,
-        ':id'=>$course_id,
-        ':team'=>$_SESSION['team_db_id'],
-        ':status'=>'pending',
-    ]);
+        $u->execute([
+            ':title'=>$title,
+            ':about'=>$about_text,
+            ':goal'=>$goal_text,
+            ':learn'=>$learnings,
+            ':cat'=>$category_id,
+            ':lvl'=>$level,
+            ':id'=>$course_id,
+            ':team'=>$_SESSION['team_db_id'],
+            ':status'=>'pending',
+        ]);
+    }
+
+
+
+
 
     json_response(true, ['message'=>'Kurs bilgileri güncellendi.']);
     header('location: editCourse.php?id='.$course_id);

@@ -66,6 +66,45 @@ function move_uploaded_file_strict(array $file, string $destDir, string $project
     return str_replace('\\', '/', $rel);
 }
 
+/** NEW: YouTube ID ayrıştırıcı (URL veya çıplak ID kabul eder) */
+function parse_youtube_id(?string $input): ?string {
+    if (!$input) return null;
+    $input = trim($input);
+
+    // çıplak ID (11–20 arası güvenli aralık)
+    if (preg_match('/^[A-Za-z0-9_-]{10,20}$/', $input)) {
+        return $input;
+    }
+
+    // URL gibi gelirse
+    $parts = @parse_url($input);
+    if (!$parts || empty($parts['host'])) return null;
+
+    $host = strtolower($parts['host']);
+    $path = $parts['path'] ?? '';
+    $query= [];
+    if (!empty($parts['query'])) parse_str($parts['query'], $query);
+
+    // youtu.be/<id>
+    if (strpos($host, 'youtu.be') !== false) {
+        $segments = array_values(array_filter(explode('/', $path)));
+        return $segments[0] ?? null;
+    }
+
+    if (strpos($host, 'youtube.com') !== false) {
+        // /watch?v=<id>
+        if (!empty($query['v'])) return $query['v'];
+
+        // /embed/<id>
+        if (preg_match('~/embed/([^/?#]+)~', $path, $m)) return $m[1];
+
+        // /shorts/<id>
+        if (preg_match('~/shorts/([^/?#]+)~', $path, $m)) return $m[1];
+    }
+
+    return null;
+}
+
 // ---- Validate input ----
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Geçersiz istek yöntemi.');
 $course_id = $_POST['course_id'] ?? null;
@@ -104,24 +143,42 @@ try {
         if (!is_array($contents)) $contents = [];
 
         foreach ($contents as $cKey => $cVal) {
-            $rawType   = $cVal['type'] ?? null; // 'text'|'video'|'document'
+            $rawType   = $cVal['type'] ?? null; // 'text' | 'video' | 'document' | 'youtube'
             $sort      = isset($cVal['sort_order']) ? (int)$cVal['sort_order'] : 0;
-            $paragraph = $cVal['paragraph'] ?? null;
-            $existing  = $cVal['existing_file'] ?? null;
+            $paragraph = $cVal['paragraph'] ?? null;      // text için
+            $existing  = $cVal['existing_file'] ?? null;  // video/document için
 
             if (!$rawType) continue;
 
-            $dbType = ($rawType === 'document') ? 'doc' : $rawType; // şemaya map
+            /** NEW: DB tip eşlemesi */
+            switch ($rawType) {
+                case 'document': $dbType = 'doc'; break;
+                case 'youtube':  $dbType = 'youtube';  break;
+                default:         $dbType = $rawType;
+            }
 
             $dataToStore = null;
 
             if ($rawType === 'text') {
                 $clean = trim((string)$paragraph);
-                if ($clean === '') continue;             // boş text atla
-                $dataToStore = $paragraph;                // HTML içerik
-            } else {
-                // *** DÜZELTİLEN KISIM: $_FILES INDEXLEMESİ ***
-                // modules[mKey][contents][cKey][file] -> $_FILES['modules']['...'][$mKey]['contents'][$cKey]['file']
+                if ($clean === '') continue;          // boş text atla
+                $dataToStore = $paragraph;            // HTML içerik
+            }
+            elseif ($rawType === 'youtube') {
+                /** NEW: YouTube URL/ID'yi al, doğrula ve kanonikleştir */
+                $ytRaw = trim((string)($cVal['youtube_url'] ?? ''));
+                if ($ytRaw === '') continue;          // boş yt alanı → atla
+                $ytId = parse_youtube_id($ytRaw);
+                if (!$ytId) {
+                    // İstersen atlamak yerine hata da atabilirsin:
+                    // throw new RuntimeException("Geçersiz YouTube bağlantısı: $ytRaw");
+                    continue;
+                }
+                $dataToStore = "https://youtu.be/" . $ytId; // kanonik
+            }
+            else {
+                // *** $_FILES INDEXLEMESİ ***
+                // modules[mKey][contents][cKey][file]
                 $fileArr = null;
                 if ($files
                     && isset($files['name'][$mKey]['contents'][$cKey]['file'])
@@ -169,5 +226,5 @@ try {
 } catch (Throwable $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     http_response_code(500);
-    echo "Video/Dosya kaydı sırasında hata: " . htmlspecialchars($e->getMessage());
+    echo "Video/Dosya/YouTube kaydı sırasında hata: " . htmlspecialchars($e->getMessage());
 }

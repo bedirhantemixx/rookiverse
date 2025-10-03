@@ -62,9 +62,7 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        // === TÜR LİMİTLERİ ===
-// Hepsinden max 1: istersen 'text' için 999 yapıp sınırsız gibi kullanabilirsin.
-        const TYPE_LIMITS = { text: 100, video: 50, document: 50 };
+        const TYPE_LIMITS = { text: 100, video: 50, document: 50, youtube: 50 };
 
 // Yardımcılar
         function getTypeCount(container, type) {
@@ -84,6 +82,52 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
                 btn.classList.toggle('cursor-not-allowed', !allowed);
             });
         }
+        function parseYouTubeId(input) {
+            if (!input) return null;
+            input = input.trim();
+
+            // Sadece ID girdiyse (11–20 arası güvenli aralık)
+            if (/^[a-zA-Z0-9_-]{10,20}$/.test(input)) return input;
+
+            try {
+                const u = new URL(input);
+                if (u.hostname.includes('youtu.be')) {
+                    const id = u.pathname.split('/').filter(Boolean)[0];
+                    return id || null;
+                }
+                if (u.hostname.includes('youtube.com')) {
+                    if (u.pathname.startsWith('/shorts/')) {
+                        const id = u.pathname.split('/').filter(Boolean)[1];
+                        return id || null;
+                    }
+                    const v = u.searchParams.get('v');
+                    if (v) return v;
+                    if (u.pathname.startsWith('/embed/')) {
+                        const id = u.pathname.split('/').filter(Boolean)[1];
+                        return id || null;
+                    }
+                }
+            } catch (_) { /* URL değilse */ }
+
+            return null;
+        }
+
+        function buildYouTubePreviewHTML(embedId) {
+            return `
+    <div class="mt-3">
+      <div class="aspect-video">
+        <iframe
+          class="w-full h-full"
+          src="https://www.youtube.com/embed/${encodeURIComponent(embedId)}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+  `;
+        }
+
 
 
         lucide.createIcons();
@@ -119,75 +163,169 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
             const moduleKey = `new_${Date.now()}`;
             const moduleElement = document.createElement('div');
             moduleElement.className = 'module-card';
-            moduleElement.innerHTML = `<div class="module-header"><h3 class="flex-grow">${moduleData.title}</h3><input type="hidden" name="modules[${moduleKey}][title]" value="${moduleData.title}"></div><div class="module-content"><div class="content-items-container space-y-4"></div><div class="flex gap-4 mt-6 border-t pt-4"><button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="text"><i data-lucide="type" class="w-4 h-4 mr-1"></i>Metin</button><button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="video"><i data-lucide="video" class="w-4 h-4 mr-1"></i>Video</button><button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="document"><i data-lucide="file-plus" class="w-4 h-4 mr-1"></i>Döküman</button></div></div>`;
+            moduleElement.innerHTML = `
+  <div class="module-header">
+    <h3 class="flex-grow">${moduleData.title}</h3>
+    <input type="hidden" name="modules[${moduleKey}][title]" value="${moduleData.title}">
+  </div>
+  <div class="module-content">
+    <div class="content-items-container space-y-4"></div>
+    <div class="flex gap-4 mt-6 border-t pt-4">
+      <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="text">
+        <i data-lucide="type" class="w-4 h-4 mr-1"></i>Metin
+      </button>
+      <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="video">
+        <i data-lucide="video" class="w-4 h-4 mr-1"></i>Video
+      </button>
+      <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="document">
+        <i data-lucide="file-plus" class="w-4 h-4 mr-1"></i>Döküman
+      </button>
+      <!-- YENİ: YouTube -->
+            <button type="button" class="add-content-btn btn btn-sm btn-secondary" data-type="youtube">
+            <i data-lucide="link-2" class="w-4 h-4 mr-1"></i>YouTube
+            </button>
+            </div>
+            </div>`;
             modulesContainer.innerHTML = '';
             modulesContainer.appendChild(moduleElement);
             attachModuleListeners(moduleElement, moduleKey);
             lucide.createIcons();
             refreshAddButtons(moduleElement);
 
+
         }
 
         // === İÇERİK YÖNETİMİ ===
         function attachModuleListeners(moduleElement, moduleKey) {
-            const contentContainer = moduleElement.querySelector('.content-items-container');
-            makeSortable(contentContainer);
-            moduleElement.querySelectorAll('.add-content-btn').forEach(btn => {
+              const contentContainer = moduleElement.querySelector('.content-items-container');
+              makeSortable(contentContainer);
+
+              moduleElement.querySelectorAll('.add-content-btn').forEach(btn => {
                 btn.addEventListener('click', async () => {
-                    const type = btn.dataset.type;
-                    const contentContainer = moduleElement.querySelector('.content-items-container');
+                  const type = btn.dataset.type;
+                  const contentContainer = moduleElement.querySelector('.content-items-container');
 
-                    // LİMİT KONTROLÜ: Eklenebiliyor mu?
-                    if (!canAdd(contentContainer, type)) {
-                        alert(`Bu modülde "${type}" içeriği en fazla ${TYPE_LIMITS[type]} kez eklenebilir.`);
-                        return;
-                    }
+                  // LİMİT KONTROLÜ
+                  if (!canAdd(contentContainer, type)) {
+                    alert(`Bu modülde "${type}" içeriği en fazla ${TYPE_LIMITS[type]} kez eklenebilir.`);
+                    return;
+                  }
 
-                    if (type === 'text') {
-                        try {
-                            const clipboardText = await navigator.clipboard.readText();
-                            if (clipboardText.trim() && clipboardText.length < 750) {
-                                pasteModal.classList.add('show');
-                                document.getElementById('paste-confirm-btn').onclick = () => {
-                                    addContentItem(contentContainer, type, moduleKey, { data: clipboardText });
-                                    pasteModal.classList.remove('show');
-                                    refreshAddButtons(moduleElement);
-                                };
-                                document.getElementById('paste-cancel-btn').onclick = () => {
-                                    addContentItem(contentContainer, type, moduleKey);
-                                    pasteModal.classList.remove('show');
-                                    refreshAddButtons(moduleElement);
-                                };
-                            } else { throw new Error("Pano boş veya limit aşıldı"); }
-                        } catch (err) {
-                            addContentItem(contentContainer, type, moduleKey);
-                            refreshAddButtons(moduleElement);
-                        }
-                    } else {
-                        addContentItem(contentContainer, type, moduleKey);
-                        refreshAddButtons(moduleElement);
+                  if (type === 'text') {
+                    try {
+                      const clipboardText = await navigator.clipboard.readText();
+                      if (clipboardText.trim() && clipboardText.length < 750) {
+                        pasteModal.classList.add('show');
+                        document.getElementById('paste-confirm-btn').onclick = () => {
+                          addContentItem(contentContainer, type, moduleKey, { data: clipboardText });
+                          pasteModal.classList.remove('show');
+                          refreshAddButtons(moduleElement);
+                        };
+                        document.getElementById('paste-cancel-btn').onclick = () => {
+                          addContentItem(contentContainer, type, moduleKey);
+                          pasteModal.classList.remove('show');
+                          refreshAddButtons(moduleElement);
+                        };
+                      } else {
+                        throw new Error("Pano boş veya limit aşıldı");
+                      }
+                    } catch (err) {
+                      addContentItem(contentContainer, type, moduleKey);
+                      refreshAddButtons(moduleElement);
                     }
+                    // <-- BURADA 'text' if bloğunu düzgün kapatıyoruz
+                  } else if (type === 'youtube') {
+                    // YouTube için burada HTML kurma yok; addContentItem halledecek
+                    addContentItem(contentContainer, 'youtube', moduleKey);
+                    refreshAddButtons(moduleElement);
+                  } else {
+                    // video / document vs.
+                    addContentItem(contentContainer, type, moduleKey);
+                    refreshAddButtons(moduleElement);
+                  }
                 });
-
-            });
+              });
         }
+
+
+
 
         function addContentItem(container, type, moduleKey, contentData = {}) {
             const contentKey = `new_c_${Date.now()}`;
             const itemElement = document.createElement('div');
             itemElement.className = 'content-item';
             const data = contentData.data || '';
-            const typeText = type === 'text' ? 'Metin İçeriği' : (type === 'video' ? 'Video' : 'Döküman');
-            const icon = type === 'text' ? 'type' : (type === 'video' ? 'video' : 'file-text');
+            let typeText = '';
+            let icon = '';
             let bodyHTML = '';
 
-            if (type === 'text') {
-                const editorData = data || '<p>Metninizi buraya yazın...</p>';
-                bodyHTML = `<div class="editor-toolbar"><div class="toolbar-group flex gap-1"><button type="button" class="editor-button" data-action="bold" title="Kalın"><i data-lucide="bold"></i></button><button type="button" class="editor-button" data-action="italic" title="İtalik"><i data-lucide="italic"></i></button></div><div class="toolbar-group flex gap-1"><button type="button" class="editor-button" data-action="insertUnorderedList" title="Liste"><i data-lucide="list"></i></button><button type="button" class="editor-button" data-action="insertOrderedList" title="Numaralı Liste"><i data-lucide="list-ordered"></i></button></div><div class="toolbar-group"><button type="button" class="editor-button" data-action="createLink" title="Link"><i data-lucide="link"></i></button></div></div><div class="editable-content" contenteditable="true" spellcheck="false">${editorData}</div><textarea class="hidden" name="modules[${moduleKey}][contents][${contentKey}][paragraph]">${editorData}</textarea>`;
-            } else {
-                const accept = type === 'video' ? 'video/*' : '.pdf,.doc,.docx,.ppt,.pptx';
-                bodyHTML = `<div class="upload-container"><div class="file-display hidden"></div><div class="horizontal-upload-card"><div class="upload-preview-thumb"><i data-lucide="${icon}"></i></div><div class="upload-drop-area"><p>Dosyayı buraya sürükleyin veya <span class="font-bold text-yellow-600">tıklayın</span></p></div></div></div><input type="file" class="hidden-file-input" name="modules[${moduleKey}][contents][${contentKey}][file]" accept="${accept}" style="display:none;"><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][existing_file]" value="${data}">`;
+            switch (type) {
+              case 'text':
+                typeText = 'Metin İçeriği';
+                icon = 'type';
+                break;
+              case 'video':
+                typeText = 'Video';
+                icon = 'video';
+                break;
+              case 'document':
+                typeText = 'Döküman';
+                icon = 'file-text';
+                break;
+              case 'youtube':
+                typeText = 'YouTube';
+                icon = 'link-2'; // lucide’da youtube yok; istersen başka ikon seçebilirsin
+                break;
+              default:
+                typeText = 'İçerik';
+                icon = 'file';
             }
+
+
+            if (type === 'text') {
+  const editorData = data || '<p>Metninizi buraya yazın...</p>';
+  bodyHTML = `<div class="editor-toolbar"> ... </div>
+            <div class="editable-content" contenteditable="true" spellcheck="false">${editorData}</div>
+            <textarea class="hidden" name="modules[${moduleKey}][contents][${contentKey}][paragraph]">${editorData}</textarea>`;
+} else if (type === 'youtube') {
+  const initial = (data || '').trim();
+  bodyHTML = `
+            <div class="space-y-2">
+            <label class="font-medium text-gray-700">YouTube URL veya Video ID</label>
+            <div class="flex gap-2">
+            <input type="text" class="yt-url-input w-full p-2 border border-gray-300 rounded-lg"
+            placeholder="https://youtu.be/dQw4w9WgXcQ veya video ID" value="${initial}">
+            <button type="button" class="yt-apply btn btn-sm">Uygula</button>
+            <button type="button" class="yt-clear btn btn-sm btn-secondary">Temizle</button>
+            </div>
+            <p class="yt-error text-red-600 text-sm" style="display:none;"></p>
+            <div class="yt-preview"></div>
+            <input type="hidden"
+            name="modules[${moduleKey}][contents][${contentKey}][youtube_url]"
+            class="yt-hidden" value="${initial}">
+            </div>
+            `;
+            } else {
+            const accept = (type === 'video') ? 'video/*' : '.pdf,.doc,.docx,.ppt,.pptx';
+            bodyHTML = `
+    <div class="upload-container">
+      <div class="file-display hidden"></div>
+      <div class="horizontal-upload-card">
+        <div class="upload-preview-thumb"><i data-lucide="${icon}"></i></div>
+        <div class="upload-drop-area">
+          <p>Dosyayı buraya sürükleyin veya <span class="font-bold text-yellow-600">tıklayın</span></p>
+        </div>
+      </div>
+    </div>
+    <input type="file" class="hidden-file-input"
+           name="modules[${moduleKey}][contents][${contentKey}][file]"
+           accept="${accept}" style="display:none;">
+    <input type="hidden"
+           name="modules[${moduleKey}][contents][${contentKey}][existing_file]"
+           value="${data}">
+  `;
+            }
+
             itemElement.innerHTML = `<div class="content-item-header"><i  class="text-gray-500"></i><span class="content-item-title">${typeText}</span><div class="ml-auto flex items-center gap-2"><button type="button" class="action-button move-up-btn" title="Yukarı Taşı"><i data-lucide="chevron-up"></i></button><button type="button" class="action-button move-down-btn" title="Aşağı Taşı"><i data-lucide="chevron-down"></i></button><button type="button" class="action-button delete-content-btn text-red-500" title="Sil"><i data-lucide="trash-2"></i></button></div></div><div class="content-item-body">${bodyHTML}</div><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][type]" value="${type}"><input type="hidden" name="modules[${moduleKey}][contents][${contentKey}][sort_order]" value="">`;
 
             container.appendChild(itemElement);
@@ -220,7 +358,43 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
                 editor.addEventListener('mouseup', () => updateToolbarState(toolbar));
                 toolbar.addEventListener('change', (e) => handleEditorCommand(e.target.dataset.action, e.target.value));
                 toolbar.addEventListener('click', (e) => { const button = e.target.closest('button'); if (button) handleEditorCommand(button.dataset.action); });
-            } else {
+            } else if (type === 'youtube') {
+                const urlInput = itemElement.querySelector('.yt-url-input');
+                const applyBtn = itemElement.querySelector('.yt-apply');
+                const clearBtn = itemElement.querySelector('.yt-clear');
+                const err = itemElement.querySelector('.yt-error');
+                const prev = itemElement.querySelector('.yt-preview');
+                const hidden = itemElement.querySelector('.yt-hidden');
+
+                function setPreviewFromInput() {
+                    err.style.display = 'none';
+                    const id = parseYouTubeId(urlInput.value);
+                    if (!id) {
+                        prev.innerHTML = '';
+                        hidden.value = '';
+                        err.textContent = 'Geçerli bir YouTube bağlantısı veya video ID girin.';
+                        err.style.display = 'block';
+                        return;
+                    }
+                    hidden.value = `https://youtu.be/${id}`; // canonical
+                    prev.innerHTML = buildYouTubePreviewHTML(id);
+                }
+
+                applyBtn.addEventListener('click', setPreviewFromInput);
+                urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); setPreviewFromInput(); } });
+                clearBtn.addEventListener('click', () => {
+                    urlInput.value = '';
+                    hidden.value = '';
+                    err.style.display = 'none';
+                    prev.innerHTML = '';
+                });
+
+                // Eğer başlangıçta değer geldiyse önizleme oluştur
+                if (urlInput.value.trim()) {
+                    const id = parseYouTubeId(urlInput.value.trim());
+                    if (id) prev.innerHTML = buildYouTubePreviewHTML(id);
+                }
+            }else {
                 const dropArea = itemElement.querySelector('.upload-drop-area');
                 const fileInput = itemElement.querySelector('.hidden-file-input');
                 dropArea.addEventListener('click', () => fileInput.click());
