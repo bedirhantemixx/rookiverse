@@ -293,6 +293,8 @@ require_once 'navbar.php';
                 </div>
 
                 <div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg">
+
+
                     <div class="p-6">
                         <h2 class="text-2xl font-bold text-gray-900">Kurs İçeriği</h2>
                         <?php
@@ -361,9 +363,74 @@ require_once 'navbar.php';
                     <?php endif; ?>
 
                 </div>
+                <!-- Q&A / SORU SOR -->
+                <div class="border-2 border-custom-yellow/20 rounded-lg" id="qa-card">
+                    <div class="p-6 border-b border-custom-yellow/20">
+                        <h3 class="text-lg font-bold">Soru & Yorumlar</h3>
+                        <p class="text-sm text-gray-600">Dersle ilgili aklına takılanı sor.</p>
+                    </div>
+
+                    <div class="p-6">
+                        <!-- Form -->
+                        <form id="ask-form" class="space-y-3">
+      <textarea id="ask-body" rows="3" class="w-full border rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-custom-yellow"
+                placeholder="Sorunuzu yazın..."></textarea>
+
+                            <div  class="flex items-center gap-3">
+                                <button id="ask-submit" <?= $isEnrolled ? '' : 'disabled'?> style="<?= $isEnrolled ? '' : 'background-color: Gray; color: white'?>" type="submit" class="bg-custom-yellow text-white font-semibold px-4 py-2 rounded-md hover:bg-opacity-90">
+                                    Gönder
+                                </button>
+                                <span id="ask-hint" class="text-sm text-gray-500">
+          <?php if(!$isEnrolled): ?>
+              <span style="font-weight: 900">Soru sormak için önce kursa kaydolun.</span>
+          <?php else: ?>
+              Nazik ve anlaşılır yazmanız yanıt şansını artırır, yorumunuz takım tarafından onaylanana kadar gizli kalacak.
+          <?php endif; ?>
+        </span>
+                            </div>
+                        </form>
+
+                        <!-- Liste -->
+                        <div id="questions-list" class="mt-6 space-y-4">
+                            <div class="p-4 border rounded-lg">
+                                <div class="text-sm text-gray-500 mb-1">03.10.2025 12:13</div>
+                                <div class="whitespace-pre-line text-gray-800">dihh</div>
+
+
+                            </div>
+                        </div>
+
+                        <!-- Yükleniyor -->
+                        <div id="qa-loading" class="hidden text-sm text-gray-500 mt-4">Yükleniyor...</div>
+                    </div>
+                </div>
+
             </div>
 
+
+
+
+
+
             <div class="space-y-6">
+                <div class="border-2 border-custom-yellow/20 rounded-lg p-6" id="reactions-card">
+                    <h3 class="text-lg font-bold mb-4">Bu kurs faydalı mı?</h3>
+                    <div class="flex items-center gap-3">
+                        <button id="btn-like" class="inline-flex items-center gap-2 px-4 py-2 rounded-md border hover:bg-green-50">
+                            <i data-lucide="thumbs-up"></i>
+                            <span>Beğen</span>
+                            <span id="like-count" class="ml-1 text-sm text-gray-600">0</span>
+                        </button>
+
+                        <button id="btn-dislike" class="inline-flex items-center gap-2 px-4 py-2 rounded-md border hover:bg-red-50">
+                            <i data-lucide="thumbs-down"></i>
+                            <span>Beğenmedim</span>
+                            <span id="dislike-count" class="ml-1 text-sm text-gray-600">0</span>
+                        </button>
+
+                        <span id="your-reaction" class="ml-3 text-sm text-gray-500"></span>
+                    </div>
+                </div>
                 <?php if (!$isEnrolled): ?>
                     <div id="enrollment-card" class="border-2 border-custom-yellow bg-custom-yellow/5 rounded-lg">
                         <div class="p-6 text-center space-y-4">
@@ -671,6 +738,21 @@ require_once 'navbar.php';
     }
 
     async function handleEnroll() {
+
+        // Yorum/Soru butonunu re-aktif et
+        const askSubmitEl = document.getElementById('ask-submit');
+        const askHintEl   = document.getElementById('ask-hint');
+        if (askSubmitEl) {
+            askSubmitEl.disabled = false;
+            // Inline disable stilini kaldır:
+            askSubmitEl.style.backgroundColor = '';
+            askSubmitEl.style.color = '';
+            // (Tailwind class'ların zaten duruyor: bg-custom-yellow, hover:bg-opacity-90)
+        }
+        if (askHintEl) {
+            askHintEl.textContent = 'Nazik ve anlaşılır yazmanız yanıt şansını artırır, yorumunuz takım tarafından onaylanana kadar gizli kalacak.';
+        }
+
         const enrollBtnContent = document.getElementById('enroll-btn-content');
         const enrolledContainer = document.getElementById('enrolled-container')
         const enrollBtnLoading = document.getElementById('enroll-btn-loading');
@@ -707,6 +789,163 @@ require_once 'navbar.php';
 
 
 </script>
+<script>
+    // ==== REACTIONS ====
+    const COURSE_ID = <?= (int)$course['id'] ?>;
+    const isEnrolledFlag = <?php echo $isEnrolled ? 'true' : 'false'; ?>;
+
+    const likeBtn = document.getElementById('btn-like');
+    const dislikeBtn = document.getElementById('btn-dislike');
+    const likeCountEl = document.getElementById('like-count');
+    const dislikeCountEl = document.getElementById('dislike-count');
+    const yourReactionEl = document.getElementById('your-reaction');
+
+    async function fetchReactions() {
+        const res = await fetch('reactions_api.php?action=get&course_id=' + COURSE_ID);
+        const data = await res.json();
+        likeCountEl.textContent = data.likes ?? 0;
+        dislikeCountEl.textContent = data.dislikes ?? 0;
+
+        if (data.your_reaction === 'like') {
+            likeBtn.classList.add('bg-green-50','border-green-300');
+            dislikeBtn.classList.remove('bg-red-50','border-red-300');
+        } else if (data.your_reaction === 'dislike') {
+            dislikeBtn.classList.add('bg-red-50','border-red-300');
+            likeBtn.classList.remove('bg-green-50','border-green-300');
+        } else {
+            yourReactionEl.textContent = '';
+            likeBtn.classList.remove('bg-green-50','border-green-300');
+            dislikeBtn.classList.remove('bg-red-50','border-red-300');
+        }
+    }
+
+    async function sendReaction(type) {
+        const res = await fetch('reactions_api.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({ action: 'toggle', course_id: COURSE_ID, reaction: type })
+        });
+        const data = await res.json();
+        if (data.ok) { fetchReactions(); }
+    }
+
+    likeBtn.addEventListener('click', () => sendReaction('like'));
+    dislikeBtn.addEventListener('click', () => sendReaction('dislike'));
+
+    // ==== Q&A (Yorum + Yanıtlar) ====
+    const askForm = document.getElementById('ask-form');
+    const askBody = document.getElementById('ask-body');
+    const questionsList = document.getElementById('questions-list');
+    const qaLoading = document.getElementById('qa-loading');
+
+    function escapeHtml(str) {
+        return (String(str || '')).replace(/[&<>"']/g, m => (
+            { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]
+        ));
+    }
+
+    function renderReplies(container, replies) {
+        container.innerHTML = '';
+        if (!Array.isArray(replies) || replies.length === 0) return;
+
+        const header = document.createElement('div');
+        header.className = 'text-sm text-gray-600 font-semibold mt-3';
+        header.textContent = `Yanıtlar (${replies.length})`;
+        container.appendChild(header);
+
+        replies.forEach(r => {
+            const row = document.createElement('div');
+            row.className = 'p-3 rounded-md border bg-gray-50';
+            row.innerHTML = `
+        <div class="text-xs text-gray-500 mb-1">
+          ${escapeHtml(r.created_at || '')} • ${escapeHtml(r.responder_name || 'Eğitmen')}
+        </div>
+        <div class="whitespace-pre-line text-gray-800">${escapeHtml(r.body || '')}</div>
+      `;
+            container.appendChild(row);
+        });
+    }
+
+    async function fetchReplies(questionId, container) {
+        try {
+            // 1) Tercihen ayrı uçtan çek (varsa)
+            let res = await fetch('questions_api.php?action=replies&question_id=' + encodeURIComponent(questionId));
+            if (!res.ok) throw new Error('replies endpoint yok');
+            const data = await res.json();
+            console.log(data)
+            renderReplies(container, data.items || []);
+        } catch (e) {
+            // 2) Yoksa sessizce geç
+            // console.debug('Replies endpoint not found/failed:', e);
+        }
+    }
+
+    async function loadQuestions() {
+        qaLoading.classList.remove('hidden');
+
+        // with_replies=1: API destekliyorsa gömülü yanıt gelir, desteklemiyorsa liste normal döner.
+        const res = await fetch('questions_api.php?action=list&with_replies=1&course_id=' + COURSE_ID);
+        const data = await res.json();
+
+        qaLoading.classList.add('hidden');
+        questionsList.innerHTML = '';
+
+        const items = data.items || [];
+
+        if (items.length === 0) {
+            questionsList.innerHTML = `<div class="text-sm text-gray-500">Henüz soru yok. İlk soruyu sen sor!</div>`;
+            return;
+        }
+
+        items.forEach(q => {
+            const item = document.createElement('div');
+            item.className = 'p-4 border rounded-lg';
+            item.innerHTML = `
+        <div class="text-sm text-gray-500 mb-1">${escapeHtml(q.created_at)}</div>
+        <div class="whitespace-pre-line text-gray-800">${escapeHtml(q.body)}</div>
+      `;
+
+            // Yanıtlar için kap
+            const repliesWrap = document.createElement('div');
+            repliesWrap.className = 'mt-3 space-y-3';
+            repliesWrap.id = 'q-replies-' + q.id;
+            item.appendChild(repliesWrap);
+
+            // 1) API gömülü verdiyse direkt bas
+            if (Array.isArray(q.replies)) {
+                renderReplies(repliesWrap, q.replies);
+            } else {
+                // 2) Değilse tek tek çekmeye çalış
+                fetchReplies(q.id, repliesWrap);
+            }
+            questionsList.appendChild(item);
+        });
+    }
+
+    askForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const body = askBody.value.trim();
+        if (!body) return;
+
+        const res = await fetch('questions_api.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({ action: 'add', course_id: COURSE_ID, body })
+        });
+        const data = await res.json();
+        if (data.ok) {
+            askBody.value = '';
+            loadQuestions(); // yeni soru + varsa yanıtları tazele
+        } else {
+            alert(data.error || 'Gönderilemedi.');
+        }
+    });
+
+    // İlk yükleme
+    fetchReactions();
+    loadQuestions();
+</script>
+
 
 </body>
 </html>

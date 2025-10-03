@@ -335,11 +335,6 @@ session_start();
           start();
       });
 
-
-
-
-  </script>
-  <script>
       (function () {
           const section = document.getElementById('contributors');
           if (!section) return;
@@ -416,7 +411,11 @@ session_start();
               start();
           });
       })();
+
+
+
   </script>
+
 
 
 

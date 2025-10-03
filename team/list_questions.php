@@ -1,0 +1,488 @@
+<?php
+/** team_course_questions_printable.php
+ *  Server-side render + print friendly
+ */
+session_start();
+$projectRoot = dirname(__DIR__);
+require_once $projectRoot . '/config.php';
+require_once 'team_header.php';
+
+if (!isset($_SESSION['team_logged_in'])) { header("Location: ../team-login.php"); exit(); }
+
+$pdo        = get_db_connection();
+$teamDbId   = $_SESSION['team_db_id'] ?? null;
+$teamNumber = $_SESSION['team_number'] ?? null;
+if (!$teamDbId) { die('Takım kimliği bulunamadı.'); }
+
+/** CSRF */
+if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(32)); }
+$CSRF = $_SESSION['csrf'];
+
+/** Kurs listesi */
+$stmt = $pdo->prepare("SELECT id, title FROM courses WHERE team_db_id = ? ORDER BY id DESC");
+$stmt->execute([$teamDbId]);
+$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+/** ---- Actions (POST) ---- */
+$flash = null;
+function redirect_same() {
+    $qs = $_GET;
+    $loc = $_SERVER['PHP_SELF'].'?'.http_build_query($qs);
+    header("Location: $loc");
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])) {
+    if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) {
+        $flash = ['type'=>'error','msg'=>'CSRF doğrulaması başarısız.'];
+    } else try {
+        $action = $_POST['action'];
+
+        if ($action === 'toggle_visibility') {
+            $qid = (int)($_POST['question_id'] ?? 0);
+            $q = $pdo->prepare("SELECT q.is_approved
+                                FROM course_questions q
+                                JOIN courses c ON c.id=q.course_id
+                                WHERE q.id=? AND c.team_db_id=? LIMIT 1");
+            $q->execute([$qid, $teamDbId]);
+            $row = $q->fetch(PDO::FETCH_ASSOC);
+            if (!$row) { $flash = ['type'=>'error','msg'=>'Soru bulunamadı.']; }
+            else {
+                $new = $row['is_approved'] ? 0 : 1;
+                $u = $pdo->prepare("UPDATE course_questions SET is_approved=? WHERE id=?");
+                $u->execute([$new, $qid]);
+                $flash = ['type'=>'ok','msg'=> $new? 'Soru yayına alındı.':'Soru gizlendi.'];
+            }
+            redirect_same();
+        }
+
+        if ($action === 'add_reply') {
+            $qid  = (int)($_POST['question_id'] ?? 0);
+            $body = trim($_POST['body'] ?? '');
+            $name = trim($_POST['responder_name'] ?? 'Eğitmen');
+            if ($body===''){ $flash = ['type'=>'error','msg'=>'Boş yanıt gönderilemez.']; redirect_same(); }
+
+            $chk = $pdo->prepare("SELECT 1
+                                  FROM course_questions q
+                                  JOIN courses c ON c.id=q.course_id
+                                  WHERE q.id=? AND c.team_db_id=? LIMIT 1");
+            $chk->execute([$qid, $teamDbId]);
+            if (!$chk->fetchColumn()) { $flash = ['type'=>'error','msg'=>'Yetkisiz işlem.']; redirect_same(); }
+
+            $ins = $pdo->prepare("INSERT INTO course_question_replies (question_id, team_db_id, responder_name, body)
+                                  VALUES (?,?,?,?)");
+            $ins->execute([$qid, $teamDbId, ($name ?: 'Eğitmen'), $body]);
+            $flash = ['type'=>'ok','msg'=>'Yanıt eklendi.'];
+            redirect_same();
+        }
+
+        $flash = ['type'=>'error','msg'=>'Bilinmeyen işlem.'];
+    } catch(Exception $e){
+        $flash = ['type'=>'error','msg'=>'Sunucu hatası.'];
+    }
+}
+
+
+/** ---- Filters (GET) ---- */
+// "All" varsayılan; yoksa tüm kursları listele
+$selectedCourse = $_GET['course'] ?? 'all';
+$isAll = ($selectedCourse === 'all' || $selectedCourse === '');
+$defaultCourseId = $isAll ? null : (int)$selectedCourse;
+
+$status  = $_GET['status'] ?? 'all'; // all|visible|hidden|unanswered|answered
+$search  = trim($_GET['search'] ?? '');
+$page    = max(1, (int)($_GET['page'] ?? 1));
+$perPage = min(50, max(5, (int)($_GET['per_page'] ?? 10)));
+$offset  = ($page-1)*$perPage;
+
+/** Kurs sahiplik kontrolü (sadece tek kurs seçiliyken) */
+if (!$isAll) {
+    $own = $pdo->prepare("SELECT 1 FROM courses WHERE id=? AND team_db_id=?");
+    $own->execute([$defaultCourseId, $teamDbId]);
+    if (!$own->fetchColumn()) { die("Bu kurs size ait değil."); }
+}
+
+/** ---- Query build ---- */
+$courseJoin = "JOIN courses c ON c.id = q.course_id";
+$replyJoin  = "LEFT JOIN (
+    SELECT question_id, COUNT(*) rcnt
+    FROM course_question_replies
+    GROUP BY question_id
+) r ON r.question_id = q.id";
+
+$where  = "c.team_db_id = :tid";
+$params = [':tid'=>$teamDbId];
+
+if (!$isAll) { $where .= " AND q.course_id = :cid"; $params[':cid'] = $defaultCourseId; }
+if ($status==='visible')    { $where .= " AND q.is_approved=1"; }
+if ($status==='hidden')     { $where .= " AND q.is_approved=0"; }
+if ($status==='answered')   { $where .= " AND COALESCE(r.rcnt,0) > 0"; }
+if ($status==='unanswered') { $where .= " AND COALESCE(r.rcnt,0) = 0"; }
+if ($search!=='')           { $where .= " AND q.body LIKE :s"; $params[':s'] = "%$search%"; }
+
+/** Count */
+$countSql = "SELECT COUNT(*) FROM course_questions q $courseJoin $replyJoin WHERE $where";
+$cst = $pdo->prepare($countSql); $cst->execute($params); $total = (int)$cst->fetchColumn();
+$pages = max(1, (int)ceil($total/$perPage));
+if ($page > $pages) { $page = $pages; $offset = ($page-1)*$perPage; }
+
+/** Page items */
+$sql = "SELECT q.id, q.body, q.is_approved,
+               DATE_FORMAT(q.created_at,'%d.%m.%Y %H:%i') created_at,
+               COALESCE(r.rcnt,0) reply_count
+        FROM course_questions q
+        $courseJoin
+        $replyJoin
+        WHERE $where
+        ORDER BY q.id DESC
+        LIMIT $perPage OFFSET $offset";
+$st = $pdo->prepare($sql); $st->execute($params);
+$items = $st->fetchAll(PDO::FETCH_ASSOC);
+
+/** Replies prefetch (hepsini önden yükle; sadece gizli göstereceğiz) */
+$repliesByQ = [];
+if (!empty($items)) {
+    $ids = array_map(fn($x)=>(int)$x['id'], $items);
+    $in  = implode(',', array_fill(0, count($ids), '?'));
+    $r = $pdo->prepare("SELECT question_id, responder_name, body,
+                        DATE_FORMAT(created_at,'%d.%m.%Y %H:%i') created_at
+                        FROM course_question_replies
+                        WHERE question_id IN ($in)
+                        ORDER BY id ASC");
+    $r->execute($ids);
+    foreach ($r->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $qid = (int)$row['question_id'];
+        $repliesByQ[$qid][] = $row;
+    }
+}
+
+/** Helper */
+function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES,'UTF-8'); }
+function qs($over=[]) {
+    $base = $_GET; foreach ($over as $k=>$v) { $base[$k]=$v; }
+    return '?'.http_build_query($base);
+}
+?>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Soru Yönetimi (Yazdırılabilir) - Takım #<?php echo h($teamNumber); ?></title>
+    <style>
+        .container{max-width:1160px;margin:0 auto;padding:16px;}
+        .filters{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:12px;align-items:end}
+        .filters label{font-size:12px;color:#555}
+        .filters input,.filters select{padding:8px;border:1px solid #ddd;border-radius:8px}
+        .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer}
+        .btn-primary{background:#111;color:#fff;border-color:#111}
+        .btn-outline{background:#fff}
+        .badge{font-size:12px;padding:4px 8px;border-radius:999px;font-weight:600}
+        .badge-green{background:#E6F4EA;color:#18794E}
+        .badge-yellow{background:#FEF7CD;color:#936B00}
+        .badge-blue{background:#E7F0FE;color:#174EA6}
+        .badge-gray{background:#F2F4F7;color:#344054}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:10px;border-bottom:1px solid #eee;vertical-align:top}
+        th{background:#fafafa;text-align:left}
+        .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+        .print-hint{font-size:12px;color:#666}
+        @media print{
+            .no-print{display:none !important}
+            body{background:#fff}
+            th{background:#fff;border-bottom:1px solid #000}
+            td{border-bottom:1px solid #ccc}
+            .container{max-width:none;padding:0}
+        }
+        /* --- Buton ve ikon normalize --- */
+        .btn{
+            display:inline-flex; align-items:center; gap:.5rem;
+            font-size:14px; line-height:1.25;
+            color:#111; background:#fff; border:1px solid #ddd; border-radius:8px;
+            padding:8px 12px; white-space:nowrap;
+        }
+        .btn.btn-primary{ background:#111; color:#fff; border-color:#111; }
+        .btn.btn-outline{ background:#fff; color:#111; border-color:#ddd; }
+        .btn i, .btn svg{ position:static !important; display:inline-block; vertical-align:middle; }
+        .btn *{ font-size:inherit; line-height:inherit; color:inherit; }
+        .btn:empty::before{ content: none; }
+        td .btn{ margin:2px 0; }
+    </style>
+</head>
+<body>
+<aside class="sidebar no-print">
+    <div class="sidebar-profile">
+        <h2>Hoş Geldin,</h2>
+        <p>Takım #<?php echo h($teamNumber); ?></p>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="panel.php"><i data-lucide="layout-dashboard"></i> Panelim</a>
+        <a href="create_course.php"><i data-lucide="plus-square"></i> Yeni Kurs Oluştur</a>
+        <a href="profile.php"><i data-lucide="settings"></i> Profilimi Düzenle</a>
+        <a href="notifications.php"><i data-lucide="bell"></i> Bildirimler</a>
+        <a class="active" href="<?php echo h($_SERVER['PHP_SELF']); ?>"><i data-lucide="message-square"></i> Soru Yönetimi</a>
+        <a href="logout.php" class="logout-link"><i data-lucide="log-out"></i> Güvenli Çıkış</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div class="container">
+        <div class="topbar">
+            <div>
+                <h1 class="text-xl font-bold">Soru Yönetimi – Takım #<?php echo h($teamNumber); ?></h1>
+                <div class="print-hint">Yazdır: Sağ üstteki “Yazdır” butonunu kullan veya tarayıcı menüsünden Yazdır.</div>
+            </div>
+            <div class="no-print">
+                <button class="btn btn-primary" onclick="window.print()"><i data-lucide="printer"></i> Yazdır</button>
+            </div>
+        </div>
+
+        <?php if ($flash): ?>
+            <div class="no-print" style="margin-bottom:12px;padding:10px;border-radius:8px;<?php echo $flash['type']==='ok'?'background:#E6F4EA;color:#18794E':'background:#FEE4E2;color:#B42318'; ?>">
+                <?php echo h($flash['msg']); ?>
+            </div>
+        <?php endif; ?>
+
+        <form class="filters no-print" method="get" action="<?php echo h($_SERVER['PHP_SELF']); ?>">
+            <div>
+                <label>Kurs</label>
+                <select name="course">
+                    <option value="all" <?= $isAll ? 'selected' : '' ?>>All</option>
+                    <?php foreach ($courses as $c): ?>
+                        <option value="<?php echo (int)$c['id']; ?>" <?= (!$isAll && $defaultCourseId===(int)$c['id'])?'selected':''; ?>>
+                            <?php echo h($c['title']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div>
+                <label>Durum</label>
+                <select name="status">
+                    <?php
+                    $opts = ['all'=>'Tümü','visible'=>'Yayında','hidden'=>'Gizli','unanswered'=>'Yanıtsız','answered'=>'Yanıtlanmış'];
+                    foreach($opts as $k=>$v){
+                        echo '<option value="'.h($k).'" '.($status===$k?'selected':'').'>'.h($v).'</option>';
+                    }
+                    ?>
+                </select>
+            </div>
+            <div>
+                <label>Ara</label>
+                <input type="text" name="search" value="<?php echo h($search); ?>" placeholder="Metne göre ara...">
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-outline" type="submit"><i data-lucide="search"></i> Uygula</button>
+            </div>
+        </form>
+
+        <div style="margin:12px 0;">Toplam <strong><?php echo $total; ?></strong> soru • Sayfa <?php echo $page; ?>/<?php echo $pages; ?></div>
+
+        <div class="overflow-x-auto">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width:140px;">Tarih</th>
+                    <th>Soru</th>
+                    <th style="width:120px;">Durum</th>
+                    <th style="width:140px;">Yanıt</th>
+                    <th class="no-print" style="width:240px;">İşlemler</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($items)): ?>
+                    <tr><td colspan="5">Bu filtrelerde kayıt yok.</td></tr>
+                <?php else: foreach ($items as $q): ?>
+                    <?php
+                    $badge = $q['is_approved'] ? '<span class="badge badge-green">Yayında</span>' : '<span class="badge badge-yellow">Gizli</span>';
+                    $rBadge = ((int)$q['reply_count']>0) ? '<span class="badge badge-blue">'.(int)$q['reply_count'].' yanıt</span>' : '<span class="badge badge-gray">Yanıt yok</span>';
+                    $qid = (int)$q['id'];
+                    $rows = $repliesByQ[$qid] ?? [];
+                    ?>
+                    <tr>
+                        <td><?php echo h($q['created_at']); ?></td>
+                        <td>
+                            <?php echo nl2br(h($q['body'])); ?>
+                            <div class="no-print" style="margin-top:6px;">
+                                <button style="color:#e5ae32;border:none;padding:8px 0;" type="button" class="btn btn-outline btn-toggle-replies" data-qid="<?php echo $qid; ?>">
+                                    <i data-lucide="chevron-down"></i> Yanıtları gör
+                                </button>
+                            </div>
+                            <div class="replies" id="replies-<?php echo $qid; ?>" style="display:none;margin-top:6px;">
+                                <?php if (empty($rows)): ?>
+                                    <div style="color:#666;">Henüz yanıt yok.</div>
+                                <?php else: foreach ($rows as $r): ?>
+                                    <div style="margin-top:8px;padding:8px;border:1px solid #eee;border-radius:8px;">
+                                        <div style="font-size:12px;color:#667085;">
+                                            <?php echo h($r['created_at']); ?> • <?php echo h($r['responder_name'] ?: 'Eğitmen'); ?>
+                                        </div>
+                                        <div><?php echo nl2br(h($r['body'])); ?></div>
+                                    </div>
+                                <?php endforeach; endif; ?>
+                            </div>
+                        </td>
+                        <td><?php echo $badge; ?></td>
+                        <td><?php echo $rBadge; ?></td>
+                        <td class="no-print">
+                            <!-- Toggle visibility -->
+                            <form method="post" action="<?php echo h($_SERVER['PHP_SELF'] . qs()); ?>" style="display:inline;">
+                                <input type="hidden" name="csrf" value="<?php echo h($CSRF); ?>">
+                                <input type="hidden" name="action" value="toggle_visibility">
+                                <input type="hidden" name="question_id" value="<?php echo (int)$q['id']; ?>">
+                                <button class="btn btn-outline" type="submit">
+                                    <?php if ($q['is_approved']): ?>
+                                        <i data-lucide="eye-off"></i> Gizle
+                                    <?php else: ?>
+                                        <i data-lucide="eye"></i> Göster
+                                    <?php endif; ?>
+                                </button>
+                            </form>
+
+                            <!-- Add reply (inline small form) -->
+                            <details style="display:contents;">
+                                <summary class="btn btn-outline" style="list-style:none;"><i data-lucide="reply"></i> Yanıtla</summary>
+                                <div style="margin-top:8px;border:1px solid #eee;border-radius:8px;padding:8px;">
+                                    <form method="post" action="<?php echo h($_SERVER['PHP_SELF'] . qs()); ?>">
+                                        <input type="hidden" name="csrf" value="<?php echo h($CSRF); ?>">
+                                        <input type="hidden" name="action" value="add_reply">
+                                        <input type="hidden" name="question_id" value="<?php echo (int)$q['id']; ?>">
+                                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+                                            <input name="responder_name" placeholder="İmza (örn. Koç Mert)" style="flex:1;min-width:160px;padding:8px;border:1px solid #ddd;border-radius:6px;">
+                                        </div>
+                                        <div>
+                                            <textarea name="body" rows="3" placeholder="Yanıtınızı yazın..." style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"></textarea>
+                                        </div>
+                                        <div style="margin-top:6px;text-align:right;">
+                                            <button class="btn btn-primary" type="submit"><i data-lucide="send"></i> Gönder</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                <?php endforeach; endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+            <div>Toplam <?php echo $total; ?> soru • Sayfa <?php echo $page; ?>/<?php echo $pages; ?></div>
+            <div style="display:flex;gap:8px;">
+                <?php if ($page>1): ?>
+                    <a class="btn btn-outline" href="<?php echo qs(['page'=>$page-1]); ?>"><i data-lucide="chevron-left"></i> Önceki</a>
+                <?php else: ?>
+                    <button class="btn btn-outline" disabled>Önceki</button>
+                <?php endif; ?>
+                <?php if ($page<$pages): ?>
+                    <a class="btn btn-outline" href="<?php echo qs(['page'=>$page+1]); ?>">Sonraki <i data-lucide="chevron-right"></i></a>
+                <?php else: ?>
+                    <button class="btn btn-outline" disabled>Sonraki</button>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</main>
+
+<?php require_once '../admin/admin_footer.php'; ?>
+<script>
+    // Lucide tek sefer yükle (çift yüklemeye karşı basit kilit)
+    (function loadLucide(){
+        if (window.__lucide_loading__) return; window.__lucide_loading__ = true;
+        function ready(fn){ document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn(); }
+        function init(){ try{ window.lucide?.createIcons?.(); }catch(e){} }
+        const s=document.createElement('script');
+        s.src='https://cdn.jsdelivr.net/npm/lucide@latest'; s.defer=true;
+        s.onload=()=>ready(init);
+        s.onerror=()=>{ const b=document.createElement('script'); b.src='https://unpkg.com/lucide@latest'; b.defer=true; b.onload=()=>ready(init); document.head.appendChild(b); };
+        document.head.appendChild(s);
+    })();
+</script>
+
+<script>
+    // Basit yardımcılar
+    const $  = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    // Satır içinde: "Yanıtları gör/gizle"
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-toggle-replies');
+        if (!btn) return;
+
+        const qid = btn.getAttribute('data-qid');
+        const box = document.getElementById('replies-' + qid);
+        if (!box) return;
+
+        const visible = box.style.display !== 'none';
+        box.style.display = visible ? 'none' : 'block';
+        btn.innerHTML = visible
+            ? '<i data-lucide="chevron-down"></i> Yanıtları gör'
+            : '<i data-lucide="chevrons-up"></i> Yanıtları gizle';
+
+        try { window.lucide?.createIcons?.(); } catch(e) {}
+    });
+
+    // Toplu aç/kapat
+    function openAllReplies() {
+        $$('.replies').forEach(box => { box.style.display = 'block'; });
+        $$('.btn-toggle-replies').forEach(btn => {
+            btn.innerHTML = '<i data-lucide="chevrons-up"></i> Yanıtları gizle';
+        });
+        try { window.lucide?.createIcons?.(); } catch(e) {}
+    }
+    function closeAllReplies() {
+        $$('.replies').forEach(box => { box.style.display = 'none'; });
+        $$('.btn-toggle-replies').forEach(btn => {
+            btn.innerHTML = '<i data-lucide="chevron-down"></i> Yanıtları gör';
+        });
+        try { window.lucide?.createIcons?.(); } catch(e) {}
+    }
+
+    // Yazdırmadan önce hepsini aç, sonra geri kapat
+    let printRestore = [];
+    window.addEventListener('beforeprint', () => {
+        printRestore = [];
+        $$('.replies').forEach(box => {
+            const wasHidden = (box.style.display === 'none' || getComputedStyle(box).display === 'none');
+            printRestore.push([box, wasHidden]);
+            box.style.display = 'block';
+        });
+    });
+    window.addEventListener('afterprint', () => {
+        for (const [box, wasHidden] of printRestore) {
+            if (wasHidden) box.style.display = 'none';
+        }
+        printRestore = [];
+    });
+
+    // Toolbar’ı ekle ve butonları bağla
+    document.addEventListener('DOMContentLoaded', () => {
+        try { window.lucide?.createIcons?.(); } catch(e) {}
+
+        const table = $('table');
+        const container = $('.container');
+        if (!table || !container) return;
+
+        const bar = document.createElement('div');
+        bar.className='no-print';
+        bar.style.cssText='display:flex;gap:8px;align-items:center;justify-content:flex-end;margin:8px 0 12px;';
+        bar.innerHTML = `
+      <button type="button" id="btn-open-all"  class="btn btn-outline">
+        <i data-lucide="chevrons-down"></i> Hepsini Aç
+      </button>
+      <button type="button" id="btn-close-all" class="btn btn-outline">
+        <i data-lucide="chevrons-up"></i> Hepsini Kapat
+      </button>
+      <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#555;margin-left:6px;">
+        <input id="cb-open-before-print" type="checkbox" checked> Yazdırmadan önce tüm yanıtları aç
+      </label>
+    `;
+        const tblWrap = table.closest('.overflow-x-auto') || table.parentElement || container;
+        (container||document.body).insertBefore(bar, tblWrap);
+
+        $('#btn-open-all') ?.addEventListener('click', (e)=>{ e.preventDefault(); openAllReplies(); });
+        $('#btn-close-all')?.addEventListener('click', (e)=>{ e.preventDefault(); closeAllReplies(); });
+
+        try { window.lucide?.createIcons?.(); } catch(e) {}
+    });
+</script>
+</body>
+</html>

@@ -78,7 +78,35 @@ $page_title = "İçerik Yükle";
         </div>
 
         <div class="upload-card">
+
             <h2><i data-lucide="video"></i> Kurs Tanıtım Videosu</h2>
+            <!-- YouTube URL giriş alanı (başta gizli) -->
+            <div id="youtube-url-box" class="hidden">
+                <input
+                        type="url"
+                        id="youtube-url-input"
+                        placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX"
+                        class="w-full border rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                        inputmode="url"
+                >
+                <div class="mt-3 flex items-center gap-3">
+                    <button id="youtube-url-save"
+                            class="bg-yellow-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-yellow-600">
+                        Kaydet
+                    </button>
+                    <span id="youtube-save-msg" class="text-sm text-gray-500"></span>
+                </div>
+
+                <!-- Önizleme -->
+                <div id="youtube-embed-wrap" class="mt-3 hidden w-full" style="aspect-ratio:16/9;">
+                    <iframe id="youtube-embed" class="w-full h-full rounded-lg" allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+
+                <p class="text-xs text-gray-500 mt-2">
+                    Bu seçenek açıkken MP4 dosyası yerine verdiğiniz YouTube bağlantısı kullanılır.
+                </p>
+            </div>
             <div id="video-drop-zone" class="drop-zone">
                 <input type="file" id="video-input" class="hidden-input" accept="video/mp4">
                 <i data-lucide="upload-cloud" class="icon"></i>
@@ -94,8 +122,16 @@ $page_title = "İçerik Yükle";
             </div>
         </div>
     </div>
+    <!-- YouTube URL toggle -->
+    <div class="flex items-center gap-2 mb-3">
+        <input id="use-yt-checkbox" type="checkbox" class="rounded border-gray-300">
+        <label for="use-yt-checkbox" class="text-sm text-gray-700">YouTube linki kullan</label>
+    </div>
+
+
+
     <div class="text-right mt-8">
-        <a href="manage_curriculum.php?id=<?php echo $course_id; ?>" class="btn text-lg"><i data-lucide="arrow-right" class="mr-2"></i> 3. Adıma Geç</a>
+        <a href="add_module.php?course_id=<?php echo $course_id; ?>" class="btn text-lg"><i data-lucide="arrow-right" class="mr-2"></i> 3. Adıma Geç</a>
     </div>
 </div>
 
@@ -219,6 +255,111 @@ $page_title = "İçerik Yükle";
             uploadUrl: 'save_course_files.php'
         });
     });
+    // --- YouTube URL kullan toggling + kayıt ---
+
+    const ytToggle       = document.getElementById('use-yt-checkbox');
+    const ytBox          = document.getElementById('youtube-url-box');
+    const ytInput        = document.getElementById('youtube-url-input');
+    const ytSaveBtn      = document.getElementById('youtube-url-save');
+    const ytSaveMsg      = document.getElementById('youtube-save-msg');
+    const ytPreviewWrap  = document.getElementById('youtube-embed-wrap');
+    const ytIframe       = document.getElementById('youtube-embed');
+
+    // Mevcut MP4 UI elemanları
+    const videoDropZone        = document.getElementById('video-drop-zone');
+    const videoProgressContainer = document.getElementById('video-progress-container');
+    const videoPreviewContainer  = document.getElementById('video-preview-container');
+
+    function parseYouTubeId(url) {
+        try {
+            const u = new URL(url);
+            const host = u.hostname.replace(/^www\./,'');
+            if (host === 'youtu.be') return u.pathname.slice(1);
+            if (host === 'youtube.com' || host === 'm.youtube.com') {
+                if (u.searchParams.get('v')) return u.searchParams.get('v');
+                const m1 = u.pathname.match(/\/embed\/([^/?#]+)/);   if (m1) return m1[1];
+                const m2 = u.pathname.match(/\/shorts\/([^/?#]+)/);  if (m2) return m2[1];
+            }
+        } catch (_) {}
+        const m = String(url).match(/(?:v=|\/)([0-9A-Za-z_-]{11})(?:[&?/]|$)/);
+        return m ? m[1] : null;
+    }
+
+    function refreshYtPreview() {
+        const id = parseYouTubeId(ytInput.value.trim());
+        if (id) {
+            ytIframe.src = `https://www.youtube.com/embed/${id}`;
+            ytPreviewWrap.classList.remove('hidden');
+        } else {
+            ytPreviewWrap.classList.add('hidden');
+            ytIframe.src = '';
+        }
+    }
+
+    // Toggle: kutu işaretlenince MP4 yükleme alanlarını gizle, URL alanını göster
+    ytToggle?.addEventListener('change', () => {
+        const on = ytToggle.checked;
+        ytBox.classList.toggle('hidden', !on);
+
+        // MP4 UI’ı yönet
+        videoDropZone?.classList.toggle('hidden', on);
+        videoProgressContainer?.classList.add('hidden');
+        videoPreviewContainer?.classList.add('hidden');
+
+        // İkonları tazele
+        try { lucide.createIcons(); } catch (_) {}
+    });
+
+    ytInput?.addEventListener('input', refreshYtPreview);
+
+    ytSaveBtn?.addEventListener('click', async () => {
+        const raw = ytInput.value.trim();
+        const id = parseYouTubeId(raw);
+        if (!id) {
+            ytSaveMsg.textContent = 'Geçerli bir YouTube bağlantısı girin.';
+            ytSaveMsg.classList.remove('text-green-600');
+            ytSaveMsg.classList.add('text-red-600');
+            return;
+        }
+
+        ytSaveBtn.disabled = true;
+        ytSaveMsg.textContent = 'Kaydediliyor...';
+        ytSaveMsg.classList.remove('text-red-600');
+        ytSaveMsg.classList.add('text-gray-500');
+
+        try {
+            // Server tarafında save_course_files.php'de bunu işle:
+            // if ($_POST['upload_type']==='intro_youtube') { $_POST['youtube_url'] ... }
+            const res = await fetch('save_course_files.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    course_id: '<?= htmlspecialchars($course_id, ENT_QUOTES, "UTF-8") ?>',
+                    upload_type: 'intro_youtube',
+                    youtube_url: raw
+                })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (data && (data.success || data.ok)) {
+                ytSaveMsg.textContent = 'Kaydedildi.';
+                ytSaveMsg.classList.remove('text-gray-500','text-red-600');
+                ytSaveMsg.classList.add('text-green-600');
+                refreshYtPreview();
+            } else {
+                throw new Error(data?.message || 'Sunucu hatası');
+            }
+        } catch (err) {
+            ytSaveMsg.textContent = 'Kaydedilemedi: ' + (err?.message || 'Hata');
+            ytSaveMsg.classList.remove('text-gray-500','text-green-600');
+            ytSaveMsg.classList.add('text-red-600');
+        } finally {
+            ytSaveBtn.disabled = false;
+        }
+    });
 </script>
+<script>
+
+</script>
+
 </body>
 </html>

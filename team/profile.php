@@ -458,6 +458,8 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
         <a href="create_course.php"><i data-lucide="plus-square"></i> Yeni Kurs Oluştur</a>
         <a href="profile.php" class="active"><i data-lucide="settings"></i> Profilimi Düzenle</a>
         <a href="notifications.php" ><i data-lucide="bell"></i> Bildirimler</a>
+        <a href="list_questions.php" ><i data-lucide="message-square"></i> Soru Yönetimi</a>
+
         <?php
         if (!isset($_SESSION['admin_panel_view'])):
             ?>

@@ -36,6 +36,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['file']) && isset($_PO
         $response['message'] = 'Dosya sunucuya taşınırken bir hata oluştu.';
     }
 }
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['upload_type']) && $_POST['upload_type'] === 'intro_youtube') {
+    $course_id = $_POST['course_id'];
+    $upload_type = $_POST['upload_type']; // 'cover' or 'intro'
+    $url = $_POST['youtube_url'];
+
+    $pdo = get_db_connection();
+
+    $stmt = $pdo->prepare("UPDATE courses SET intro_video_url = ?, status = 'pending' WHERE id = ? AND team_db_id = ?");
+    $stmt->execute([$url, $course_id, $_SESSION['team_db_id']]);
+
+    $response = ['success' => true, 'message' => 'Dosya başarıyla yüklendi.'];
+
+}
+
+
 
 echo json_encode($response);
 ?>
