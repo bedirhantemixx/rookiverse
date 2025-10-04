@@ -66,7 +66,7 @@ if (!isset($index)){
         </div>
 
         <!-- Sponsor Bölümü -->
-        <div id="sponsor" class="mt-4 border-t border-gray-200 text-center">
+        <div id="sponsor" style="border-top: 1px solid #E5AE32" class="mt-4 border-t text-center">
             <div class="flex justify-center items-center">
                 <img
                         src="assets/images/inetmar.png"
@@ -81,7 +81,7 @@ if (!isset($index)){
 
 
             <p class="text-gray-600 text-sm mb-4">
-                RookieVerse'ün gelişimine katkılarından dolayı değerli sponsorumuz <span id="sponsor-text" class="hover:cursor-pointer" style="color: rgb(229 174 50); font-weight: 700">İnetmar</span>'a içten teşekkürler! 💛
+                RookieVerse'ün gelişimine katkılarından dolayı değerli sponsorumuz <span id="sponsor-text" class="hover:cursor-pointer" style="color: rgb(229 174 50); font-weight: 700">İnetmar</span>'a içten teşekkürler!
             </p>
 
         </div>

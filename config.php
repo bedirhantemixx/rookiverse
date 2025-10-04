@@ -273,6 +273,20 @@ function getTeambyNumber($nmbr)
 
 }
 
+
+function getCoursesByCat($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM courses WHERE category_id = ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
 /**
  * Veritabanına bağlanmak için GÜVENLİ ve HATALARI GÖSTEREN fonksiyon.
  * @return PDO Veritabanı bağlantı objesi

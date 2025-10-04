@@ -109,10 +109,14 @@ foreach ($courses as $course) {
 
             <?php
             foreach ($categories as $category):
+                $crs = getCoursesByCat($category['id']);
+                if(empty($crs)){
+                    continue;
+                }
             ?>
             <div data-category="<?=$category['id']?>">
                 <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                    <div class="w-1 h-8 bg-custom-yellow mr-4 rounded-full"> <?= $category['name']?></div>
+                    <div style="width: auto; border-left: 5px solid #e5ae32f9; padding-left: 3px" class="w-1 h-8 mr-4"> <?= $category['name']?></div>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <?php
