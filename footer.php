@@ -1,7 +1,6 @@
-
 <?php
 if (!isset($teamCourses)):
-?>
+    ?>
     <script>
         tailwind.config = {
             theme: { extend: { colors: { 'custom-yellow': '#E5AE32' } } }
@@ -11,12 +10,12 @@ if (!isset($teamCourses)):
 
 
 <footer style="<?php
-    if (!isset($index)){
-        echo 'margin-top: 20vh';
-    }
-?>" class="relative bg-white ">
+if (!isset($index)){
+    echo 'margin-top: 20vh';
+}
+?>" class="relative bg-white">
     <!-- üstte ince sarı parıltı -->
-    <div class=" pointer-events-none absolute -top-2 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-custom-yellow/40 to-transparent"></div>
+    <div class="pointer-events-none absolute -top-2 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-custom-yellow/40 to-transparent"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
@@ -32,10 +31,7 @@ if (!isset($teamCourses)):
                     Bu platformun arkasındaki zihinler:<br>
                     <a style="color: #E5AE32" href="https://www.linkedin.com/in/bedirhantemix/"><b>Bedirhan Temiz</b></a> ve
                     <a style="color: #E5AE32" href="https://www.linkedin.com/in/mustafa-deniz-buksur/"><b>Mustafa Deniz Buksur</b></a>
-
-
                 </p>
-
             </div>
 
             <!-- Öğren -->
@@ -68,5 +64,35 @@ if (!isset($teamCourses)):
                 </ul>
             </div>
         </div>
+
+        <!-- Sponsor Bölümü -->
+        <div id="sponsor" class="mt-4 border-t border-gray-200 text-center">
+            <div class="flex justify-center items-center">
+                <img
+                        src="assets/images/inetmar.png"
+                        alt="Sponsor Logo"
+                        class="h-24 object-contain transition-transform duration-300 ease-in-out hover:cursor-pointer hover:scale-110"
+
+                >
+            </div>
+
+
+
+
+
+            <p class="text-gray-600 text-sm mb-4">
+                RookieVerse'ün gelişimine katkılarından dolayı değerli sponsorumuz <span id="sponsor-text" class="hover:cursor-pointer" style="color: rgb(229 174 50); font-weight: 700">İnetmar</span>'a içten teşekkürler! 💛
+            </p>
+
+        </div>
     </div>
+    <script>
+        document.querySelector('#sponsor-text').addEventListener('click',() => {
+            window.open('https://www.inetmar.com/', '_blank').focus()
+        })
+        document.querySelector('#sponsor').addEventListener('click',() => {
+            window.open('https://www.inetmar.com/', '_blank').focus()
+        })
+
+    </script>
 </footer>
