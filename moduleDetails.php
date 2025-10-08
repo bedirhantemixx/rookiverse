@@ -14,6 +14,7 @@ session_start();
  */
 
 
+
 $pdo = get_db_connection();
 $details = getCourseDetails($_GET['course']);
 $course_id = (int)($details['id'] ?? 0);
@@ -22,45 +23,7 @@ if ($course_id < 1) {
     exit('Geçersiz kurs.');
 }
 
-/**
- * Eğer sisteminde normal hesaplı kullanıcı girişi de varsa,
- * önce “hesaplı yetki”yi kontrol edebilirsin. Değilse anonim akışa bak.
- */
 
-// 1) Hızlı yol: kurs cookie’si varsa içeri al
-$courseCookie = "access_course_{$course_id}";
-if (!isset($_COOKIE[$courseCookie])) {
-    // 2) Cookie yoksa anon_id ile DB’de kayıt var mı bak
-    $anonId = $_COOKIE['rv_anon'] ?? null;
-    if ($anonId) {
-        $stmt = $pdo->prepare("
-          SELECT 1 FROM course_guest_enrollments
-          WHERE course_id = ? AND anon_id = ? LIMIT 1
-        ");
-        $stmt->execute([$course_id, $anonId]);
-        if ($stmt->fetchColumn()) {
-            // Tekrar cookie bas (kullanıcıyı hatırla)
-            setcookie($courseCookie, "1", time() + 3600 * 24 * 365, "/", "", false, true);
-        } else {
-            http_response_code(403);
-            exit('Bu kursa erişiminiz yok. Önce kaydolmanız gerekiyor.');
-        }
-    } else {
-        http_response_code(403);
-        exit('Bu kursa erişiminiz yok. Önce kaydolmanız gerekiyor.');
-    }
-}
-
-// Buradan sonrası: kurs içeriğini render et (örn. modüller, videolar vs.)
-// İstersen burada last_seen_at güncelle:
-$anonId = $_COOKIE['rv_anon'] ?? null;
-if ($anonId) {
-    $upd = $pdo->prepare("
-    UPDATE course_guest_enrollments SET last_seen_at = NOW()
-    WHERE course_id = ? AND anon_id = ?
-  ");
-    $upd->execute([$course_id, $anonId]);
-}
 
 
 $preview = false;
@@ -76,6 +39,55 @@ if (isset($_GET['preview'])) {
 }
 
 
+/**
+ * Eğer sisteminde normal hesaplı kullanıcı girişi de varsa,
+ * önce “hesaplı yetki”yi kontrol edebilirsin. Değilse anonim akışa bak.
+ */
+
+// 1) Hızlı yol: kurs cookie’si varsa içeri al
+
+if (!$preview){
+    $courseCookie = "access_course_{$course_id}";
+    if (!isset($_COOKIE[$courseCookie])) {
+        // 2) Cookie yoksa anon_id ile DB’de kayıt var mı bak
+        $anonId = $_COOKIE['rv_anon'] ?? null;
+        if ($anonId) {
+            $stmt = $pdo->prepare("
+          SELECT 1 FROM course_guest_enrollments
+          WHERE course_id = ? AND anon_id = ? LIMIT 1
+        ");
+            $stmt->execute([$course_id, $anonId]);
+            if ($stmt->fetchColumn()) {
+                // Tekrar cookie bas (kullanıcıyı hatırla)
+                setcookie($courseCookie, "1", time() + 3600 * 24 * 365, "/", "", false, true);
+            } else {
+                http_response_code(403);
+                header('location: courseDetails.php?course='.$course_id);
+                exit('Bu kursa erişiminiz yok. Önce kaydolmanız gerekiyor.');
+            }
+        } else {
+            http_response_code(403);
+            header('location: courseDetails.php?course='.$course_id);
+            exit('Bu kursa erişiminiz yok. Önce kaydolmanız gerekiyor.');
+        }
+    }
+}
+
+
+// Buradan sonrası: kurs içeriğini render et (örn. modüller, videolar vs.)
+// İstersen burada last_seen_at güncelle:
+$anonId = $_COOKIE['rv_anon'] ?? null;
+if ($anonId) {
+    $upd = $pdo->prepare("
+    UPDATE course_guest_enrollments SET last_seen_at = NOW()
+    WHERE course_id = ? AND anon_id = ?
+  ");
+    $upd->execute([$course_id, $anonId]);
+}
+
+
+
+
 // Yardımcı güvenli kaçış
 function e(?string $s): string { return htmlspecialchars($s ?? '', ENT_QUOTES, 'UTF-8'); }
 
@@ -83,7 +95,14 @@ $content = getModuleContent($_GET['id'], $_GET['ord']);
 $course = getCourseDetails($_GET['course']);
 $h = getCourseDetails($_GET['course']);
 
-$modules = getModules($h['id']);
+if($preview){
+    $modules = getModulesPreviewSafe($h['id']);
+}
+else{
+    $modules = getModules($h['id']);
+
+}
+
 $count = count($modules);
 $thisModule = null;
 foreach($modules as $m){
@@ -101,6 +120,9 @@ foreach($modules as $m){
     }
 }
 
+if ($thisModule['status'] != 'approved'){
+    header("location: courses.php");
+}
 
 if ($count == ($_GET['ord'] + 1)) {
     $isLast = true;
@@ -157,7 +179,6 @@ if (!isset($modules)) {
     ];
 }
 */
-
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -176,7 +197,10 @@ if (!isset($modules)) {
 <body class="bg-gray-100">
 <!-- NAVBAR -->
 <?php
-require_once 'navbar.php';
+if (!$preview){
+    require_once 'navbar.php';
+}
+
 
 ?>
 
@@ -251,7 +275,7 @@ require_once 'navbar.php';
                 <a href="courseDetails.php?course=<?=$course['course_uid']?>" class="inline-flex items-center text-[#E5AE32] hover:bg-yellow-100/50 p-2 rounded-md">
                     <span class="mr-2">←</span> Kurs Detayına Geri Dön
                 </a>
-                <h1 class="text-2xl font-bold text-gray-900"><?= $thisModule['title'] ?></h1>
+                <h1 class="text-2xl font-bold text-gray-900"><?= $course['title'] ?></h1>
             </div>
         <?php
         endif;
@@ -306,7 +330,7 @@ require_once 'navbar.php';
                 ?>
                     <div class="bg-black rounded-lg overflow-hidden relative aspect-video">
                         <video class="w-full h-full" controls autoplay>
-                            <source src="../<?=$cont['data']?>" type="video/mp4">
+                            <source src="<?=$cont['data']?>" type="video/mp4">
                             Tarayıcınız video etiketini desteklemiyor.
                         </video>
                     </div>
@@ -358,10 +382,10 @@ require_once 'navbar.php';
                                 <?php endif; ?>
                             </div>
                             <div class="flex items-center gap-2">
-                                <a href="../<?= $cont['data'] ?>" download class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
+                                <a href="<?= $cont['data'] ?>" download class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
                                     İndir
                                 </a>
-                                <a href="../<?= $cont['data'] ?>" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
+                                <a href="<?= $cont['data'] ?>" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border hover:bg-gray-50 text-sm">
                                     Yeni Sekmede Aç
                                 </a>
                             </div>
@@ -439,7 +463,11 @@ require_once 'navbar.php';
 
     </div>
 </div>
-<?php require_once 'footer.php'?>
+<?php
+if (!$preview){
+    require_once 'footer.php';
+}
+?>
 
 </body>
 

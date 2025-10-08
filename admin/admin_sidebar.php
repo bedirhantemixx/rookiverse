@@ -62,6 +62,10 @@ $pending_badge = $pending_approvals > 99 ? '99+' : (string)$pending_approvals;
                 <a href="course_actions.php">Kursları Görüntüle</a>
 
             </div>
+            <div class="submenu">
+                <a href="delete_requests.php">Kurs Silme Talepleri</a>
+
+            </div>
         </div>
 
         <div class="menu-item">

@@ -1,5 +1,42 @@
 <?php require_once 'config.php';
 //a
+
+
+// hata ekrana basılmasın, loga gitsin
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/php-error.log');
+
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// … burada route eşleştirmelerini yap (switch/if)
+// $matched = true/false olarak düşün
+$matched = false;
+
+// örnek:
+if ($path === '/' || $path === '/index.php') {
+    $matched = true;
+}
+// … diğer route’lar
+
+// Hiçbir route eşleşmedi ise:
+if (!$matched){
+    $numb = rand(0, 1);
+
+    if ($numb == 0) {
+        http_response_code(404);
+        require_once '404code.php';
+        exit;
+    }
+    else if ($numb == 1) {
+        http_response_code(404);
+        require_once '404mechanic.php';
+        exit;    }
+
+}
+
+
+
 $index = true;
 $courses = getTopCourses();
 session_start();
@@ -171,8 +208,8 @@ session_start();
           </div>
             <div class="hero-ss-container">
                 <div class="hero-ss-track" id="heroSS">
-                    <div class="hero-ss-slide"><img src="assets/images/frcexapmle.png" alt=""></div>
                     <div class="hero-ss-slide"><img src="assets/images/frcexampleimage2.jpg" alt=""></div>
+                    <div class="hero-ss-slide"><img src="assets/images/frcexapmle.png" alt=""></div>
                     <div class="hero-ss-slide"><img src="assets/images/frcexampleimage3.jpg" alt=""></div>
                     <div class="hero-ss-slide"><img src="assets/images/frcexample7.jpg" alt=""></div>
                     <div class="hero-ss-slide"><img src="assets/images/frcexampleimage4.jpg" alt=""></div>
@@ -203,6 +240,9 @@ session_start();
               <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <?php
                   foreach ($courses as $course):
+                      if($course['status'] != 'approved'){
+                          continue;
+                      }
                   ?>
                       <div class="overflow-hidden hover:shadow-xl rounded-lg border">
                           <div class="aspect-video relative group">

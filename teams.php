@@ -2,7 +2,6 @@
 // teams.php
 $projectRoot = __DIR__;
 require_once $projectRoot . '/config.php';
-require_once $projectRoot . '/navbar.php'; // (Kamuya açık listeyse) – admin stil kullanacaksan admin_header/admin_sidebar ekle
 
 $pdo = get_db_connection();
 
@@ -43,6 +42,8 @@ $teams = $stmt->fetchAll(PDO::FETCH_ASSOC);
 /** ---- Sayfalama bilgisi ---- */
 $pages = max(1, (int)ceil($total / $perPage));
 function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+require_once $projectRoot . '/navbar.php'; // (Kamuya açık listeyse) – admin stil kullanacaksan admin_header/admin_sidebar ekle
+
 ?>
 <!DOCTYPE html>
 <html lang="tr">

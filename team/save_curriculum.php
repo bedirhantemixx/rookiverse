@@ -2,7 +2,7 @@
 // File: modules/curriculum/save_curriculum.php
 session_start();
 
-$projectRoot = dirname(__DIR__, 2); // .../projeadi
+$projectRoot = $_SERVER['DOCUMENT_ROOT']; // .../projeadi
 require_once('../config.php');
 
 if (!isset($_SESSION['team_logged_in'])) {

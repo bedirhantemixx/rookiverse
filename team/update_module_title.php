@@ -1,47 +1,60 @@
 <?php
-
+// File: modules/curriculum/update_module_title.php
 session_start();
-if (!isset($_SESSION['team_logged_in'])) {
-    exit('Yetkisiz erişim');
-}
-$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
-require_once($projectRoot . '/config.php');
-$pdo = get_db_connection();
+header('Content-Type: application/json');
 
-// ... session, config, upload, reorganize fonksiyonları buraya kadar aynı kalsın
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['module_id'])) {
-    $module_id = $_POST['module_id'];
-    $course_id = $_POST['course_id'];
-
-    // Yetki kontrolü (aynı)
-    $stmt_check = $pdo->prepare("SELECT c.id FROM course_modules m JOIN courses c ON m.course_id = c.id WHERE m.id = ? AND c.team_db_id = ?");
-    $stmt_check->execute([$module_id, $_SESSION['team_db_id']]);
-    if ($stmt_check->fetchColumn() === false) {
-        die("Bu işlemi yapma yetkiniz yok.");
+try {
+    if (!isset($_SESSION['team_logged_in'])) {
+        http_response_code(401);
+        echo json_encode(['ok' => false, 'error' => 'Oturum gerekli.']);
+        exit;
     }
 
-    $reorganized_files = isset($_FILES['contents']) ? reorganize_files_array($_FILES['contents']) : [];
+    $projectRoot = dirname(__DIR__, 1); // modules/curriculum → modules
+    require_once '../config.php';
+    $pdo = get_db_connection();
 
-    try {
-        $title = $_POST['title'] ?? null;
-        $stmt_update = $pdo->prepare("UPDATE course_modules SET title = ? WHERE id = ?");
-        $stmt_update->execute([$title, $module_id]);
+    $moduleId = isset($_POST['module_id']) ? (int)$_POST['module_id'] : 0;
+    $newTitle = isset($_POST['new_title']) ? trim((string)$_POST['new_title']) : '';
+    $csrf     = $_POST['csrf'] ?? '';
 
-
-
-
-
-        // Modül durumu güncelle
-        $stmt_update = $pdo->prepare("UPDATE course_modules SET status = 'pending' WHERE id = ?");
-        $stmt_update->execute([$module_id]);
-
-        $pdo->commit();
-    } catch (Exception $e) {
+    if (!$moduleId) {
+        http_response_code(400);
+        echo json_encode(['ok' => false, 'error' => 'Geçersiz bölüm.']);
+        exit;
+    }
+    if (!hash_equals($_SESSION['csrf'] ?? '', $csrf)) {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'error' => 'Güvenlik doğrulaması başarısız (CSRF).']);
+        exit;
+    }
+    if ($newTitle === '' || mb_strlen($newTitle) > 200) {
+        http_response_code(400);
+        echo json_encode(['ok' => false, 'error' => 'Başlık boş olamaz ve 200 karakteri aşamaz.']);
+        exit;
     }
 
-    header("Location: view_curriculum.php?id=" . $module_id . "&status=updated");
-    exit();
-}
+    // Yetki: Bu modül, oturumdaki takımın kursunda mı?
+    $stmt = $pdo->prepare("
+        UPDATE course_modules m
+        JOIN courses c ON c.id = m.course_id
+        SET m.title = ?, m.status = 'pending'
+        WHERE m.id = ? AND c.team_db_id = ?
+    ");
+    $stmt->execute([$newTitle, $moduleId, $_SESSION['team_db_id']]);
 
-?>
+    if ($stmt->rowCount() < 1) {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'error' => 'Bu bölümü güncelleme yetkiniz yok veya bulunamadı.']);
+        exit;
+    }
+
+    echo json_encode(['ok' => true, 'title' => $newTitle]);
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode([
+        'ok' => false,
+        'error' => 'Sunucu hatası: ' . $e->getMessage(),
+        'trace' => $e->getTraceAsString()
+    ]);
+}

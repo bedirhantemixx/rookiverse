@@ -3,8 +3,9 @@
 
 $projectRoot = dirname(__DIR__);
 require_once($projectRoot . '/config.php');
-require_once 'admin_header.php'; // session_start() burada / admin kontrolünü burada yaptığını varsayıyorum
-
+session_start();
+if (!isset($_SESSION['admin_logged_in'])) { header("Location: index.php"); exit(); }
+$current_page = basename($_SERVER['PHP_SELF']);
 $page_title = "Admin Yönetimi";
 $pdo = get_db_connection();
 
@@ -86,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  * LİSTE
  */
 $admins = $pdo->query("SELECT id, username, created_at FROM admins ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+require_once 'admin_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="tr">

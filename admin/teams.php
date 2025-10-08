@@ -1,12 +1,14 @@
 <?php
 $projectRoot = dirname(__DIR__);
 require_once($projectRoot . '/config.php');
-require_once 'admin_header.php'; // session_start() burada çağrıldığı için başka yerde çağırmaya gerek yok
-$page_title = "Takım Yönetimi";
+session_start();
+if (!isset($_SESSION['admin_logged_in'])) { header("Location: index.php"); exit(); }
+$current_page = basename($_SERVER['PHP_SELF']);$page_title = "Takım Yönetimi";
 $pdo = get_db_connection();
 $teams = $pdo->query("SELECT id, team_number, team_id_generated, team_name FROM teams ORDER BY team_number ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 // HTML kısmı başlıyor
+require_once 'admin_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="tr">

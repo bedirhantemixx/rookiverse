@@ -7,7 +7,7 @@ $projectRoot = dirname(__DIR__);
 require_once $projectRoot . '/config.php';
 require_once 'team_header.php';
 
-if (!isset($_SESSION['team_logged_in'])) { header("Location: ../team-login.php"); exit(); }
+if (!isset($_SESSION['team_logged_in'])) { redirect("Location: ../team-login.php"); exit(); }
 
 $pdo        = get_db_connection();
 $teamDbId   = $_SESSION['team_db_id'] ?? null;
@@ -28,7 +28,7 @@ $flash = null;
 function redirect_same() {
     $qs = $_GET;
     $loc = $_SERVER['PHP_SELF'].'?'.http_build_query($qs);
-    header("Location: $loc");
+    redirect("Location: $loc");
     exit;
 }
 
@@ -110,7 +110,7 @@ $replyJoin  = "LEFT JOIN (
     GROUP BY question_id
 ) r ON r.question_id = q.id";
 
-$where  = "c.team_db_id = :tid";
+$where  = "c.team_db_id = :tid AND c.is_deleted = 0";
 $params = [':tid'=>$teamDbId];
 
 if (!$isAll) { $where .= " AND q.course_id = :cid"; $params[':cid'] = $defaultCourseId; }
@@ -162,6 +162,8 @@ function qs($over=[]) {
     $base = $_GET; foreach ($over as $k=>$v) { $base[$k]=$v; }
     return '?'.http_build_query($base);
 }
+
+require_once 'team_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -206,9 +208,48 @@ function qs($over=[]) {
         .btn *{ font-size:inherit; line-height:inherit; color:inherit; }
         .btn:empty::before{ content: none; }
         td .btn{ margin:2px 0; }
+        .menu-label-with-badge{display:inline-flex;align-items:center;gap:8px}
+        .menu-badge{
+            background:#ef4444;color:#fff;border-radius:9999px;
+            font-size:11px;line-height:1;padding:4px 6px;min-height: 15px;
+            display:inline-flex;align-items:center;justify-content:center;
+            font-weight:600;
+        }
+        .notification-button {
+            position: relative;
+            background: none;
+            border: none;
+            color: black;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .notification-button .lucide {
+            color: black; /* İkon rengini siyah yap */
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: 8px;
+            background-color: #ffc107;
+            color: black;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid white;
+        }
     </style>
 </head>
 <body>
+
 <aside class="sidebar no-print">
     <div class="sidebar-profile">
         <h2>Hoş Geldin,</h2>
@@ -218,13 +259,34 @@ function qs($over=[]) {
         <a href="panel.php"><i data-lucide="layout-dashboard"></i> Panelim</a>
         <a href="create_course.php"><i data-lucide="plus-square"></i> Yeni Kurs Oluştur</a>
         <a href="profile.php"><i data-lucide="settings"></i> Profilimi Düzenle</a>
-        <a href="notifications.php"><i data-lucide="bell"></i> Bildirimler</a>
+        <a href="notifications.php"><i data-lucide="bell"></i> Bildirimler<?php if ($unreadTotal > 0): ?><span class="menu-badge"><?php echo $unreadTotal; ?></span><?php endif; ?></a>
         <a class="active" href="<?php echo h($_SERVER['PHP_SELF']); ?>"><i data-lucide="message-square"></i> Soru Yönetimi</a>
-        <a href="logout.php" class="logout-link"><i data-lucide="log-out"></i> Güvenli Çıkış</a>
+        <?php
+        if (!isset($_SESSION['admin_panel_view'])):
+            ?>
+            <a href="logout.php" class="logout-link"><i data-lucide="log-out"></i> Güvenli Çıkış</a>
+        <?php endif;?>
     </nav>
 </aside>
 
 <main class="main-content">
+    <div class="top-bar">
+        <div class="font-bold">Takım #<?php echo $_SESSION['team_number']; ?> Paneli</div>
+        <div class="actions">
+            <button id="notif-button" class="notification-button">
+                <i data-lucide="bell"></i>
+                <?php if ($unreadTotal > 0): ?>
+                    <div class="notification-badge"><?= htmlspecialchars($unreadTotal) ?></div>
+                <?php endif; ?>
+            </button>
+
+            <?php
+            if (isset($_SESSION['admin_panel_view'])):
+                ?>
+                <a href="../admin/accessTeamPanel.php?exit=1" class="btn btn-sm"><i data-lucide="arrow-left"></i>Admin Paneline Dön</a>
+            <?php endif;?>
+        </div>
+    </div>
     <div class="container">
         <div class="topbar">
             <div>
@@ -483,6 +545,9 @@ function qs($over=[]) {
 
         try { window.lucide?.createIcons?.(); } catch(e) {}
     });
+    document.querySelector('#notif-button').addEventListener('click', ()=>{
+        window.location.href = 'notifications.php';
+    })
 </script>
 </body>
 </html>

@@ -1,9 +1,8 @@
 <?php
-// File: modules/curriculum/edit_module_content.php
 session_start();
 if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
 
-$projectRoot = dirname(__DIR__, 2);
+$projectRoot = $_SERVER['DOCUMENT_ROOT'];
 require_once '../config.php';
 $pdo = get_db_connection();
 
@@ -27,6 +26,7 @@ $stmtC->execute([$module_id]);
 $contents = $stmtC->fetchAll(PDO::FETCH_ASSOC);
 
 $page_title = "Bölüm İçeriğini Düzenle";
+
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -64,6 +64,30 @@ $page_title = "Bölüm İçeriğini Düzenle";
         .modal-content{ background:#fff; width:min(720px, 92vw); border-radius:12px; overflow:hidden; }
         .form-input{ width:100%; border:1px solid #e5e7eb; border-radius:10px; }
         #preview-modal-content iframe, #preview-modal-content video { width:100%; height:70vh; display:block; }
+        /* === Yükleme Overlay === */
+        .loading-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            display: none; align-items: center; justify-content: center;
+            background: rgba(0,0,0,.55);
+            backdrop-filter: blur(2px);
+        }
+        .loading-overlay.show { display: flex; }
+        .loading-box {
+            background: #E5AE32; color: #ffffff; border: 1px solid #ac7e25;
+            border-radius: 14px; padding: 18px 22px; min-width: 260px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 18px 48px rgba(2,6,23,.35);
+        }
+        .spinner {
+            width: 22px; height: 22px; border-radius: 50%;
+            border: 3px solid rgba(228, 228, 228, 0.25);
+            border-top-color: #ffffff;
+            animation: spin .8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-weight: 700; }
+        .loading-sub { font-size: 12px; opacity: .75; margin-top: 2px; }
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -80,7 +104,10 @@ $page_title = "Bölüm İçeriğini Düzenle";
         </div>
         <div class="flex gap-2">
             <a href="view_curriculum.php?id=<?= (int)$module['course_id'] ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Geri Dön</a>
-            <a href="edit_module_title.php?id=<?= (int)$module['id'] ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Başlığı Düzenle</a>
+            <button type="button" id="open-title-modal"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">
+                Başlığı Düzenle
+            </button>
         </div>
     </div>
 
@@ -188,7 +215,8 @@ $page_title = "Bölüm İçeriğini Düzenle";
                                             <?php if ($data): ?>
                                                 <div class="upload-preview-thumb">
                                                     <?php if ($renderType === 'video'): ?>
-                                                        <video src="<?= htmlspecialchars($data) ?>"></video>
+
+                                                        <video src="../<?= htmlspecialchars($data) ?>"></video>
                                                     <?php else: ?>
                                                         <i data-lucide="file-text"></i>
                                                     <?php endif; ?>
@@ -198,7 +226,7 @@ $page_title = "Bölüm İçeriğini Düzenle";
                                                     <div class="file-size">Kaydedilmiş dosya</div>
                                                 </div>
                                                 <div class="file-actions">
-                                                    <button type="button" class="action-button preview-btn" data-prev="<?= htmlspecialchars($data) ?>" data-kind="<?= $renderType ?>" title="Önizle"><i data-lucide="eye"></i></button>
+                                                    <button type="button" class="action-button preview-btn" data-prev="../<?= htmlspecialchars($data) ?>" data-kind="<?= $renderType ?>" title="Önizle"><i data-lucide="eye"></i></button>
                                                     <button type="button" class="action-button change-btn" title="Değiştir"><i data-lucide="refresh-cw"></i></button>
                                                 </div>
                                             <?php endif; ?>
@@ -267,11 +295,158 @@ $page_title = "Bölüm İçeriğini Düzenle";
         </div>
     </div>
 </div>
+<!-- Global Loading Overlay -->
+<div id="loading-overlay" class="loading-overlay" aria-hidden="true">
+    <div class="loading-box">
+        <div class="spinner" aria-hidden="true"></div>
+        <div>
+            <div class="loading-text">Yükleniyor…</div>
+            <div class="loading-sub">Büyük dosyalarda bu işlem birkaç saniye sürebilir.</div>
+        </div>
+    </div>
+</div>
+<!-- Title Edit Modal -->
+<div id="title-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="p-6 space-y-4">
+            <h2 class="text-xl font-bold">Bölüm Başlığını Düzenle</h2>
+
+            <div>
+                <label for="title-input" class="block text-sm font-medium text-gray-700 mb-1">
+                    Yeni Başlık
+                </label>
+                <input id="title-input" type="text"
+                       class="form-input p-2"
+                       maxlength="200"
+                       placeholder="Yeni başlığı yazın…">
+                <p id="title-error" class="text-sm text-red-600 mt-2" style="display:none;"></p>
+            </div>
+
+            <input type="hidden" id="title-module-id" value="<?= (int)$module['id'] ?>">
+            <!-- CSRF: varsa session’daki token’ı kullan -->
+            <?php if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(32)); } ?>
+            <input type="hidden" id="title-csrf" value="<?= htmlspecialchars($_SESSION['csrf']) ?>">
+        </div>
+
+        <div class="bg-gray-100 p-4 flex justify-end gap-3 rounded-b-lg">
+            <button type="button" id="title-cancel-btn" class="btn btn-secondary">İptal</button>
+            <button type="button" id="title-save-btn" class="btn">Kaydet</button>
+        </div>
+    </div>
+</div>
+
 
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         lucide.createIcons();
+        // === Başlık Düzenleme Modalı ===
+        const openTitleBtn   = document.getElementById('open-title-modal');
+        const titleModal     = document.getElementById('title-modal');
+        const titleInput     = document.getElementById('title-input');
+        const titleErr       = document.getElementById('title-error');
+        const titleCancelBtn = document.getElementById('title-cancel-btn');
+        const titleSaveBtn   = document.getElementById('title-save-btn');
+        const titleModuleId  = document.getElementById('title-module-id');
+        const titleCsrf      = document.getElementById('title-csrf');
+
+// Header’daki görünen başlık elemanı:
+        const pageTitleLine = document.querySelector('.max-w-4xl .text-gray-600');
+        /*
+          Bu satır şu şekildeydi:
+          <p class="text-gray-600">
+            Kurs: <strong><?= $module['course_title'] ?></strong> —
+    Bölüm: <strong><?= $module['title'] ?></strong>
+  </p>
+*/
+        function getCurrentTitleFromHeader() {
+            // “Bölüm: <strong>…</strong>” kısmını bul
+            const strongs = pageTitleLine?.querySelectorAll('strong') || [];
+            // 0: course_title, 1: module_title
+            return strongs[1]?.textContent?.trim() || '';
+        }
+        function setCurrentTitleInHeader(newTitle) {
+            const strongs = pageTitleLine?.querySelectorAll('strong') || [];
+            if (strongs[1]) strongs[1].textContent = newTitle;
+        }
+
+        function openTitleModal() {
+            titleErr.style.display = 'none';
+            titleErr.textContent = '';
+            titleInput.value = getCurrentTitleFromHeader();
+            titleModal.classList.add('show');
+            setTimeout(() => titleInput.focus(), 50);
+        }
+        function closeTitleModal() {
+            titleModal.classList.remove('show');
+        }
+
+        openTitleBtn?.addEventListener('click', openTitleModal);
+        titleCancelBtn?.addEventListener('click', closeTitleModal);
+        titleModal?.addEventListener('click', (e) => {
+            if (e.target === titleModal) closeTitleModal();
+        });
+
+        async function saveTitle() {
+            const newTitle = (titleInput.value || '').trim();
+            if (newTitle.length === 0) {
+                titleErr.textContent = 'Başlık boş olamaz.';
+                titleErr.style.display = 'block';
+                return;
+            }
+            if (newTitle.length > 200) {
+                titleErr.textContent = 'Başlık 200 karakteri aşamaz.';
+                titleErr.style.display = 'block';
+                return;
+            }
+
+            titleErr.style.display = 'none';
+
+            // UI kilitle
+            const originalHtml = titleSaveBtn.innerHTML;
+            titleSaveBtn.disabled = true;
+            titleSaveBtn.innerHTML = `
+    <span class="inline-flex items-center gap-2">
+      <span class="spinner" style="width:16px; height:16px; border-width:2px;"></span>
+      Kaydediliyor…
+    </span>`;
+
+            try {
+                const res = await fetch('update_module_title.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: new URLSearchParams({
+                        module_id: titleModuleId.value,
+                        new_title : newTitle,
+                        csrf      : titleCsrf.value
+                    })
+                });
+
+                const json = await res.json().catch(() => ({}));
+
+                if (!res.ok || !json.ok) {
+                    const msg = json?.error || 'Başlık güncellenemedi.';
+                    titleErr.textContent = msg;
+                    titleErr.style.display = 'block';
+                    return;
+                }
+
+                // Başarılı → sayfadaki başlığı güncelle + modalı kapat
+                setCurrentTitleInHeader(json.title || newTitle);
+                closeTitleModal();
+
+            } catch (err) {
+                titleErr.textContent = 'Ağ hatası oluştu. Lütfen tekrar deneyin.';
+                titleErr.style.display = 'block';
+            } finally {
+                titleSaveBtn.disabled = false;
+                titleSaveBtn.innerHTML = originalHtml;
+            }
+        }
+        titleSaveBtn?.addEventListener('click', saveTitle);
+        titleInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); saveTitle(); }
+        });
 
 
 
@@ -669,6 +844,49 @@ $page_title = "Bölüm İçeriğini Düzenle";
     </div>
   `;
         }
+
+        const formEl = document.getElementById('content-form');
+        const overlayEl = document.getElementById('loading-overlay');
+        const submitBtn = formEl?.querySelector('button[type="submit"]');
+
+        if (formEl && overlayEl && submitBtn) {
+            let submitting = false;
+            let formChanged = false;
+
+            // 🔸 Sayfadaki değişiklikleri izle (text, input, file vs.)
+            formEl.addEventListener('input', () => {
+                formChanged = true;
+            });
+            formEl.addEventListener('change', () => {
+                formChanged = true;
+            });
+
+            formEl.addEventListener('submit', () => {
+                submitting = true;
+                formChanged = false;  // önemli: gönderince değişiklik durumu sıfırlanır
+
+                overlayEl.classList.add('show');
+                submitBtn.disabled = true;
+                submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+                submitBtn.innerHTML = `
+          <span class="inline-flex items-center gap-2">
+            <span class="spinner" style="width:16px; height:16px; border-width:2px;"></span>
+            Kaydediliyor…
+          </span>
+        `;
+            });
+
+            // 🔸 Sadece gerçekten değişiklik varsa uyarı göster
+            window.addEventListener('beforeunload', (e) => {
+                if (formChanged && !submitting) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+        }
+
+
+
 
 
         // Delegation: contenteditable → textarea

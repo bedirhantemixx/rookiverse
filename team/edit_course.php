@@ -26,6 +26,7 @@ $page_title = "Kurs Bilgilerini Düzenle";
 <?php require_once '../navbar.php'; ?>
 
 <div class="max-w-4xl mx-auto py-12 px-4">
+
     <h1 class="text-3xl font-bold text-gray-800 mb-8">1. Adım: Kurs Bilgilerini Düzenle</h1>
 
     <form id="course-form" action="save_course_step1.php" method="POST">

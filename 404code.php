@@ -215,7 +215,7 @@
 
     // Daha hızlı canlı yazım: kısa gecikmeler
     const lines = [
-      "<?php",
+      "<\u003fphp",
       "$pdo = get_db_connection();",
       "$stmt = $pdo->prepare('SELECT id, title, level FROM courses ORDER BY created_at DESC LIMIT 6');",
       "$stmt->execute();",

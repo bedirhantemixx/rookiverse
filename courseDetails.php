@@ -17,7 +17,13 @@ if (isset($_GET['preview'])) {
     }
 }
 
+
 $course = getCourseDetails($_GET['course']);
+
+if ($course['status'] != 'approved'){
+    header("location: courses.php");
+}
+
 $anonId = $_COOKIE['rv_anon'] ?? null;
 $isEnrolled = false;
 $pdo = get_db_connection();
@@ -214,17 +220,74 @@ require_once 'navbar.php';
                     <div class="aspect-video relative bg-black">
                         <div id="video-thumbnail-container" class="absolute inset-0">
                             <img src="<?=$course['cover_image_url']?>" alt="Kurs tanıtım kapağı" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                <button onclick="playIntroVideo()" class="inline-flex items-center justify-center bg-white text-custom-yellow hover:bg-gray-100 px-8 py-4 text-lg rounded-lg">
-                                    <i data-lucide="film" class="mr-2" style="width: 24px; height: 24px;"></i>
-                                    Kurs Tanıtımı
-                                </button>
-                            </div>
+                            <?php
+                            if ($course['intro_video_url'] != ''):
+
+                            ?>
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                    <button onclick="playIntroVideo()" class="inline-flex items-center justify-center bg-white text-custom-yellow hover:bg-gray-100 px-8 py-4 text-lg rounded-lg">
+                                        <i data-lucide="film" class="mr-2" style="width: 24px; height: 24px;"></i>
+                                        Kurs Tanıtımı
+                                    </button>
+                                </div>
+                            <?php
+                            endif;
+                            ?>
                         </div>
-                        <video id="intro-video" class="w-full h-full hidden" controls>
-                            <source  src="<?=$course['intro_video_url']?>" type="video/mp4">
-                            Tarayıcınız video etiketini desteklemiyor.
-                        </video>
+                        <?php
+                        if ($course['intro_video_url'] != ''):
+                            if (str_contains($course['intro_video_url'], 'https://')):
+                                $videoUrl = $course['intro_video_url'] ?? '';
+                                $youtubeId = '';
+
+// Farklı YouTube URL formatlarını destekle
+                                if (preg_match('/^[A-Za-z0-9_-]{10,20}$/', $videoUrl)) {
+                                    // Zaten sadece ID
+                                    $youtubeId = $videoUrl;
+                                } elseif (preg_match('/youtu\.be\/([A-Za-z0-9_-]+)/', $videoUrl, $m)) {
+                                    // https://youtu.be/VIDEO_ID
+                                    $youtubeId = $m[1];
+                                } elseif (preg_match('/youtube\.com\/watch\?v=([A-Za-z0-9_-]+)/', $videoUrl, $m)) {
+                                    // https://www.youtube.com/watch?v=VIDEO_ID
+                                    $youtubeId = $m[1];
+                                } elseif (preg_match('/youtube\.com\/embed\/([A-Za-z0-9_-]+)/', $videoUrl, $m)) {
+                                    // https://www.youtube.com/embed/VIDEO_ID
+                                    $youtubeId = $m[1];
+                                } elseif (preg_match('/youtube\.com\/shorts\/([A-Za-z0-9_-]+)/', $videoUrl, $m)) {
+                                    // https://www.youtube.com/shorts/VIDEO_ID
+                                    $youtubeId = $m[1];
+                                }
+                                ?>
+
+                                <?php if ($youtubeId): ?>
+                                <!-- YouTube iframe -->
+                                <iframe
+                                        id="intro-video"
+                                        class="w-full h-full hidden"
+                                        src="https://www.youtube.com/embed/<?= htmlspecialchars($youtubeId, ENT_QUOTES, 'UTF-8') ?>"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen>
+                                </iframe>
+                            <?php else: ?>
+                                <!-- Normal video (MP4 vs.) -->
+                                <video id="intro-video" class="w-full h-full hidden" controls>
+                                    <source src="<?= htmlspecialchars($course['intro_video_url'], ENT_QUOTES, 'UTF-8') ?>" type="video/mp4">
+                                    Tarayıcınız video etiketini desteklemiyor.
+                                </video>
+                            <?php endif; ?>
+                        <?php
+                            else:
+                        ?>
+                            <video id="intro-video" class="w-full h-full hidden" controls>
+                                <source  src="<?=$course['intro_video_url']?>" type="video/mp4">
+                                Tarayıcınız video etiketini desteklemiyor.
+                            </video>
+                        <?php
+                            endif;
+
+                        endif;
+                        ?>
                         <div id="skip-backward-indicator" class="skip-indicator hidden">
                             <i data-lucide="rewind" class="w-8 h-8"></i>
                         </div>
@@ -319,7 +382,7 @@ require_once 'navbar.php';
                                             Modülleri önizlemek için <span class="font-semibold">panele geri dön</span> ve
                                             oradan modül detayına gir.
                                         </p>
-                                        <a href="course_actions.php"
+                                        <a href="admin/course_actions.php"
                                            class="mt-3 inline-flex items-center rounded-md border-2 border-yellow-300 px-3 py-2 text-sm font-semibold text-yellow-800 hover:bg-yellow-100">
                                             <i data-lucide="arrow-left" class="mr-2" style="width:16px;height:16px;"></i>
                                             Panele Geri Dön
@@ -372,6 +435,7 @@ require_once 'navbar.php';
 
                     <div class="p-6">
                         <!-- Form -->
+                        <span id="character-limit" style="color: red; margin-left: 5px; display: none">Sorunuz 250 karakteri aşmamalı.</span>
                         <form id="ask-form" class="space-y-3">
       <textarea id="ask-body" rows="3" class="w-full border rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-custom-yellow"
                 placeholder="Sorunuzu yazın..."></textarea>
@@ -392,12 +456,7 @@ require_once 'navbar.php';
 
                         <!-- Liste -->
                         <div id="questions-list" class="mt-6 space-y-4">
-                            <div class="p-4 border rounded-lg">
-                                <div class="text-sm text-gray-500 mb-1">03.10.2025 12:13</div>
-                                <div class="whitespace-pre-line text-gray-800">dihh</div>
 
-
-                            </div>
                         </div>
 
                         <!-- Yükleniyor -->
@@ -588,212 +647,163 @@ require_once 'navbar.php';
     }
 
     // Dışına tıklayınca kapat
-    enrollModalBackdrop.addEventListener('click', closeEnrollModal);
+    enrollModalBackdrop?.addEventListener('click', closeEnrollModal);
     // ESC ile kapat
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !enrollModal.classList.contains('hidden')) closeEnrollModal();
     });
 
-    // Modal içindeki "Ücretsiz Kayıt Ol" butonu: mevcut handleEnroll'i çağırır
-    modalEnrollBtn.addEventListener('click', async () => {
+    // Modal içindeki "Ücretsiz Kayıt Ol"
+    modalEnrollBtn?.addEventListener('click', async () => {
         await handleEnroll();
         closeEnrollModal();
     });
-
-
-
     // Vazgeç
-    modalCancelBtn.addEventListener('click', closeEnrollModal);
+    modalCancelBtn?.addEventListener('click', closeEnrollModal);
 
     lucide.createIcons();
 
     let isEnrolled = <?php echo $isEnrolled ? 'true' : 'false'; ?>;
 
-
-    // İlk modüle gitmek için güvenli fonksiyon:
+    // İlk modüle git
     function continueCourse() {
-        // Enroll olmayan biri butona basarsa modal aç (emniyet)
         if (!isEnrolled) {
             openEnrollModal();
             return;
         }
-
-        // Modül kartlarını bul
         const firstModule = document.querySelector('.modulePlayer');
-        if (!firstModule) {
-            // Modül yoksa kurs sayfasında kal ya da uygun bir fallback yap
-            console.warn('Bu kursta henüz modül yok.');
-            return;
-        }
+        if (!firstModule) return;
 
-        // Data attributeları al (sen zaten modulePlayer üzerinde bunları basmışsın)
-        const moduleId = firstModule.dataset.moduleid;   // örn: "123"
-        const courseUid = firstModule.dataset.course;    // örn: "rv-abcdef"
-        let ord = parseInt(firstModule.dataset.ord, 10); // 1-based geliyor
-        if (Number.isNaN(ord)) ord = 1;
+        const moduleId = firstModule.dataset.moduleid;
+        const courseUid = firstModule.dataset.course || '<?= htmlspecialchars($_GET['course'] ?? '', ENT_QUOTES) ?>';
+        const ordZero = Math.max(0, (Number(firstModule.dataset.ord) || 1) - 1);
 
-        // Sen modül tıklamasında ord-1 yapıyorsun; aynı mantığı koruyalım:
-        const zeroBasedOrd = ord - 1;
-
-        // İlk modüle yönlendir
-        window.location.href = `moduleDetails.php?course=${encodeURIComponent(courseUid)}&id=${encodeURIComponent(moduleId)}&ord=${encodeURIComponent(zeroBasedOrd)}`;
+        window.location.href = `moduleDetails.php?course=${encodeURIComponent(courseUid)}&id=${encodeURIComponent(moduleId)}&ord=${encodeURIComponent(ordZero)}`;
     }
-    let video = document.querySelector('#intro-video')
 
-
-
-
-    const enrollButtonContainer = document.getElementById('enroll-button-container');
-    const enrolledContainer = document.getElementById('enrolled-container');
+    // --- Video / tanıtım kısmı: null-safe ---
     const thumbnailContainer = document.getElementById('video-thumbnail-container');
-
-    // ## DEĞİŞİKLİK: TÜM VİDEO KONTROL İŞLEMLERİ BURADA ##
-    const introVideo = document.getElementById('intro-video');
-    const videoContainer = introVideo.parentElement; // Videonun etrafındaki relative container
+    const introVideo = document.getElementById('intro-video'); // yoksa null
+    const videoContainer = introVideo?.parentElement || document.querySelector('.aspect-video'); // fallback
     const skipBackwardIndicator = document.getElementById('skip-backward-indicator');
-    const skipForwardIndicator = document.getElementById('skip-forward-indicator');
+    const skipForwardIndicator  = document.getElementById('skip-forward-indicator');
     let skipIndicatorTimeout;
 
-    document.querySelectorAll('.modulePlayer').forEach(el => {
-        el.addEventListener('click', (e) => {
-            if (isEnrolled){
-                let id = el.dataset.moduleid; // <div class="modulePlayer" data-moduleid="123">
-                let course = el.dataset.course; // <div class="modulePlayer" data-moduleid="123">
-                let i = el.dataset.ord; // <div class="modulePlayer" data-moduleid="123">
-                i = i - 1;
-                window.location.href = `moduleDetails.php?course=${course}&id=${id}&ord=${i}`;
-            }
-            else{
-                openEnrollModal()
-            }
-        });
-    });
-
-
-    // İleri/geri sarma animasyonunu gösteren fonksiyon
-    function showSkipIndicator(indicator) {
-        clearTimeout(skipIndicatorTimeout);
-
-        // Diğerini gizle, animasyonun sıfırlanması için
-        (indicator === skipForwardIndicator ? skipBackwardIndicator : skipForwardIndicator).classList.remove('show');
-
-        indicator.classList.remove('hidden');
-        indicator.classList.add('show');
-
-        lucide.createIcons(); // Animasyon içindeki ikonu tekrar render et
-
-        skipIndicatorTimeout = setTimeout(() => {
-            indicator.classList.remove('show');
-            indicator.classList.add('hidden');
-        }, 800); // Animasyon süresiyle eşleşmeli
+    function playIntroVideo() {
+        if (!introVideo) return; // video yoksa sessizce çık
+        thumbnailContainer?.classList.add('hidden');
+        introVideo.classList.remove('hidden');
+        introVideo.play().catch(()=>{});
     }
 
-    // Klavye kısayollarını dinle
+    function showSkipIndicator(indicator) {
+        clearTimeout(skipIndicatorTimeout);
+        (indicator === skipForwardIndicator ? skipBackwardIndicator : skipForwardIndicator)?.classList.remove('show');
+
+        indicator?.classList.remove('hidden');
+        indicator?.classList.add('show');
+        lucide.createIcons();
+        skipIndicatorTimeout = setTimeout(() => {
+            indicator?.classList.remove('show');
+            indicator?.classList.add('hidden');
+        }, 800);
+    }
+
+    // Klavye kısayolları (yalnızca video varken)
     document.addEventListener('keydown', (event) => {
-        // Kısayollar sadece video görünür durumdayken çalışsın
-        if (introVideo.classList.contains('hidden')) return;
+        if (!introVideo || introVideo.classList.contains('hidden')) return;
 
-        // Kullanıcı bir input alanına yazıyorsa kısayolları devre dışı bırak
         const activeEl = document.activeElement;
-        if (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable) {
-            return;
-        }
+        if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable)) return;
 
-        // Tuşlara göre işlem yap
         switch (event.key.toLowerCase()) {
             case ' ':
             case 'k':
-                event.preventDefault(); // Boşluk tuşunun sayfayı kaydırmasını engelle
+                event.preventDefault();
                 introVideo.paused ? introVideo.play() : introVideo.pause();
                 break;
             case 'f':
                 if (!document.fullscreenElement) {
-                    videoContainer.requestFullscreen();
+                    videoContainer?.requestFullscreen?.();
                 } else {
-                    document.exitFullscreen();
+                    document.exitFullscreen?.();
                 }
                 break;
             case 'l':
-                introVideo.currentTime += 5;
+                introVideo.currentTime = Math.min(introVideo.duration || Infinity, introVideo.currentTime + 5);
                 showSkipIndicator(skipForwardIndicator);
                 break;
             case 'j':
-                introVideo.currentTime -= 5;
+                introVideo.currentTime = Math.max(0, introVideo.currentTime - 5);
                 showSkipIndicator(skipBackwardIndicator);
                 break;
         }
     });
-    // ## VİDEO KONTROL DEĞİŞİKLİKLERİNİN SONU ##
 
+    // Modül tıklama — KAYNAK SORUN: JS hata alırsa burası hiç çalışmıyordu.
+    document.querySelectorAll('.modulePlayer').forEach(el => {
+        el.addEventListener('click', () => {
+            if (isEnrolled) {
+                const id = el.dataset.moduleid;
+                const course = el.dataset.course || '<?= htmlspecialchars($_GET['course'] ?? '', ENT_QUOTES) ?>';
+                const ordZero = Math.max(0, (Number(el.dataset.ord) || 1) - 1);
+                window.location.href = `moduleDetails.php?course=${encodeURIComponent(course)}&id=${encodeURIComponent(id)}&ord=${encodeURIComponent(ordZero)}`;
+            } else {
+                openEnrollModal();
+            }
+        });
+    });
 
+    // Enroll butonu null olabilir (kayıtlı kullanıcıda kart gösterilmiyor) → guard
     const enrollBtn = document.getElementById('enroll-btn');
-    enrollBtn.addEventListener('click', () =>{
-        handleEnroll()
-    })
-
-    function playIntroVideo() {
-        thumbnailContainer.classList.add('hidden');
-        introVideo.classList.remove('hidden');
-        introVideo.play();
-    }
+    enrollBtn?.addEventListener('click', handleEnroll);
 
     async function handleEnroll() {
-
-        // Yorum/Soru butonunu re-aktif et
+        // Q&A butonunu aktifleştir
         const askSubmitEl = document.getElementById('ask-submit');
         const askHintEl   = document.getElementById('ask-hint');
         if (askSubmitEl) {
             askSubmitEl.disabled = false;
-            // Inline disable stilini kaldır:
             askSubmitEl.style.backgroundColor = '';
             askSubmitEl.style.color = '';
-            // (Tailwind class'ların zaten duruyor: bg-custom-yellow, hover:bg-opacity-90)
         }
         if (askHintEl) {
             askHintEl.textContent = 'Nazik ve anlaşılır yazmanız yanıt şansını artırır, yorumunuz takım tarafından onaylanana kadar gizli kalacak.';
         }
 
-        const enrollBtnContent = document.getElementById('enroll-btn-content');
-        const enrolledContainer = document.getElementById('enrolled-container')
-        const enrollBtnLoading = document.getElementById('enroll-btn-loading');
-        let course_id = <?=$course['id']?>;
-        fetch('addStudent.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `id=${course_id}`
-        })
-            .then(res => res.json())
-            .then(data => {
-            })
-            .catch(err => {
-                console.error("Sabitleme hatası", err);
+        const enrollBtnContent  = document.getElementById('enroll-btn-content');
+        const enrollBtnLoading  = document.getElementById('enroll-btn-loading');
+        const enrollButtonBox   = document.getElementById('enroll-button-container');
+        const enrolledBox       = document.getElementById('enrolled-container');
+
+        const course_id = <?= (int)$course['id'] ?>;
+        try {
+            // backend’e kayıt isteği
+            await fetch('addStudent.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `id=${encodeURIComponent(course_id)}`
             });
+        } catch(e) {
+            console.error('Kayıt hatası', e);
+        }
 
-        enrollBtn.disabled = true;
-        enrollBtn.classList.add('cursor-not-allowed');
-        enrollBtnContent.classList.add('hidden');
-        enrollBtnLoading.classList.remove('hidden');
+        if (enrollBtn) {
+            enrollBtn.disabled = true;
+            enrollBtn.classList.add('cursor-not-allowed');
+        }
+        enrollBtnContent?.classList.add('hidden');
+        enrollBtnLoading?.classList.remove('hidden');
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(r => setTimeout(r, 800));
 
         isEnrolled = true;
-
-
-        enrollButtonContainer.classList.add('hidden');
-        enrolledContainer.classList.remove('hidden');
+        enrollButtonBox?.classList.add('hidden');
+        enrolledBox?.classList.remove('hidden');
     }
 
-
-
-
-</script>
-<script>
     // ==== REACTIONS ====
     const COURSE_ID = <?= (int)$course['id'] ?>;
-    const isEnrolledFlag = <?php echo $isEnrolled ? 'true' : 'false'; ?>;
-
     const likeBtn = document.getElementById('btn-like');
     const dislikeBtn = document.getElementById('btn-dislike');
     const likeCountEl = document.getElementById('like-count');
@@ -801,38 +811,39 @@ require_once 'navbar.php';
     const yourReactionEl = document.getElementById('your-reaction');
 
     async function fetchReactions() {
-        const res = await fetch('reactions_api.php?action=get&course_id=' + COURSE_ID);
-        const data = await res.json();
-        likeCountEl.textContent = data.likes ?? 0;
-        dislikeCountEl.textContent = data.dislikes ?? 0;
+        try {
+            const res = await fetch('reactions_api.php?action=get&course_id=' + COURSE_ID);
+            const data = await res.json();
+            likeCountEl.textContent = data.likes ?? 0;
+            dislikeCountEl.textContent = data.dislikes ?? 0;
 
-        if (data.your_reaction === 'like') {
-            likeBtn.classList.add('bg-green-50','border-green-300');
-            dislikeBtn.classList.remove('bg-red-50','border-red-300');
-        } else if (data.your_reaction === 'dislike') {
-            dislikeBtn.classList.add('bg-red-50','border-red-300');
-            likeBtn.classList.remove('bg-green-50','border-green-300');
-        } else {
-            yourReactionEl.textContent = '';
             likeBtn.classList.remove('bg-green-50','border-green-300');
             dislikeBtn.classList.remove('bg-red-50','border-red-300');
-        }
+
+            if (data.your_reaction === 'like') {
+                likeBtn.classList.add('bg-green-50','border-green-300');
+            } else if (data.your_reaction === 'dislike') {
+                dislikeBtn.classList.add('bg-red-50','border-red-300');
+            }
+        } catch(e) { console.error(e); }
     }
 
     async function sendReaction(type) {
-        const res = await fetch('reactions_api.php', {
-            method: 'POST',
-            headers: {'Content-Type':'application/x-www-form-urlencoded'},
-            body: new URLSearchParams({ action: 'toggle', course_id: COURSE_ID, reaction: type })
-        });
-        const data = await res.json();
-        if (data.ok) { fetchReactions(); }
+        try {
+            const res = await fetch('reactions_api.php', {
+                method: 'POST',
+                headers: {'Content-Type':'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({ action: 'toggle', course_id: COURSE_ID, reaction: type })
+            });
+            const data = await res.json();
+            if (data.ok) fetchReactions();
+        } catch(e) { console.error(e); }
     }
 
-    likeBtn.addEventListener('click', () => sendReaction('like'));
-    dislikeBtn.addEventListener('click', () => sendReaction('dislike'));
+    likeBtn?.addEventListener('click', () => sendReaction('like'));
+    dislikeBtn?.addEventListener('click', () => sendReaction('dislike'));
 
-    // ==== Q&A (Yorum + Yanıtlar) ====
+    // ==== Q&A ====
     const askForm = document.getElementById('ask-form');
     const askBody = document.getElementById('ask-body');
     const questionsList = document.getElementById('questions-list');
@@ -847,12 +858,10 @@ require_once 'navbar.php';
     function renderReplies(container, replies) {
         container.innerHTML = '';
         if (!Array.isArray(replies) || replies.length === 0) return;
-
         const header = document.createElement('div');
         header.className = 'text-sm text-gray-600 font-semibold mt-3';
         header.textContent = `Yanıtlar (${replies.length})`;
         container.appendChild(header);
-
         replies.forEach(r => {
             const row = document.createElement('div');
             row.className = 'p-3 rounded-md border bg-gray-50';
@@ -868,30 +877,21 @@ require_once 'navbar.php';
 
     async function fetchReplies(questionId, container) {
         try {
-            // 1) Tercihen ayrı uçtan çek (varsa)
-            let res = await fetch('questions_api.php?action=replies&question_id=' + encodeURIComponent(questionId));
-            if (!res.ok) throw new Error('replies endpoint yok');
+            const res = await fetch('questions_api.php?action=replies&question_id=' + encodeURIComponent(questionId));
+            if (!res.ok) return;
             const data = await res.json();
-            console.log(data)
             renderReplies(container, data.items || []);
-        } catch (e) {
-            // 2) Yoksa sessizce geç
-            // console.debug('Replies endpoint not found/failed:', e);
-        }
+        } catch (_e) {}
     }
 
     async function loadQuestions() {
         qaLoading.classList.remove('hidden');
-
-        // with_replies=1: API destekliyorsa gömülü yanıt gelir, desteklemiyorsa liste normal döner.
         const res = await fetch('questions_api.php?action=list&with_replies=1&course_id=' + COURSE_ID);
         const data = await res.json();
-
         qaLoading.classList.add('hidden');
         questionsList.innerHTML = '';
 
         const items = data.items || [];
-
         if (items.length === 0) {
             questionsList.innerHTML = `<div class="text-sm text-gray-500">Henüz soru yok. İlk soruyu sen sor!</div>`;
             return;
@@ -904,29 +904,37 @@ require_once 'navbar.php';
         <div class="text-sm text-gray-500 mb-1">${escapeHtml(q.created_at)}</div>
         <div class="whitespace-pre-line text-gray-800">${escapeHtml(q.body)}</div>
       `;
-
-            // Yanıtlar için kap
             const repliesWrap = document.createElement('div');
             repliesWrap.className = 'mt-3 space-y-3';
             repliesWrap.id = 'q-replies-' + q.id;
             item.appendChild(repliesWrap);
 
-            // 1) API gömülü verdiyse direkt bas
             if (Array.isArray(q.replies)) {
                 renderReplies(repliesWrap, q.replies);
             } else {
-                // 2) Değilse tek tek çekmeye çalış
                 fetchReplies(q.id, repliesWrap);
             }
             questionsList.appendChild(item);
         });
     }
 
-    askForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const body = askBody.value.trim();
-        if (!body) return;
+    function removeAlertText(){
+        const el = document.querySelector('#character-limit');
+        if (el) el.style.display = 'none';
+    }
 
+    askForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const body = (askBody?.value || '').trim();
+        if (!body) return;
+        if (body.length > 250){
+            const el = document.querySelector('#character-limit');
+            if (el) {
+                el.style.display = 'flex';
+                setTimeout(removeAlertText, 3000);
+            }
+            return;
+        }
         const res = await fetch('questions_api.php', {
             method: 'POST',
             headers: {'Content-Type':'application/x-www-form-urlencoded'},
@@ -934,8 +942,8 @@ require_once 'navbar.php';
         });
         const data = await res.json();
         if (data.ok) {
-            askBody.value = '';
-            loadQuestions(); // yeni soru + varsa yanıtları tazele
+            if (askBody) askBody.value = '';
+            loadQuestions();
         } else {
             alert(data.error || 'Gönderilemedi.');
         }
@@ -945,6 +953,7 @@ require_once 'navbar.php';
     fetchReactions();
     loadQuestions();
 </script>
+
 
 
 </body>

@@ -1,8 +1,9 @@
 <?php
 $projectRoot = dirname(__DIR__);
 require_once('../config.php');
-require_once 'admin_header.php'; // session_start burada
-
+session_start();
+if (!isset($_SESSION['admin_logged_in'])) { header("Location: index.php"); exit(); }
+$current_page = basename($_SERVER['PHP_SELF']);
 $page_title = "Kurs Yönetimi";
 $pdo = get_db_connection();
 
@@ -106,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             http_response_code(400);
     }
 }
-
+require_once 'admin_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="tr">

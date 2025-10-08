@@ -1,8 +1,14 @@
 <?php
 session_start();
-$projectRoot = dirname(__DIR__);
-require_once 'team_header.php';
-require_once($projectRoot . '/config.php');
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once $projectRoot . '/config.php';
+$pdo = get_db_connection();
+$count = $pdo->prepare("SELECT 
+    COUNT(*) AS total,
+    SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) AS unread
+    FROM notifications WHERE team_id = ?");
+$count->execute([$_SESSION['team_db_id']]);
+list($totalRows, $unreadTotal) = $count->fetch(PDO::FETCH_NUM);require_once($projectRoot . '/config.php');
 
 if (!isset($_SESSION['team_logged_in'])) {
     header('Location: ../team-login.php');
@@ -57,7 +63,18 @@ list($totalRows, $unreadTotal) = $count->fetch(PDO::FETCH_NUM);
 
 $totalPages = max(1, ceil(($totalRows ?: 0) / $perPage));
 ?>
-
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title><?php echo $page_title ?? 'Admin Paneli'; ?> - FRC Rookieverse</title>
+    <link rel="stylesheet" href="<?=BASE_URL?>/assets/css/panel2.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>@font-face { font-family: "Sakana"; src: url("../assets/fonts/Sakana.ttf") format("truetype"); }</style>
+</head>
+<body>
+<div class="panel-layout">
 <script>
     try { if (window.lucide?.createIcons) lucide.createIcons(); } catch(e){}
     (function(){
@@ -148,10 +165,13 @@ $totalPages = max(1, ceil(($totalRows ?: 0) / $perPage));
     <div class="top-bar">
         <div class="font-bold">Bildirimler</div>
         <div class="actions">
-            <button class="notification-button">
+            <button id="notif-button" class="notification-button">
                 <i data-lucide="bell"></i>
-                <div class="notification-badge">3</div>
+                <?php if ($unreadTotal > 0): ?>
+                    <div class="notification-badge"><?= htmlspecialchars($unreadTotal) ?></div>
+                <?php endif; ?>
             </button>
+
             <?php
             if (isset($_SESSION['admin_panel_view'])):
                 ?>
@@ -192,7 +212,7 @@ $totalPages = max(1, ceil(($totalRows ?: 0) / $perPage));
                         }
                         elseif ($n['type'] === 'course'){
                             $details = getCourseDetailsById($n['content_id']);
-                            $gotoUrl = 'panel.php';
+                            $gotoUrl = 'editCourse.php?id=' . $details['id'];
 
                         }
                         else{
@@ -209,13 +229,13 @@ $totalPages = max(1, ceil(($totalRows ?: 0) / $perPage));
                             <td><?php echo htmlspecialchars($details['title'] ?? '—'); ?></td>
                             <td><span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($n['action']); ?></span></td>
                             <td class="note-time"><?php echo date('d.m.Y H:i', strtotime($n['notified_at'])); ?></td>
-                            <td class="flex gap-2">
+                            <td style="flex-direction: row; display: flex; width: 100%;padding-right: 33%;justify-content:space-between ">
                                 <a class="btn btn-sm" href="<?= $gotoUrl; ?>">
                                     <i data-lucide="link"></i> <?php echo ($n['type']==='course'?'Kursa Git':'Modüle Git'); ?>
                                 </a>
                                 <form method="post" class="inline">
                                     <input type="hidden" name="nid" value="<?php echo (int)$n['id']; ?>">
-                                    <button class="btn btn-sm" name="toggle_read" value="1">
+                                    <button style="height: 100%" class="btn btn-sm" name="toggle_read" value="1">
                                         <?php echo $n['is_read'] ? 'Okunmadı yap' : 'Okundu yap'; ?>
                                     </button>
                                 </form>

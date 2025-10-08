@@ -3,7 +3,7 @@
 session_start();
 if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
 
-$projectRoot = dirname(__DIR__, 2); // .../projeadi
+$projectRoot = $_SERVER['DOCUMENT_ROOT']; // /home/rookieve/public_html
 require_once('../config.php');
 $pdo = get_db_connection();
 
@@ -112,7 +112,7 @@ if (!$course_id) fail('course_id eksik');
 
 $modules = $_POST['modules'] ?? [];
 $files   = $_FILES['modules'] ?? null;
-if (empty($modules) || !is_array($modules)) fail('Modül verisi bulunamadı.');
+if (empty($modules) || !is_array($modules)) header('location: panel.php');
 
 // ---- Course ownership check ----
 $own = $pdo->prepare("SELECT id, team_db_id FROM courses WHERE id = ?");

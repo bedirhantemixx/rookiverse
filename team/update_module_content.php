@@ -3,7 +3,7 @@
 session_start();
 if (!isset($_SESSION['team_logged_in'])) { header('Location: ../team-login.php'); exit(); }
 
-$projectRoot = dirname(__DIR__, 2); // .../projeadi
+$projectRoot = $_SERVER['DOCUMENT_ROOT']; // .../projeadi
 require_once('../config.php');
 $pdo = get_db_connection();
 
@@ -325,8 +325,8 @@ try {
     }
 
     $pdo->commit();
-
-    // başarı → edit sayfasına dön
+    $stat = $pdo->prepare("UPDATE course_modules SET status='pending' WHERE id=?");
+    $stat->execute([$module_id]);
     header('Location: edit_module_content.php?id=' . (int)$module_id . '&ok=1');
     exit;
 

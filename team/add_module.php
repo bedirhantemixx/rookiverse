@@ -17,6 +17,30 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
     <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/manage_curriculum.css">
 </head>
+<style>
+    .loading-overlay {
+        position: fixed; inset: 0; z-index: 1000;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(0,0,0,.55);
+        backdrop-filter: blur(2px);
+    }
+    .loading-overlay.show { display: flex; }
+    .loading-box {
+        background: #E5AE32; color: #ffffff; border: 1px solid #ac7e25;
+        border-radius: 14px; padding: 18px 22px; min-width: 260px;
+        display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 18px 48px rgba(2,6,23,.35);
+    }
+    .spinner {
+        width: 22px; height: 22px; border-radius: 50%;
+        border: 3px solid rgba(228, 228, 228, 0.25);
+        border-top-color: #ffffff;
+        animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-weight: 700; }
+    .loading-sub { font-size: 12px; opacity: .75; margin-top: 2px; }
+</style>
 <body class="bg-gray-100">
 <?php require_once $projectRoot . '/navbar.php'; ?>
 
@@ -56,8 +80,15 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
         </div>
     </div>
 </div>
-
-<script src="https://unpkg.com/lucide@latest"></script>
+<div id="loading-overlay" class="loading-overlay" aria-hidden="true">
+    <div class="loading-box">
+        <div class="spinner" aria-hidden="true"></div>
+        <div>
+            <div class="loading-text">Yükleniyor…</div>
+            <div class="loading-sub">Büyük dosyalarda bu işlem birkaç saniye sürebilir.</div>
+        </div>
+    </div>
+</div>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -483,5 +514,46 @@ if (!$course_id) { die("Kurs ID'si bulunamadı."); }
         });
         document.getElementById('cancel-link-btn').addEventListener('click', () => { linkModal.classList.remove('show'); });
     });
+
+
+            const formEl = document.getElementById('curriculum-form');
+            const overlayEl = document.getElementById('loading-overlay');
+            const submitBtn = formEl?.querySelector('button[type="submit"]');
+
+            if (formEl && overlayEl && submitBtn) {
+            let submitting = false;
+            let formChanged = false;
+
+                // 🔸 Sayfadaki değişiklikleri izle (text, input, file vs.)
+            formEl.addEventListener('input', () => {
+            formChanged = true;
+            });
+            formEl.addEventListener('change', () => {
+            formChanged = true;
+            });
+
+            formEl.addEventListener('submit', () => {
+            submitting = true;
+            formChanged = false;  // önemli: gönderince değişiklik durumu sıfırlanır
+
+            overlayEl.classList.add('show');
+            submitBtn.disabled = true;
+            submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = `
+          <span class="inline-flex items-center gap-2">
+            <span class="spinner" style="width:16px; height:16px; border-width:2px;"></span>
+            Kaydediliyor…
+          </span>
+        `;
+            });
+
+                // 🔸 Sadece gerçekten değişiklik varsa uyarı göster
+            window.addEventListener('beforeunload', (e) => {
+            if (formChanged && !submitting) {
+            e.preventDefault();
+            e.returnValue = '';
+            }
+            });
+            }
 </script></body>
 </html>

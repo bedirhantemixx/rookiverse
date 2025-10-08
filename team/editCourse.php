@@ -14,7 +14,7 @@ if (!$course_id) { header('Location: panel.php'); exit(); }
 
 // --- Mevcut kurs verilerini çek (front-end prefill için) ---
 $stmt = $pdo->prepare("
-  SELECT id, title, about_text, goal_text, learnings_text, category_id, level, status,
+  SELECT id, title, about_text, goal_text, learnings_text, category_id, level, status, is_deleted,
          cover_image_url, intro_video_url
   FROM courses
   WHERE id = :id AND team_db_id = :team
@@ -128,6 +128,13 @@ $page_title = "Kursu Düzenle";
 <?php require_once $projectRoot . '/navbar.php'; ?>
 
 <div class="max-w-6xl mx-auto py-10 px-4 space-y-8">
+    <?php
+    if ($course['is_deleted']):
+    ?>
+        Bu kurs silinmiş.
+    <?php
+    else:
+    ?>
     <div class="flex flex-wrap gap-3 justify-between items-center">
         <div>
             <h1 class="text-3xl font-bold text-gray-900"><?= htmlspecialchars($course['title']) ?></h1>
@@ -311,6 +318,7 @@ $page_title = "Kursu Düzenle";
                 </div>
             </div>
         </div>
+
     </div>
 
     <div class="flex justify-end gap-2">
@@ -337,6 +345,10 @@ $page_title = "Kursu Düzenle";
             <button type="button" onclick="closePopup('category-popup')" class="w-full btn-muted">İptal</button>
         </div>
     </div>
+
+    <?php
+    endif;
+    ?>
 </div>
 
 <script>

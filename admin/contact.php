@@ -2,8 +2,9 @@
 $page_title = "İletişim Mesajları";
 $projectRoot = dirname(__DIR__);
 require_once($projectRoot . '/config.php');
-require_once($projectRoot . '/admin/admin_header.php');
-require_once($projectRoot . '/admin/admin_sidebar.php');
+session_start();
+if (!isset($_SESSION['admin_logged_in'])) { header("Location: index.php"); exit(); }
+$current_page = basename($_SERVER['PHP_SELF']);
 
 $pdo = get_db_connection();
 
@@ -20,6 +21,9 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute();
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+require_once 'admin_header.php';
+require_once($projectRoot . '/admin/admin_sidebar.php');
+
 ?>
 <style>
     .badge {display:inline-block;font-size:12px;font-weight:700;padding:4px 8px;border-radius:9999px}

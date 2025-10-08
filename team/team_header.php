@@ -1,6 +1,13 @@
 <?php
 $projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
 require_once $projectRoot . '/config.php';
+$pdo = get_db_connection();
+$count = $pdo->prepare("SELECT 
+    COUNT(*) AS total,
+    SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) AS unread
+    FROM notifications WHERE team_id = ?");
+$count->execute([$_SESSION['team_db_id']]);
+list($totalRows, $unreadTotal) = $count->fetch(PDO::FETCH_NUM);
 ?>
 
 <!DOCTYPE html>

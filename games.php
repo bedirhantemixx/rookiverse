@@ -99,45 +99,23 @@ require_once 'config.php';
     lucide.createIcons();
 
 
-
-    window.GAMES = [
-        {
-            slug: 'wordGuesser',
-            title: 'Harf Tahmin',
-            desc: 'FRC terimlerini harf harf bularak puan topla.',
-            type: 'kelime',
-            minutes: '3-5',
-            players: 'Tek',
-            icon: 'letter-text'
-        },
-        {
-            slug: 'multipleChoice',
-            title: 'Terim Quiz',
-            desc: 'Çoktan seçmeli sorularla bilgini ölç, hızlı puan kap.',
-            type: 'quiz',
-            minutes: '4-6',
-            players: 'Tek',
-            icon: 'help-circle'
-        },
-        {
-            slug: 'guessGame',
-            title: 'Takım Numarası Tahmin',
-            desc: 'FRC takımlarının isimlerinden doğru takım numarasını tahmin et.',
-            type: 'tahmin',
-            minutes: '4-6',
-            players: 'Tek / İki',
-            icon: 'hash'
-        },
-        {
-            slug: 'flipGame',
-            title: 'Hafıza Kartları',
-            desc: 'Kartları çevir, aynı terimleri yakala.',
-            type: 'hafiza',
-            minutes: '3-5',
-            players: 'Tek / İki',
-            icon: 'gallery-vertical-end'
+    async function loadGames() {
+        try {
+            const res = await fetch('data.php?type=games');
+            const json = await res.json();
+            if (!json.ok) throw new Error(json.error);
+            window.GAMES = json.data.items;
+            render(window.GAMES);
+        } catch (err) {
+            console.error('Games yüklenemedi:', err);
+            grid.innerHTML = '<p class="text-red-600">Oyun listesi yüklenemedi.</p>';
         }
-    ];
+    }
+
+    // Sayfa açılınca oyunları yükle
+    loadGames();
+
+
 
     const grid = document.getElementById('game-grid');
     const template = document.getElementById('game-card-template');

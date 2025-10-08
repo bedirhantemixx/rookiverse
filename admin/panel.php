@@ -2,15 +2,19 @@
 $page_title = "Dashboard";
 $projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
 require_once($projectRoot . '/config.php');
-require_once($projectRoot . '/admin/admin_header.php');
-require_once($projectRoot . '/admin/admin_sidebar.php');
+session_start();
+if (!isset($_SESSION['admin_logged_in'])) { header("Location: index.php"); exit(); }
+$current_page = basename($_SERVER['PHP_SELF']);
 
 $pdo = get_db_connection();
 $total_teams = $pdo->query("SELECT count(*) FROM teams")->fetchColumn();
 $course_count = $pdo->query("SELECT count(*) FROM courses WHERE status='approved'")->fetchColumn();
 
 
+require_once 'admin_header.php';
+require_once($projectRoot . '/admin/admin_sidebar.php');
 $notification_count = $pending_approvals;
+
 ?>
 
     <main class="main-content">

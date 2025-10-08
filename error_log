@@ -1,0 +1,321 @@
+[04-Oct-2025 16:09:34 UTC] PHP Parse error:  syntax error, unexpected '?' in /home/rookieve/public_html/team/team_header.php on line 10
+[04-Oct-2025 16:09:48 UTC] PHP Parse error:  syntax error, unexpected '?' in /home/rookieve/public_html/team/team_header.php on line 10
+[04-Oct-2025 16:12:03 UTC] PHP Parse error:  syntax error, unexpected '?' in /home/rookieve/public_html/team/team_header.php on line 10
+[04-Oct-2025 17:23:46 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/panel.php on line 6
+[04-Oct-2025 17:59:01 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:01:39 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:01:50 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:02:31 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:02:42 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:02:59 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:15:00 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:15:12 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:21:15 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function redirect() in /home/rookieve/public_html/team/list_questions.php:31
+Stack trace:
+#0 /home/rookieve/public_html/team/list_questions.php(56): redirect_same()
+#1 {main}
+  thrown in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:30:08 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 18:30:14 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/rookieve/public_html/team/team_header.php:5) in /home/rookieve/public_html/team/list_questions.php on line 31
+[04-Oct-2025 19:28:05 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function redirect() in /home/rookieve/public_html/team/create_course.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/rookieve/public_html/team/create_course.php on line 3
+[04-Oct-2025 19:28:08 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function redirect() in /home/rookieve/public_html/team/create_course.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/rookieve/public_html/team/create_course.php on line 3
+[04-Oct-2025 19:28:19 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function redirect() in /home/rookieve/public_html/team/create_course.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/rookieve/public_html/team/create_course.php on line 3
+[04-Oct-2025 19:28:20 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function redirect() in /home/rookieve/public_html/team/create_course.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/rookieve/public_html/team/create_course.php on line 3
+[04-Oct-2025 19:28:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function redirect() in /home/rookieve/public_html/team/create_course.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/rookieve/public_html/team/create_course.php on line 3
+[04-Oct-2025 19:28:53 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function redirect() in /home/rookieve/public_html/team/create_course.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/rookieve/public_html/team/create_course.php on line 3
+[04-Oct-2025 19:40:26 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 278
+[04-Oct-2025 19:40:26 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 281
+[04-Oct-2025 19:40:28 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 278
+[04-Oct-2025 19:40:28 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 281
+[04-Oct-2025 19:40:33 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 278
+[04-Oct-2025 19:40:33 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 281
+[04-Oct-2025 19:40:50 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 19:40:55 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 19:40:57 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 19:42:52 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 19:42:54 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 19:42:59 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 19:43:21 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 20:29:30 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:29:32 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:29:38 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:29:55 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:29:57 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:30:04 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:30:04 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:30:04 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:30:05 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:30:05 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:30:24 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:30:28 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:30:43 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:32:09 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:34:31 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:34:31 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:34:31 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:34:31 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:34:32 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:34:32 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:34:32 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:39:26 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:39:26 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:39:27 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:39:27 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:28 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:33 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:34 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:34 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:34 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:35 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:35 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:35 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:36 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:36 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:40:40 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:42:09 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:42:10 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:42:31 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 141
+[04-Oct-2025 20:45:27 UTC] PHP Parse error:  syntax error, unexpected '?' in /home/rookieve/public_html/teams.php on line 10
+[04-Oct-2025 20:45:33 UTC] PHP Parse error:  syntax error, unexpected '?' in /home/rookieve/public_html/teams.php on line 10
+[04-Oct-2025 20:47:10 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:01:55 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:01:55 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:01:55 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:01:56 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:02:01 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:02:08 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:20:54 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 278
+[04-Oct-2025 21:20:54 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 281
+[04-Oct-2025 21:21:30 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:21:37 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:23:13 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:23:21 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:23:23 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:23:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:23:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:23:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:23:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:24:34 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:24:34 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:24:34 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:24:34 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:24:41 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:24:41 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:24:41 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:24:41 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:24:52 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:24:52 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:24:52 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:24:52 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:25:13 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:25:13 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:25:13 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:25:13 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:25:16 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:25:16 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:25:16 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:25:16 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:25:32 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:25:32 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:25:32 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:25:32 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:25:41 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:25:41 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:25:41 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:25:41 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:26:45 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:26:45 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:26:45 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:26:45 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:26:49 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:26:49 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:26:49 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:26:49 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:26:54 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:26:54 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:26:54 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:26:54 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:27:06 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:27:06 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:27:06 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:27:06 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:30:47 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:30:47 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:30:47 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:30:47 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:32:51 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:32:51 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:32:51 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:32:51 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:33:55 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:33:55 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:33:55 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:33:55 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:34:13 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 177
+[04-Oct-2025 21:34:13 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 227
+[04-Oct-2025 21:34:13 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 239
+[04-Oct-2025 21:34:13 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 276
+[04-Oct-2025 21:34:38 UTC] PHP Warning:  Array to string conversion in /home/rookieve/public_html/moduleDetails.php on line 92
+[04-Oct-2025 21:34:38 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:34:38 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:34:38 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:34:38 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:35:52 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:35:52 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:35:52 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:35:52 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:36:33 UTC] PHP Warning:  Undefined array key 0 in /home/rookieve/public_html/moduleDetails.php on line 93
+[04-Oct-2025 21:36:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 93
+[04-Oct-2025 21:36:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:36:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:36:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:36:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:37:00 UTC] PHP Warning:  Undefined array key 0 in /home/rookieve/public_html/moduleDetails.php on line 93
+[04-Oct-2025 21:37:00 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 93
+[04-Oct-2025 21:37:00 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:37:00 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:37:00 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:37:00 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:37:07 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:37:07 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:37:07 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:37:07 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:39:31 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:39:33 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:40:41 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:40:46 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:41:17 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:41:33 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:41:59 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:42:05 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:42:10 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:46:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:46:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:46:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:46:33 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:48:29 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 176
+[04-Oct-2025 21:48:29 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 226
+[04-Oct-2025 21:48:29 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 238
+[04-Oct-2025 21:48:29 UTC] PHP Warning:  Trying to access array offset on null in /home/rookieve/public_html/moduleDetails.php on line 275
+[04-Oct-2025 21:49:57 UTC] PHP Fatal error:  Uncaught ValueError: setcookie(): "path" option cannot contain ",", ";", " ", "\t", "\r", "\n", "\013", or "\014" in /home/rookieve/public_html/reactions_api.php:36
+Stack trace:
+#0 /home/rookieve/public_html/reactions_api.php(36): setcookie('rv_anon', 'e828ede859d8844...', 1791150597, '/; samesite=Lax', '', false, true)
+#1 {main}
+  thrown in /home/rookieve/public_html/reactions_api.php on line 36
+[04-Oct-2025 21:51:25 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:51:46 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[04-Oct-2025 21:56:56 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[04-Oct-2025 21:56:56 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[04-Oct-2025 22:01:04 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[04-Oct-2025 22:01:04 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[04-Oct-2025 22:01:23 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[04-Oct-2025 22:01:23 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[04-Oct-2025 22:01:25 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[04-Oct-2025 22:01:25 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[04-Oct-2025 22:13:22 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[04-Oct-2025 22:13:22 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[04-Oct-2025 22:14:39 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[04-Oct-2025 22:14:39 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[05-Oct-2025 02:37:20 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 02:37:20 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 02:37:20 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 02:37:20 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 02:37:20 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 05:32:52 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 05:44:10 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[05-Oct-2025 05:44:10 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[05-Oct-2025 05:44:12 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[05-Oct-2025 05:44:12 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[05-Oct-2025 05:44:41 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[05-Oct-2025 05:44:41 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[05-Oct-2025 05:44:52 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[05-Oct-2025 05:44:52 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[05-Oct-2025 06:12:35 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:12:36 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:13:26 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:13:35 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:20:26 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:20:27 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:20:29 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:20:41 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:20:44 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:20:45 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:20:47 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:20:51 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:57:22 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:57:26 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:57:27 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:57:28 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 06:57:31 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 07:09:03 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 07:09:05 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 07:09:29 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 07:09:41 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 07:11:49 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 07:12:03 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 07:12:18 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 08:30:25 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 08:30:30 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 08:43:49 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 09:52:06 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 14:52:15 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[05-Oct-2025 14:52:15 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[05-Oct-2025 15:32:06 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[05-Oct-2025 21:38:23 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[05-Oct-2025 21:38:23 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[06-Oct-2025 08:37:43 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 08:38:08 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 14:01:12 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[06-Oct-2025 14:01:12 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[06-Oct-2025 14:36:55 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[06-Oct-2025 14:36:55 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[06-Oct-2025 15:12:07 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 15:25:25 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 15:58:57 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 15:58:59 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 16:49:05 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 16:51:44 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 17:35:56 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 17:58:07 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 18:01:19 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/rookieve/public_html/navbar.php on line 15
+[06-Oct-2025 18:36:41 UTC] PHP Warning:  Undefined variable $prev_url in /home/rookieve/public_html/moduleDetails.php on line 291
+[06-Oct-2025 18:36:41 UTC] PHP Warning:  Undefined variable $next_url in /home/rookieve/public_html/moduleDetails.php on line 294
+[06-Oct-2025 22:01:33 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:01:38 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:01:41 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:02:42 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:02:47 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:02:49 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:02:51 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:02:52 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:02:53 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:02:55 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:01 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:07 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:09 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:10 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:10 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:11 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:11 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:11 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:12 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:12 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140
+[06-Oct-2025 22:03:12 UTC] PHP Parse error:  syntax error, unexpected ':', expecting '{' in /home/rookieve/public_html/config.php on line 140

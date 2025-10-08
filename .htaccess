@@ -1,32 +1,15 @@
 RewriteEngine On
+RewriteBase /
 
-# -----------------------------------
-# 🔸 404 Hata Sayfası Yönlendirmesi
-# -----------------------------------
+# 404 sayfanı tekrar rewrite etme
+RewriteCond %{REQUEST_URI} !^/404\.php$
 
-# Sunucuya özel hata sayfası tanımı
-ErrorDocument 404 /404.php
-
-
-# Temel URL yönlendirmeleri için önerilen ayarlar
-<IfModule mod_rewrite.c>
-
-  # Gerekiyorsa kök dizini belirt
-  # RewriteBase /rookieverse/
-
-  # Eğer istenen dosya ya da dizin yoksa 404'e düş
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /404.php [L]
-</IfModule>
-
-
-
-RewriteBase /frc_rookieverse/
-
-DirectoryIndex login.php index.php
-
+# Var olan dosya/klasörü bypass et
 RewriteCond %{REQUEST_FILENAME} !-f
-
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ $1.php [L,QSA]
+
+# Her şeyi index.php'ye gönder (pretty URL)
+RewriteRule ^ index.php [L,QSA]
+
+# İsteğe bağlı: doğrudan /404.php çağrısını 404 statüsüne zorlamak için:
+ErrorDocument 404 /404.php

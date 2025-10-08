@@ -2,7 +2,7 @@
 declare(strict_types=1);
 session_start();
 
-$projectRoot = dirname(__DIR__, 2);
+$projectRoot = $_SERVER['DOCUMENT_ROOT'];
 require_once '../config.php';
 
 header('Content-Type: application/json; charset=utf-8');

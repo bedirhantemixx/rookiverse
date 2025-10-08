@@ -3,7 +3,6 @@ session_start();
 
 $projectRoot = dirname(__DIR__);
 require_once $projectRoot . '/config.php';
-require_once 'team_header.php';
 
 
 if (!isset($_SESSION['team_logged_in'])) {
@@ -191,6 +190,8 @@ $base = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 $logoPath = $team['logo'] ?? ($team['profile_pic_path'] ?? '');
 $logoUrl  = $logoPath ? ($base . '/' . ltrim($logoPath, '/')) : ($base . '/assets/images/default.jpg'); // .jgp düzeltildi
 $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
+
+require_once 'team_header.php';
 ?>
 
     <style>
@@ -439,6 +440,13 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
         justify-content: center;
         border: 1px solid white;
     }
+    .menu-label-with-badge{display:inline-flex;align-items:center;gap:8px}
+    .menu-badge{
+        background:#ef4444;color:#fff;border-radius:9999px;
+        font-size:11px;line-height:1;padding:4px 6px;min-height: 15px;
+        display:inline-flex;align-items:center;justify-content:center;
+        font-weight:600;
+    }
 </style>
 
 <aside class="sidebar">
@@ -457,7 +465,7 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
         <a href="panel.php"><i data-lucide="layout-dashboard"></i> Panelim</a>
         <a href="create_course.php"><i data-lucide="plus-square"></i> Yeni Kurs Oluştur</a>
         <a href="profile.php" class="active"><i data-lucide="settings"></i> Profilimi Düzenle</a>
-        <a href="notifications.php" ><i data-lucide="bell"></i> Bildirimler</a>
+        <a href="notifications.php"><i data-lucide="bell"></i> Bildirimler<?php if ($unreadTotal > 0): ?><span class="menu-badge"><?php echo $unreadTotal; ?></span><?php endif; ?></a>
         <a href="list_questions.php" ><i data-lucide="message-square"></i> Soru Yönetimi</a>
 
         <?php
@@ -472,10 +480,13 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
     <div class="top-bar">
         <div class="font-bold">Takım #<?php echo $teamNumber; ?> Profil Ayarları</div>
         <div class="actions">
-            <button class="notification-button">
+            <button id="notif-button" class="notification-button">
                 <i data-lucide="bell"></i>
-                <div class="notification-badge">3</div>
+                <?php if ($unreadTotal > 0): ?>
+                    <div class="notification-badge"><?= htmlspecialchars($unreadTotal) ?></div>
+                <?php endif; ?>
             </button>
+
             <?php
             if (isset($_SESSION['admin_panel_view'])):
                 ?>
@@ -689,6 +700,9 @@ $teamNumber = htmlspecialchars((string) ($_SESSION['team_number'] ?? ''));
             }
         });
     });
+    document.querySelector('#notif-button').addEventListener('click', ()=>{
+        window.location.href = 'notifications.php';
+    })
 </script>
 
 <?php require_once __DIR__ . '/../admin/admin_footer.php'; ?>

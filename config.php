@@ -12,7 +12,7 @@ $domain   = $_SERVER['HTTP_HOST'];
 // FS yollarını normalize et
 $docRoot  = rtrim(str_replace('\\','/', $_SERVER['DOCUMENT_ROOT']), '/');
 $projRoot = rtrim(str_replace('\\','/', __DIR__), '/'); // config.php'nin klasörü (proje kökü)
-$basePath = str_replace($docRoot, '', $projRoot);       // web köküne göre relatif path, ör: /rookiverse/rookiverse
+$basePath = str_replace($docRoot, '', $projRoot);       // web köküne göre relatif path, ör: /rookieverse/rookieverse
 
 define('BASE_URL', $protocol . $domain . $basePath);
 // İstersen trailing slash'lı sabit:
@@ -23,10 +23,10 @@ function get_db_connection() {
     static $db = null;
 
     if ($db === null) {
-        $host = 'localhost';
-        $dbname = 'frc_rookieverse';
-        $username = 'root';
-        $password = '';
+        $host = 'localhost';          // ⚠️ cPanel'de genellikle 'localhost' olur
+        $dbname = 'rookieve_frc_rookieverse';  // Veritabanı adı
+        $username = 'rookieve_rookieve';       // cPanel MySQL kullanıcı adı
+        $password = 'Nh;6l.bN0U3x8Y'; // Şifre
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
@@ -35,6 +35,7 @@ function get_db_connection() {
             $db = new PDO($dsn, $username, $password, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
             ]);
         } catch (PDOException $e) {
             die("Veritabanı bağlantı hatası: " . $e->getMessage());
@@ -43,6 +44,7 @@ function get_db_connection() {
 
     return $db;
 }
+
 
 function getCourseDetails($id)
 {
@@ -114,7 +116,7 @@ function getCourses()
 {
     $db = get_db_connection();
 
-    $sql = "SELECT * FROM courses";
+    $sql = "SELECT * FROM courses WHERE is_deleted = 0";
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -148,7 +150,6 @@ function rv_get_or_set_anon_id(): string
     return $new;
 }
 
-
 function getCategory($id)
 {
     $db = get_db_connection();
@@ -167,6 +168,18 @@ function getModules($id)
     $db = get_db_connection();
 
     $sql = "SELECT * FROM course_modules WHERE course_id = ? AND status = 'approved' ORDER BY sort_order ASC";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+function getModulesPreviewSafe($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM course_modules WHERE course_id = ? ORDER BY sort_order ASC";
 
     $stmt = $db->prepare($sql);
     $stmt->execute([$id]);

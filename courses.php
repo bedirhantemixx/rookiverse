@@ -1,7 +1,6 @@
-<!DOCTYPE html>
-<html lang="tr">
 <?php require_once 'config.php';
 session_start();
+
 $courses = getCourses();
 $categories = getApprovedCategories();
 $approvedCourses = 0;
@@ -13,7 +12,8 @@ foreach ($courses as $course) {
 
 
 ?>
-
+<!DOCTYPE html>
+<html lang="tr">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
