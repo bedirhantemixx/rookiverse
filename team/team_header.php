@@ -1,4 +1,6 @@
 <?php
+if (!$_SESSION['team_logged_in']) {header('location: ../index.php');}
+
 $projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
 require_once $projectRoot . '/config.php';
 $pdo = get_db_connection();

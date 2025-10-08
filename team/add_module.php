@@ -5,6 +5,8 @@ $projectRoot = dirname(__DIR__); // Ör: C:\xampp\htdocs\projeadi
 require_once($projectRoot . '/config.php');
 
 $course_id = $_GET['course_id'] ?? null;
+$course = getCourseDetailsById($course_id);
+if ($_SESSION['team_db_id'] != $course['team_db_id']) { header('Location: ../index.php'); exit(); }
 if (!$course_id) { die("Kurs ID'si bulunamadı."); }
 ?>
 <!DOCTYPE html>

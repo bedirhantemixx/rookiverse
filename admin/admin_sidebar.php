@@ -71,6 +71,20 @@ $pending_badge = $pending_approvals > 99 ? '99+' : (string)$pending_approvals;
         <div class="menu-item">
             <div class="menu-title">
                 <div class="menu-label-with-badge">
+                    <i data-lucide="layers-2" class="menu-icon"></i>Kategoriler
+                </div>
+                <i data-lucide="chevron-right" class="menu-arrow"></i>
+            </div>
+            <div class="submenu">
+                <a href="manage_categories.php">Kategorileri Yönet</a>
+
+            </div>
+
+        </div>
+
+        <div class="menu-item">
+            <div class="menu-title">
+                <div class="menu-label-with-badge">
                     <i data-lucide="user-cog" class="menu-icon"></i>Admin Yönetimi
                 </div>
                 <i data-lucide="chevron-right" class="menu-arrow"></i>

@@ -2,12 +2,21 @@
 /** team_course_questions_printable.php
  *  Server-side render + print friendly
  */
+
 session_start();
 $projectRoot = dirname(__DIR__);
 require_once $projectRoot . '/config.php';
-require_once 'team_header.php';
+if (!$_SESSION['team_logged_in']) {header('location: ../index.php');}
 
-if (!isset($_SESSION['team_logged_in'])) { redirect("Location: ../team-login.php"); exit(); }
+$projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
+require_once $projectRoot . '/config.php';
+$pdo = get_db_connection();
+$count = $pdo->prepare("SELECT 
+    COUNT(*) AS total,
+    SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) AS unread
+    FROM notifications WHERE team_id = ?");
+$count->execute([$_SESSION['team_db_id']]);
+list($totalRows, $unreadTotal) = $count->fetch(PDO::FETCH_NUM);
 
 $pdo        = get_db_connection();
 $teamDbId   = $_SESSION['team_db_id'] ?? null;
@@ -25,12 +34,6 @@ $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 /** ---- Actions (POST) ---- */
 $flash = null;
-function redirect_same() {
-    $qs = $_GET;
-    $loc = $_SERVER['PHP_SELF'].'?'.http_build_query($qs);
-    redirect("Location: $loc");
-    exit;
-}
 
 if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])) {
     if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) {
@@ -53,27 +56,61 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])) {
                 $u->execute([$new, $qid]);
                 $flash = ['type'=>'ok','msg'=> $new? 'Soru yayına alındı.':'Soru gizlendi.'];
             }
-            redirect_same();
+            header("Location: list_questions.php");
+        }
+        if ($action === 'delete_reply') {
+            $rid = (int)($_POST['reply_id'] ?? 0);
+            if ($rid <= 0) {
+                $flash = ['type'=>'error','msg'=>'Geçersiz yanıt.'];
+                header("Location: list_questions.php");
+                exit;
+            }
+
+            // Bu yanıt gerçekten bu takımın kursuna ait mi kontrol et
+            $chk = $pdo->prepare("
+        SELECT 1
+        FROM course_question_replies r
+        JOIN course_questions q ON q.id = r.question_id
+        JOIN courses c ON c.id = q.course_id
+        WHERE r.id = ? AND c.team_db_id = ?
+        LIMIT 1
+    ");
+            $chk->execute([$rid, $teamDbId]);
+
+            if (!$chk->fetchColumn()) {
+                $flash = ['type'=>'error','msg'=>'Yetkisiz işlem veya kayıt bulunamadı.'];
+                header("Location: list_questions.php");
+                exit;
+            }
+
+            // Sil
+            $del = $pdo->prepare("DELETE FROM course_question_replies WHERE id = ? LIMIT 1");
+            $del->execute([$rid]);
+
+            $flash = ['type'=>'ok','msg'=>'Yanıt silindi.'];
+            header("Location: list_questions.php");
+            exit;
         }
 
         if ($action === 'add_reply') {
             $qid  = (int)($_POST['question_id'] ?? 0);
             $body = trim($_POST['body'] ?? '');
             $name = trim($_POST['responder_name'] ?? 'Eğitmen');
-            if ($body===''){ $flash = ['type'=>'error','msg'=>'Boş yanıt gönderilemez.']; redirect_same(); }
+            if ($body===''){ $flash = ['type'=>'error','msg'=>'Boş yanıt gönderilemez.']; header("Location: list_questions.php"); }
 
             $chk = $pdo->prepare("SELECT 1
                                   FROM course_questions q
                                   JOIN courses c ON c.id=q.course_id
                                   WHERE q.id=? AND c.team_db_id=? LIMIT 1");
             $chk->execute([$qid, $teamDbId]);
-            if (!$chk->fetchColumn()) { $flash = ['type'=>'error','msg'=>'Yetkisiz işlem.']; redirect_same(); }
+            if (!$chk->fetchColumn()) { $flash = ['type'=>'error','msg'=>'Yetkisiz işlem.']; header("Location: list_questions.php");}
 
             $ins = $pdo->prepare("INSERT INTO course_question_replies (question_id, team_db_id, responder_name, body)
                                   VALUES (?,?,?,?)");
             $ins->execute([$qid, $teamDbId, ($name ?: 'Eğitmen'), $body]);
             $flash = ['type'=>'ok','msg'=>'Yanıt eklendi.'];
-            redirect_same();
+            header("Location: list_questions.php");
+
         }
 
         $flash = ['type'=>'error','msg'=>'Bilinmeyen işlem.'];
@@ -144,11 +181,13 @@ $repliesByQ = [];
 if (!empty($items)) {
     $ids = array_map(fn($x)=>(int)$x['id'], $items);
     $in  = implode(',', array_fill(0, count($ids), '?'));
-    $r = $pdo->prepare("SELECT question_id, responder_name, body,
-                        DATE_FORMAT(created_at,'%d.%m.%Y %H:%i') created_at
-                        FROM course_question_replies
-                        WHERE question_id IN ($in)
-                        ORDER BY id ASC");
+    $r = $pdo->prepare("
+    SELECT id, question_id, responder_name, body,
+           DATE_FORMAT(created_at,'%d.%m.%Y %H:%i') created_at
+    FROM course_question_replies
+    WHERE question_id IN ($in)
+    ORDER BY id ASC
+");
     $r->execute($ids);
     foreach ($r->fetchAll(PDO::FETCH_ASSOC) as $row) {
         $qid = (int)$row['question_id'];
@@ -251,6 +290,14 @@ require_once 'team_header.php';
 <body>
 
 <aside class="sidebar no-print">
+    <?php
+    if (!isset($_SESSION['admin_panel_view'])):
+        ?>
+        <a class="flex items-center space-x-2" href="<?php echo BASE_URL; ?>">
+            <span class="rookieverse">FRC ROOKIEVERSE</span>
+        </a>
+    <?php endif;?>
+
     <div class="sidebar-profile">
         <h2>Hoş Geldin,</h2>
         <p>Takım #<?php echo h($teamNumber); ?></p>
@@ -371,14 +418,28 @@ require_once 'team_header.php';
                             <div class="replies" id="replies-<?php echo $qid; ?>" style="display:none;margin-top:6px;">
                                 <?php if (empty($rows)): ?>
                                     <div style="color:#666;">Henüz yanıt yok.</div>
-                                <?php else: foreach ($rows as $r): ?>
-                                    <div style="margin-top:8px;padding:8px;border:1px solid #eee;border-radius:8px;">
-                                        <div style="font-size:12px;color:#667085;">
-                                            <?php echo h($r['created_at']); ?> • <?php echo h($r['responder_name'] ?: 'Eğitmen'); ?>
+                                <?php
+                                    else:
+                                    foreach ($rows as $r): ?>
+                                    <div style="margin-top:8px;display: flex;justify-content: space-between;flex-direction: row;padding:8px;border:1px solid #eee;border-radius:8px;">
+
+                                        <div style="font-size:12px;color:#667085;display:flex;flex-direction: column;justify-content:space-between;gap:5px; width: 100%">
+                                            <span><?php echo h($r['created_at']); ?> • <?php echo h($r['responder_name'] ?: 'Eğitmen'); ?></span>
+
+                                            <div style="text-align: left" ><?php echo nl2br(h($r['body'])); ?></div>
+
                                         </div>
-                                        <div><?php echo nl2br(h($r['body'])); ?></div>
+                                        <form class="no-print" method="post" action="<?php echo h($_SERVER['PHP_SELF'] . qs()); ?>" onsubmit="return confirm('Bu yanıtı silmek istediğine emin misin? Bu işlem geri alınamaz.');" style="margin:0;">
+                                            <input type="hidden" name="csrf" value="<?php echo h($CSRF); ?>">
+                                            <input type="hidden" name="action" value="delete_reply">
+                                            <input type="hidden" name="reply_id" value="<?php echo (int)$r['id']; ?>">
+                                            <button type="submit" class="btn btn-outline" title="Yanıtı sil">
+                                                <i data-lucide="trash-2"></i> Sil
+                                            </button>
+                                        </form>
                                     </div>
-                                <?php endforeach; endif; ?>
+                                <?php endforeach; endif;?>
+
                             </div>
                         </td>
                         <td><?php echo $badge; ?></td>

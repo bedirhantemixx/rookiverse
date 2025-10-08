@@ -202,7 +202,7 @@ require_once __DIR__ . '/admin_sidebar.php';
     </style>
 </head>
 <body>
-<div class="page-container">
+<div style="width: 100%" class="page-container">
     <main class="main-content">
         <div class="page-header mb-6" style="display:flex;flex-direction:column">
             <h1 class="text-3xl font-extrabold">Silme İstekleri</h1>

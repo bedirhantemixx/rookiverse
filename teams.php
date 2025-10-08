@@ -1,5 +1,6 @@
 <?php
 // teams.php
+session_start();
 $projectRoot = __DIR__;
 require_once $projectRoot . '/config.php';
 

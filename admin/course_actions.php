@@ -161,7 +161,7 @@ require_once 'admin_header.php';
 <body>
 <?php require_once 'admin_sidebar.php'; ?>
 
-<div class="page-container">
+<div style="width: 100%" class="page-container">
     <main class="main-content">
         <div class="page-header mb-8 flex flex-col">
             <h1 class="text-4xl font-extrabold text-gray-800">Kurs Yönetimi</h1>

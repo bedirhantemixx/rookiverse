@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require_once 'config.php';
 ?>
 <!DOCTYPE html>
@@ -27,7 +29,6 @@ require_once 'config.php';
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --rv-card: 255 255 255; --rv-muted: 248 250 252; }
-        body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
         .rv-container { max-width: 1100px; }
         .rv-card { background: rgb(var(--rv-card)); box-shadow: 0 10px 25px rgba(2,6,23,0.08); }
         .rv-chip { border: 1px solid #e5e7eb; }

@@ -234,7 +234,7 @@ require_once 'admin_header.php';
 
 <?php require_once 'admin_sidebar.php'; ?>
 
-<div class="page-container">
+<div style="width: 100%" class="page-container">
     <main class="main-content">
         <div class="content-area">
             <div class="page-header mb-8 flex flex-col">

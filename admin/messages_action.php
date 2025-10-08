@@ -35,7 +35,7 @@ try{
         $stmt = $pdo->prepare("UPDATE contact_messages SET is_read=0 WHERE id IN ($in)");
         $stmt->execute($ids);
     } else { // delete
-        $stmt = $pdo->prepare("DELETE FROM contact_messages WHERE id IN ($in)");
+        $stmt = $pdo->prepare("UPDATE contact_messages SET archived=1 WHERE id IN ($in)");
         $stmt->execute($ids);
     }
 

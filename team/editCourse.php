@@ -25,6 +25,7 @@ if (!$course) { header('Location: panel.php'); exit(); }
 
 // Sadece approved kategoriler
 $categories = $pdo->query("SELECT id, name FROM categories WHERE status='approved' ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$catIDs = $pdo->query("SELECT id FROM categories WHERE status='approved' ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 $page_title = "Kursu Düzenle";
 ?>
 <!DOCTYPE html>
@@ -189,7 +190,16 @@ $page_title = "Kursu Düzenle";
                 <label for="category_id" class="font-semibold text-gray-800">Kategori</label>
                 <div class="flex flex-col sm:flex-row gap-3 items-center">
                     <select id="category_id" name="category_id" class="form-select w-full" required>
+
                         <option value="" disabled <?= empty($course['category_id']) ? 'selected':''; ?>>Lütfen bir kategori seçin...</option>
+                        <?php
+                        if (!in_array($course['category_id'], $catIDs)):
+                            $cat = getCategory($course['category_id']);
+                        ?>
+                            <option value="<?= (int)$cat['id'] ?>" <?= ((int)$cat['id']===(int)$course['category_id'])?'selected':''; ?>>
+                                <?= htmlspecialchars($cat['name']) ?> (Onay Bekliyor)
+                            </option>
+                        <?php endif;?>
                         <?php foreach($categories as $cat): ?>
                             <option value="<?= (int)$cat['id'] ?>" <?= ((int)$cat['id']===(int)$course['category_id'])?'selected':''; ?>>
                                 <?= htmlspecialchars($cat['name']) ?>

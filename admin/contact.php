@@ -9,13 +9,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $pdo = get_db_connection();
 
 /* İstatistikler */
-$total_messages  = (int)$pdo->query("SELECT COUNT(*) FROM contact_messages")->fetchColumn();
-$unread_messages = (int)$pdo->query("SELECT COUNT(*) FROM contact_messages WHERE is_read=0")->fetchColumn();
+$total_messages  = (int)$pdo->query("SELECT COUNT(*) FROM contact_messages WHERE archived = 0")->fetchColumn();
+$unread_messages = (int)$pdo->query("SELECT COUNT(*) FROM contact_messages WHERE is_read=0 AND archived = 0")->fetchColumn();
 
 /* Liste (ilk 100) */
 $stmt = $pdo->prepare("
   SELECT id, name, email, subject, message, is_read, received_at
   FROM contact_messages
+  WHERE archived = 0
   ORDER BY received_at DESC
   LIMIT 100
 ");
@@ -40,7 +41,7 @@ require_once($projectRoot . '/admin/admin_sidebar.php');
     .muted{color:#6b7280}
 </style>
 
-<main class="main-content">
+<main style="width: 100%" class="main-content">
     <div class="content-area">
         <div class="page-header"><h1>İletişim Mesajları</h1></div>
 
@@ -75,13 +76,13 @@ require_once($projectRoot . '/admin/admin_sidebar.php');
             </div>
         </div>
 
-        <div class="card">
+        <div style="padding: 1rem" class="card">
             <h2>Mesaj Listesi</h2>
-            <div class="table-responsive" style="margin-top:12px">
-                <table class="table">
+            <div  class="table-responsive" style="margin-top:12px;">
+                <table style="width: 100%" class="table">
                     <thead>
                     <tr>
-                        <th style="width:44px"><input type="checkbox" id="head-check"></th>
+                        <th ><input type="checkbox" id="head-check"></th>
                         <th>Gönderen</th>
                         <th>E-posta</th>
                         <th>Konu</th>
@@ -91,7 +92,7 @@ require_once($projectRoot . '/admin/admin_sidebar.php');
                         <th style="width:120px">İşlemler</th>
                     </tr>
                     </thead>
-                    <tbody id="message-table">
+                    <tbody  id="message-table">
                     <?php foreach ($messages as $m):
                         $badge = $m['is_read'] ? 'badge read' : 'badge unread';
                         $badgeText = $m['is_read'] ? 'okundu' : 'okunmamış';

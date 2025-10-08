@@ -291,7 +291,19 @@ function getCoursesByCat($id)
 {
     $db = get_db_connection();
 
-    $sql = "SELECT * FROM courses WHERE category_id = ?";
+    $sql = "SELECT * FROM courses WHERE category_id = ? AND status = 'approved' AND is_deleted = 0";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$id]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+function getAllCoursesByCat($id)
+{
+    $db = get_db_connection();
+
+    $sql = "SELECT * FROM courses WHERE category_id = ? AND is_deleted = 0";
 
     $stmt = $db->prepare($sql);
     $stmt->execute([$id]);
