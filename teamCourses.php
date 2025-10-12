@@ -67,6 +67,8 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
     <link rel="stylesheet"  href="assets/css/navbar.css">
     <link rel="stylesheet" href="assets/css/index.css">
     <title><?= e($team['name'] ?? 'Takım') ?> — Kurslar | RookieVerse</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
+
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -91,6 +93,15 @@ function e(?string $s): string { return htmlspecialchars((string)$s ?? '', ENT_Q
         .clamp-3{ display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
         .focus-ring:focus{ outline:none; box-shadow:0 0 0 3px rgba(229,174,50,.35); }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-EDSVL8LRCY');
+    </script>
 </head>
 <body class="bg-white text-ink">
 

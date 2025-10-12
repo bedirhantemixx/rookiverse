@@ -45,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec("SET time_zone = '+00:00'"); // <-- YENİ
 
-        // Form verileri
         $team_number       = trim((string)($_POST['team_number'] ?? ''));
         $team_id_generated = trim((string)($_POST['team_id'] ?? ''));
         $password          = (string)($_POST['password'] ?? '');
@@ -54,11 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new RuntimeException('Lütfen tüm alanları doldurun.');
         }
 
-        // Kimlik + IP bazlı throttling anahtarı
         $identity = strtolower($team_number . ':' . $team_id_generated);
         $ip       = client_ip();
 
-        // 1) Kilitli mi?
         $sel = $pdo->prepare("SELECT attempts, locked_until FROM login_attempts WHERE identity = ? AND ip = ? LIMIT 1");
         $sel->execute([$identity, $ip]);
         $thr = $sel->fetch(PDO::FETCH_ASSOC);
@@ -76,14 +73,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($lock_seconds > 0) {
                 $form_disabled = true;
-                $error_message = null; // kilitliyken sadece sarı kutu gösterilecek
+                $error_message = null;
             }
         }
 
 
-        // Kilitli değilse giriş kontrolüne geç
         if (!$form_disabled) {
-            // 2) Takımı getir
             $stmt = $pdo->prepare("SELECT id, team_number, team_id_generated, password_hash
                                    FROM teams WHERE team_number = ? AND team_id_generated = ? LIMIT 1");
             $stmt->execute([$team_number, $team_id_generated]);
@@ -92,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ok = $team && password_verify($password, $team['password_hash']);
 
             if ($ok) {
-                // Başarılı giriş: throttle kaydını temizle
                 $del = $pdo->prepare("DELETE FROM login_attempts WHERE identity = ? AND ip = ? LIMIT 1");
                 $del->execute([$identity, $ip]);
 
@@ -105,7 +99,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            // 3) Başarısız giriş: sayaç artır / kilitle
             if ($thr) {
                 $attempts = (int)$thr['attempts'] + 1;
                 if ($attempts >= MAX_TRIES) {
@@ -126,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $secStmt->execute([$identity, $ip]);
                     $lock_seconds  = (int)$secStmt->fetchColumn();
                     $form_disabled = true;
-                    $error_message = null; // sadece sarı kilit kutusu
+                    $error_message = null;
 
                 } else {
                     $upd = $pdo->prepare("
@@ -140,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error_message = "Hatalı giriş. Kalan deneme: {$left}";
                 }
             } else {
-                // ilk hatalı deneme
                 $ins = $pdo->prepare("
                     INSERT INTO login_attempts (identity, ip, attempts, locked_until)
                     VALUES (?, ?, 1, NULL)
@@ -162,6 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Takım Paneli Girişi - FRC Rookieverse</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -174,6 +167,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .password-toggle-icon { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); cursor: pointer; color: #6b7280; }
         .disabledish { opacity: .5; cursor: not-allowed; }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-EDSVL8LRCY');
+    </script>
 </head>
 <body class="flex items-center justify-center min-h-screen">
 

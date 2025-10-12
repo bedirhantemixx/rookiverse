@@ -18,6 +18,8 @@ foreach ($courses as $course) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kurslar - RookieVerse</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/index.css">
 
@@ -32,6 +34,15 @@ foreach ($courses as $course) {
                 }
             }
         }
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-EDSVL8LRCY');
     </script>
     <style>
         body {
@@ -86,23 +97,24 @@ foreach ($courses as $course) {
         </div>
 
         <!-- Mevcut Metrikler -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div class="text-center border-2 border-custom-yellow/20 p-6 rounded-lg">
-                <h3 class="text-3xl font-bold text-custom-yellow"><?=$approvedCourses?></h3>
-                <p class="text-lg text-gray-500">Toplam Kurs</p>
+        <div class="grid grid-cols-3 gap-3 sm:gap-6 mb-12">
+            <div class="text-center border-2 border-custom-yellow/20 p-4 sm:p-6 rounded-lg">
+                <h3 class="text-2xl sm:text-3xl font-bold text-custom-yellow"><?=$approvedCourses?></h3>
+                <p class="text-sm sm:text-lg text-gray-500">Toplam Kurs</p>
             </div>
-            <div class="text-center border-2 border-custom-yellow/20 p-6 rounded-lg">
-                <h3 class="text-3xl font-bold text-custom-yellow"><?=count($categories)?></h3>
-                <p class="text-lg text-gray-500">Kategori</p>
+
+            <div class="text-center border-2 border-custom-yellow/20 p-4 sm:p-6 rounded-lg">
+                <h3 class="text-2xl sm:text-3xl font-bold text-custom-yellow"><?=count($categories)?></h3>
+                <p class="text-sm sm:text-lg text-gray-500">Kategori</p>
             </div>
-            <div class="text-center border-2 border-custom-yellow/20 p-6 rounded-lg">
-                <?php
-                $studentcount = getStudents();
-                ?>
-                <h3 class="text-3xl font-bold text-custom-yellow"><?=$studentcount?></h3>
-                <p class="text-lg text-gray-500">Toplam Öğrenci</p>
+
+            <div class="text-center border-2 border-custom-yellow/20 p-4 sm:p-6 rounded-lg">
+                <?php $studentcount = getStudents(); ?>
+                <h3 class="text-2xl sm:text-3xl font-bold text-custom-yellow"><?=$studentcount?></h3>
+                <p class="text-sm sm:text-lg text-gray-500">Toplam Öğrenci</p>
             </div>
         </div>
+
 
         <!-- KURS KARTLARI -->
         <div class="space-y-12">

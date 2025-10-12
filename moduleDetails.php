@@ -189,6 +189,16 @@ if (!isset($modules)) {
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
 
     <title><?= e($thisModule['title']) ?> - Modül Görünümü</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-EDSVL8LRCY');
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif}

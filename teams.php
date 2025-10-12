@@ -43,15 +43,19 @@ $teams = $stmt->fetchAll(PDO::FETCH_ASSOC);
 /** ---- Sayfalama bilgisi ---- */
 $pages = max(1, (int)ceil($total / $perPage));
 function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-require_once $projectRoot . '/navbar.php'; // (Kamuya açık listeyse) – admin stil kullanacaksan admin_header/admin_sidebar ekle
 
 ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Tüm Takımlar</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = { theme: { extend: { colors: { 'custom-yellow':'#E5AE32' } } } }
     </script>
@@ -64,9 +68,18 @@ require_once $projectRoot . '/navbar.php'; // (Kamuya açık listeyse) – admin
         .chip { font-size:.75rem; padding:.15rem .5rem; border-radius:9999px; background:#f3f4f6; border:1px solid #e5e7eb; color:#6b7280; }
         .pager a[aria-current="page"] { background:#E5AE32; color:#fff; border-color:#E5AE32; }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-EDSVL8LRCY');
+    </script>
 </head>
 <body class="bg-gray-50">
-<!-- navbar.php zaten yukarıda include edildi -->
+<?php require_once 'navbar.php'?>
 <main class="main-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="content-area">
         <div class="page-header mb-6">

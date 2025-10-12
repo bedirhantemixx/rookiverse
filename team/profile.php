@@ -447,7 +447,178 @@ require_once 'team_header.php';
         display:inline-flex;align-items:center;justify-content:center;
         font-weight:600;
     }
-</style>
+    /* ====== LAYOUT (aynı panel sayfasındaki gibi) ====== */
+    :root{ --sidebar-w: 280px; }
+
+    body, html { height: 100%; }
+    .main-wrapper{
+        display:grid;
+        grid-template-columns: var(--sidebar-w) 1fr;
+        min-height: 100vh;
+    }
+
+    /* Hamburger: küçük ekranda görünür, büyükte gizle */
+    #sidebarToggle { display: inline-flex; }
+    @media (min-width: 1024px){
+        #sidebarToggle { display: none; }
+    }
+
+    /* Büyük ekran: sidebar sabit */
+    @media (min-width: 1024px){
+        .sidebar{
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            transform: translateX(0) !important;
+            transition: none;
+            box-shadow: inset -1px 0 0 rgba(0,0,0,.05);
+
+        }
+        .sidebar-overlay{ display:none !important; }
+    }
+
+    /* Küçük ekran: sidebar çekme menü */
+    @media (max-width: 1023px){
+        .main-wrapper{ grid-template-columns: 1fr; }
+
+        .sidebar{
+            position: fixed;
+            inset: 0 auto 0 0;
+            width: 50vw;
+            max-width: 85vw;
+            background: #fff;
+            z-index: 50;
+            border-right: 1px solid #e5e7eb;
+            transform: translateX(-100%);
+            transition: transform .25s ease;
+            overflow-y: auto;
+        }
+        .sidebar.open{ transform: translateX(0); }
+
+        .sidebar-overlay{
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.35);
+            backdrop-filter: blur(1px);
+            z-index: 40;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s ease;
+        }
+        .sidebar-overlay.show{
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .top-bar{
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: #fff;
+        }
+    }
+
+    /* Üst bar ve genel boşluklar */
+    .top-bar{
+        display:flex; align-items:center; justify-content:space-between;
+        padding: 12px 16px; border-bottom: 1px solid #eee;
+    }
+    .main-content{ padding: 16px; }
+    @media (min-width: 1024px){ .main-content{ padding: 24px; } }
+
+    /* ====== TIPOGRAFI — okunaklılık ====== */
+    html { font-size: 16px; }
+    @media (min-width: 1280px){ html { font-size: 17px; } }
+    body { font-size: 1rem; line-height: 1.6; }
+
+    .page-header h1{
+        font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+        line-height: 1.3;
+        margin: 0 0 14px;
+    }
+    .sidebar-nav a{
+        display:flex; align-items:center; gap:10px;
+        font-size: 1rem; padding: 12px 14px;
+    }
+    .sidebar-nav i.lucide{ width: 20px; height: 20px; flex: 0 0 20px; }
+
+    .btn{
+        font-size: 0.98rem;
+        padding: 10px 14px;
+        border-radius: 10px;
+        min-height: 38px;
+    }
+    .btn.btn-sm{
+        font-size: 0.95rem;
+        padding: 8px 12px;
+        min-height: 34px;
+    }
+    .btn i.lucide{ width: 18px; height: 18px; }
+
+    /* Bildirim ikonu biraz büyük */
+    .notification-button .lucide{ width: 22px; height: 22px; }
+
+    /* ====== FORM KIRILIMLARI ====== */
+    .form-card{
+        display:flex; gap: 24px;
+        align-items: stretch;
+    }
+    .form-main{ flex: 1 1 0; }
+
+    /* Sağ kartın masaüstünde sabit genişliği */
+    .form-aside{ width: 320px; max-width: 100%; }
+
+    /* Grid: mobilde tek sütun, md ile iki sütun */
+    .form-grid{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .form-grid .col-span-2{ grid-column: span 2; }
+
+    @media (max-width: 1023px){
+        .form-card{ flex-direction: column; }
+        .form-grid{ grid-template-columns: 1fr; }
+        .form-grid .col-span-2{ grid-column: span 1; } /* tek sütunda doğal davranış */
+    }
+
+    /* Form alanları */
+    .label{ font-weight:700; font-size: 14px; }
+    .input, .textarea, .file{
+        width: 100%; background: #fff; color: var(--text);
+        border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px;
+    }
+    .input:focus, .textarea:focus, .file:focus{
+        outline: none; border-color: var(--brand);
+        box-shadow: 0 0 0 4px rgba(229, 174, 50, .15);
+    }
+    .textarea{ min-height: 160px; resize: vertical; }
+    .help{ font-size: 12px; color: var(--muted); }
+
+    /* Logo kartı yan yana kalsın, mobilde de iyi dursun */
+    .logo-card{
+        background:#fff; border:1px solid var(--border); border-radius:16px;
+        padding:16px; display:flex; align-items:center; gap:16px;
+    }
+    .logo-preview{ width:100px; height:100px; border-radius:18px; object-fit:cover; border:1px solid var(--border); }
+    .change-logo-label{
+        display:inline-block; padding:8px 16px; background:#f0f0f0;
+        border:1px solid var(--border); border-radius:12px; cursor:pointer;
+        font-weight:600; font-size:14px;
+    }
+    .change-logo-label:hover{ background:#e5e5e5; }
+    #logo{ display:none; }
+
+    @media (max-width: 640px){
+        body{ font-size: 1.02rem; }
+        .btn{ min-height: 40px; }
+        .sidebar-nav a{ padding: 12px 16px; }
+        .top-bar{ padding: 12px 14px; }
+    }
+
+    </style>
+
+<div class="main-wrapper">
 
 <aside class="sidebar">
     <?php
@@ -467,6 +638,7 @@ require_once 'team_header.php';
         <a href="profile.php" class="active"><i data-lucide="settings"></i> Profilimi Düzenle</a>
         <a href="notifications.php"><i data-lucide="bell"></i> Bildirimler<?php if ($unreadTotal > 0): ?><span class="menu-badge"><?php echo $unreadTotal; ?></span><?php endif; ?></a>
         <a href="list_questions.php" ><i data-lucide="message-square"></i> Soru Yönetimi</a>
+        <a href="support_requests.php"><i data-lucide="life-buoy"></i> Destek</a>
 
         <?php
         if (!isset($_SESSION['admin_panel_view'])):
@@ -476,8 +648,13 @@ require_once 'team_header.php';
     </nav>
 </aside>
 
-<main class="main-content">
+<main style="margin-left: 0px; padding: 0px" class="main-content">
     <div class="top-bar">
+        <button style="background-color: white" id="sidebarToggle"
+                class="inline-flex items-center justify-center w-10 h-10 rounded-md border"
+                aria-label="Menüyü aç/kapat" type="button">
+            <i data-lucide="menu"></i>
+        </button>
         <div class="font-bold">Takım #<?php echo $teamNumber; ?> Profil Ayarları</div>
         <div class="actions">
             <button id="notif-button" class="notification-button">
@@ -592,6 +769,9 @@ require_once 'team_header.php';
         </div>
     </div>
 </main>
+</div>
+<div class="sidebar-overlay"></div>
+
 
 <script>
     try {
@@ -703,6 +883,44 @@ require_once 'team_header.php';
     document.querySelector('#notif-button').addEventListener('click', ()=>{
         window.location.href = 'notifications.php';
     })
+    try { if (window.lucide?.createIcons) lucide.createIcons(); } catch(e){}
+
+    (function(){
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const toggle  = document.getElementById('sidebarToggle');
+
+        if(!sidebar || !toggle || !overlay) return;
+
+        const open = () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            try { lucide.createIcons(); } catch(_){}
+        };
+        const close = () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        };
+
+        toggle.addEventListener('click', () => {
+            if(sidebar.classList.contains('open')) close(); else open();
+        });
+        overlay.addEventListener('click', close);
+
+        document.addEventListener('keydown', (e)=>{
+            if(e.key === 'Escape' && sidebar.classList.contains('open')) close();
+        });
+
+        // Küçük ekranda menü linkine tıklayınca kapan
+        sidebar.querySelectorAll('a').forEach(a=>{
+            a.addEventListener('click', ()=>{
+                if (window.matchMedia('(max-width: 1023px)').matches){ close(); }
+            });
+        });
+    })();
 </script>
+
 
 <?php require_once __DIR__ . '/../admin/admin_footer.php'; ?>

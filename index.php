@@ -47,10 +47,21 @@ session_start();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anasayfa - FRC Rookieverse</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
 
 
-  <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-EDSVL8LRCY');
+    </script>
   
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/index.css">
@@ -69,11 +80,23 @@ session_start();
       .logo-slider-track {
           position: relative;
           width: 100%;
-          height: 30vh;            /* logo yüksekliğine göre ayarla */
+          height: 28vh;            /* logo yüksekliğine göre ayarla */
           overflow: hidden;         /* kaydırma kapalı */
       }
 
-      /* Her slide sahnede aynı noktada */
+      @media only screen and (max-width: 765px) {
+          .logo-slider-container {
+              padding: 0px;
+
+
+          }
+
+          .logo-slide {
+              padding: 0px;
+          }
+      }
+
+              /* Her slide sahnede aynı noktada */
       .logo-slide {
           position: absolute;
           inset: 0;                 /* top:0 right:0 bottom:0 left:0 */

@@ -98,7 +98,8 @@ $pending_badge = $pending_approvals > 99 ? '99+' : (string)$pending_approvals;
                 </div>
                 <i data-lucide="chevron-right" class="menu-arrow"></i>
             </div>
-            <div class="submenu"><a href="contact.php">Mesajları Gör</a>
+            <div class="submenu"><a href="contact.php">Kullanıcı Mesajları</a></div>
+            <div class="submenu"><a href="team_support.php">Takım Destek Mesajları</a></div>
         </div>
     </nav>
 </aside>

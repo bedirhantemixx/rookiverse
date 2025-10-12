@@ -26,13 +26,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>İletişim - FRC Rookieverse</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
+
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/contact.css">
-  
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-EDSVL8LRCY');
+    </script>
   <script>
     tailwind.config = {
       theme: { extend: { colors: { 'custom-yellow': '#E5AE32' } } }

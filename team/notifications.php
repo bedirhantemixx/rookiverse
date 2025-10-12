@@ -130,8 +130,109 @@ $totalPages = max(1, ceil(($totalRows ?: 0) / $perPage));
         justify-content: center;
         border: 1px solid white;
     }
+    /* ====== LAYOUT (panel/profil ile tutarlı) ====== */
+    :root{ --sidebar-w: 280px; }
+
+    html, body { height: 100%; }
+    .main-wrapper{
+        display:grid;
+        grid-template-columns: var(--sidebar-w) 1fr;
+        min-height: 100vh;
+    }
+
+    /* Hamburger: küçük ekranda görünür, büyükte gizle */
+    #sidebarToggle { display: inline-flex; background:#fff; }
+    @media (min-width:1024px){ #sidebarToggle{ display:none; } }
+
+    /* Büyük ekran: sidebar sabit */
+    @media (min-width:1024px){
+        .sidebar{
+            position: sticky; top: 0; height: 100vh;
+            transform: translateX(0) !important; transition: none;
+            box-shadow: inset -1px 0 0 rgba(0,0,0,.05);
+        }
+        .sidebar-overlay{ display:none !important; }
+    }
+
+    /* Küçük ekran: çekme menü */
+    @media (max-width:1023px){
+        .main-wrapper{ grid-template-columns: 1fr; }
+        .sidebar{
+            position: fixed; inset: 0 auto 0 0;
+            width: 50vw;
+            background:#fff; z-index:50; border-right:1px solid #e5e7eb;
+            transform: translateX(-100%); transition: transform .25s ease;
+            overflow-y:auto;
+        }
+        .sidebar.open{ transform: translateX(0); }
+
+        .sidebar-overlay{
+            position: fixed; inset:0; background:rgba(0,0,0,.35);
+            backdrop-filter: blur(1px); z-index:40; opacity:0;
+            pointer-events:none; transition:opacity .2s ease;
+        }
+        .sidebar-overlay.show{ opacity:1; pointer-events:auto; }
+
+        .top-bar{ position: sticky; top:0; z-index:30; background:#fff; }
+    }
+
+    /* Üst bar ve genel boşluklar */
+    .top-bar{
+        display:flex; align-items:center; justify-content:space-between;
+        padding:12px 16px; border-bottom:1px solid #eee;
+    }
+    .main-content{ padding:16px; }
+    @media (min-width:1024px){ .main-content{ padding:24px; } }
+
+    /* ====== OKUNAKLILIK ====== */
+    html { font-size: 16px; }
+    @media (min-width:1280px){ html{ font-size:17px; } }
+    body { font-size:1rem; line-height:1.6; }
+    .sidebar-nav a{ display:flex; align-items:center; gap:10px; font-size:1rem; padding:12px 14px; }
+    .sidebar-nav i.lucide{ width:20px; height:20px; flex:0 0 20px; }
+    .btn{ font-size:.98rem; padding:10px 14px; border-radius:10px; min-height:38px; }
+    .btn.btn-sm{ font-size:.95rem; padding:8px 12px; min-height:34px; }
+    .btn i.lucide{ width:18px; height:18px; }
+    .notification-button .lucide{ width:22px; height:22px; }
+
+    /* ====== TABLO (yatay kaydırma + mobil kart) ====== */
+    .table-wrap{ width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
+        border:1px solid #e5e7eb; border-radius:10px; }
+    table{ width:100%; border-collapse: collapse; }
+    thead th{
+        text-align:left; font-weight:700; font-size:.95rem; color:#374151;
+        border-bottom:1px solid #e5e7eb; padding:12px 14px;
+    }
+    tbody td{ border-bottom:1px solid #f1f5f9; padding:12px 14px; vertical-align:middle; }
+
+    /* 640px altı: kart formatı */
+    @media (max-width:640px){
+        table.responsive-stack thead{ display:none; }
+        table.responsive-stack, table.responsive-stack tbody,
+        table.responsive-stack tr, table.responsive-stack td{
+            display:block; width:100%;
+        }
+        table.responsive-stack tr{ border-bottom:1px solid #e5e7eb; padding:8px 10px; }
+        table.responsive-stack td{ padding:8px 10px; }
+        table.responsive-stack td::before{
+            content: attr(data-label);
+            display:block; font-size:11px; font-weight:600; color:#6b7280;
+            margin-bottom:4px; text-transform:uppercase; letter-spacing:.02em;
+        }
+        /* İşlem butonları daha rahat hizalansın */
+        .actions-cell > *{ display:inline-flex; margin:4px 6px 0 0; }
+    }
+
+    /* Satır vurguları ve rozetler (mevcut stillerle uyumlu) */
+    .row-unread{ background:#fffdf2; }
+    .badge{ display:inline-block; padding:.25rem .5rem; border-radius:9999px; font-size:.75rem; font-weight:600; }
+    .badge-approve{ background:#dcfce7; color:#166534; }
+    .badge-reject{ background:#fee2e2; color:#991b1b; }
+    .note-time{ font-size:.85rem; color:#666; }
 
 </style>
+
+<div class="main-wrapper">
 
 <aside class="sidebar">
     <?php
@@ -152,6 +253,7 @@ $totalPages = max(1, ceil(($totalRows ?: 0) / $perPage));
         <a href="profile.php"><i data-lucide="settings"></i> Profilimi Düzenle</a>
         <a href="notifications.php" class="active"><i data-lucide="bell"></i> Bildirimler</a>
         <a href="list_questions.php" ><i data-lucide="message-square"></i> Soru Yönetimi</a>
+        <a href="support_requests.php"><i data-lucide="life-buoy"></i> Destek</a>
 
         <?php
         if (!isset($_SESSION['admin_panel_view'])):
@@ -161,8 +263,13 @@ $totalPages = max(1, ceil(($totalRows ?: 0) / $perPage));
     </nav>
 </aside>
 
-<main class="main-content">
+<main style="margin-left: 0px; padding: 0px" class="main-content">
     <div class="top-bar">
+        <button id="sidebarToggle"
+                class="inline-flex items-center justify-center w-10 h-10 rounded-md border"
+                aria-label="Menüyü aç/kapat" type="button">
+            <i data-lucide="menu"></i>
+        </button>
         <div class="font-bold">Bildirimler</div>
         <div class="actions">
             <button id="notif-button" class="notification-button">
@@ -194,73 +301,104 @@ $totalPages = max(1, ceil(($totalRows ?: 0) / $perPage));
             <?php if (!$notifications): ?>
                 <p>Henüz bir bildirimin yok.</p>
             <?php else: ?>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Tür</th>
-                        <th>Başlık</th>
-                        <th>Durum</th>
-                        <th>Tarih</th>
-                        <th>İşlemler</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($notifications as $n):
-                        if ($n['type'] === 'module'){
-                            $details = getModule($n['content_id']);
-                            $gotoUrl = 'edit_module_content.php?id=' . $details['id'];
-                        }
-                        elseif ($n['type'] === 'course'){
-                            $details = getCourseDetailsById($n['content_id']);
-                            $gotoUrl = 'editCourse.php?id=' . $details['id'];
-
-                        }
-                        else{
-                            echo 'hata';
-                            continue;
-                        }
-
-                        $rowClass  = $n['is_read'] ? '' : 'row-unread';
-                        $badgeClass = $n['action'] === 'approve' ? 'badge-approve' : 'badge-reject';
-                        // Hedef URL: kurs sayfası; modül için aynı sayfada module anchor
-                        ?>
-                        <tr class="<?php echo $rowClass; ?>">
-                            <td><?php echo htmlspecialchars($n['type']); ?></td>
-                            <td><?php echo htmlspecialchars($details['title'] ?? '—'); ?></td>
-                            <td><span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($n['action']); ?></span></td>
-                            <td class="note-time"><?php echo date('d.m.Y H:i', strtotime($n['notified_at'])); ?></td>
-                            <td style="flex-direction: row; display: flex; width: 100%;padding-right: 33%;justify-content:space-between ">
-                                <a class="btn btn-sm" href="<?= $gotoUrl; ?>">
-                                    <i data-lucide="link"></i> <?php echo ($n['type']==='course'?'Kursa Git':'Modüle Git'); ?>
-                                </a>
-                                <form method="post" class="inline">
-                                    <input type="hidden" name="nid" value="<?php echo (int)$n['id']; ?>">
-                                    <button style="height: 100%" class="btn btn-sm" name="toggle_read" value="1">
-                                        <?php echo $n['is_read'] ? 'Okunmadı yap' : 'Okundu yap'; ?>
-                                    </button>
-                                </form>
-                            </td>
+                <div class="table-wrap">
+                    <table class="responsive-stack">
+                        <thead>
+                        <tr>
+                            <th>Tür</th>
+                            <th>Başlık</th>
+                            <th>Durum</th>
+                            <th>Tarih</th>
+                            <th>İşlemler</th>
                         </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($notifications as $n):
+                            if ($n['type'] === 'module'){
+                                $details = getModule($n['content_id']);
+                                $gotoUrl = 'edit_module_content.php?id=' . $details['id'];
+                            } elseif ($n['type'] === 'course'){
+                                $details = getCourseDetailsById($n['content_id']);
+                                $gotoUrl = 'editCourse.php?id=' . $details['id'];
+                            } else { continue; }
 
-
-                <?php if ($totalPages > 1): ?>
-                    <div class="mt-4 flex justify-center space-x-2">
-                        <?php if ($page > 1): ?>
-                            <a class="btn btn-sm" href="?p=<?php echo $page-1; ?>"><i data-lucide="chevron-left"></i> Önceki</a>
-                        <?php endif; ?>
-                        <span>Sayfa <?php echo $page; ?>/<?php echo $totalPages; ?></span>
-                        <?php if ($page < $totalPages): ?>
-                            <a class="btn btn-sm" href="?p=<?php echo $page+1; ?>">Sonraki <i data-lucide="chevron-right"></i></a>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
-
+                            $rowClass   = $n['is_read'] ? '' : 'row-unread';
+                            $badgeClass = $n['action'] === 'approve' ? 'badge-approve' : 'badge-reject';
+                            ?>
+                            <tr class="<?php echo $rowClass; ?>">
+                                <td data-label="Tür"><?php echo htmlspecialchars($n['type']); ?></td>
+                                <td data-label="Başlık"><?php echo htmlspecialchars($details['title'] ?? '—'); ?></td>
+                                <td data-label="Durum"><span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($n['action']); ?></span></td>
+                                <td data-label="Tarih" class="note-time"><?php echo date('d.m.Y H:i', strtotime($n['notified_at'])); ?></td>
+                                <td data-label="İşlemler" class="actions-cell">
+                                    <a class="btn btn-sm" href="<?= $gotoUrl; ?>">
+                                        <i data-lucide="link"></i> <?php echo ($n['type']==='course'?'Kursa Git':'Modüle Git'); ?>
+                                    </a>
+                                    <form method="post" class="inline">
+                                        <input type="hidden" name="nid" value="<?php echo (int)$n['id']; ?>">
+                                        <button class="btn btn-sm" name="toggle_read" value="1">
+                                            <?php echo $n['is_read'] ? 'Okunmadı yap' : 'Okundu yap'; ?>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endif; ?>
         </div>
+
     </div>
 </main>
+</div>
+<div class="sidebar-overlay"></div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            try { if (window.lucide?.createIcons) lucide.createIcons(); } catch(e){}
+
+            // Sidebar active link (opsiyonel: zaten var gibi)
+            (function(){
+                const here = 'notifications.php';
+                document.querySelectorAll('.sidebar-nav a').forEach(a=>{
+                    if ((a.getAttribute('href')||'').endsWith(here)) a.classList.add('active');
+                });
+            })();
+
+            // Bildirim ikonu -> notifications’a git (aynı sayfa ama davranış tutarlı kalsın)
+            const notifBtn = document.getElementById('notif-button');
+            if (notifBtn) notifBtn.addEventListener('click', () => { window.location.href = 'notifications.php'; });
+
+            // Sidebar toggle
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const toggle  = document.getElementById('sidebarToggle');
+            if (!sidebar || !overlay || !toggle) return;
+
+            const open = () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                const icon = toggle.querySelector('i.lucide');
+                if (icon){ icon.setAttribute('data-lucide', 'x'); try { lucide.createIcons(); } catch(_){} }
+            };
+            const close = () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+                const icon = toggle.querySelector('i.lucide');
+                if (icon){ icon.setAttribute('data-lucide', 'menu'); try { lucide.createIcons(); } catch(_){} }
+            };
+
+            toggle.addEventListener('click', () => {
+                if (sidebar.classList.contains('open')) close(); else open();
+            });
+            overlay.addEventListener('click', close);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && sidebar.classList.contains('open')) close(); });
+            sidebar.querySelectorAll('a').forEach(a=>{
+                a.addEventListener('click', ()=>{ if (window.matchMedia('(max-width:1023px)').matches) close(); });
+            });
+        });
+</script>
 
 <?php require_once '../admin/admin_footer.php'; ?>

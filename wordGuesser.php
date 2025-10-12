@@ -5,10 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FRC Kelime Bulma - FRC Rookieverse</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
+
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
+        gtag('config', 'G-EDSVL8LRCY');
+    </script>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
 
     <style>

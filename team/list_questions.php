@@ -6,10 +6,9 @@
 session_start();
 $projectRoot = dirname(__DIR__);
 require_once $projectRoot . '/config.php';
-if (!$_SESSION['team_logged_in']) {header('location: ../index.php');}
+if (!isset($_SESSION['team_logged_in'])) {header('location: ../team-login.php');}
 
 $projectRoot = dirname(__DIR__); // C:\xampp\htdocs\projeadi
-require_once $projectRoot . '/config.php';
 $pdo = get_db_connection();
 $count = $pdo->prepare("SELECT 
     COUNT(*) AS total,
@@ -285,9 +284,116 @@ require_once 'team_header.php';
             justify-content: center;
             border: 1px solid white;
         }
+        /* ===== LAYOUT (panel/profil ile aynı) ===== */
+        :root{ --sidebar-w: 280px; }
+
+        html, body { height: 100%; }
+        .main-wrapper{
+            display:grid;
+            grid-template-columns: var(--sidebar-w) 1fr;
+            min-height: 100vh;
+        }
+
+        /* Hamburger: küçükte görünür, büyükte gizlenir */
+        #sidebarToggle{ display:inline-flex; }
+        @media (min-width:1024px){ #sidebarToggle{ display:none; } }
+
+        /* Büyük ekran: sidebar sabit */
+        @media (min-width:1024px){
+            .sidebar{
+                position: sticky; top:0; height:100vh;
+                transform: translateX(0) !important; transition:none;
+                box-shadow: inset -1px 0 0 rgba(0,0,0,.05);
+            }
+            .sidebar-overlay{ display:none !important; }
+        }
+
+        /* Küçük ekran: çekme menü */
+        @media (max-width:1023px){
+            .main-wrapper{ grid-template-columns: 1fr; }
+
+            .sidebar{
+                position: fixed; inset: 0 auto 0 0;
+                width: var(--sidebar-w); max-width:85vw;
+                background:#fff; z-index:50; border-right:1px solid #e5e7eb;
+                transform: translateX(-100%); transition: transform .25s ease;
+                overflow-y:auto;
+            }
+            .sidebar.open{ transform: translateX(0); }
+
+            .sidebar-overlay{
+                position: fixed; inset:0; background:rgba(0,0,0,.35);
+                backdrop-filter: blur(1px); z-index:40; opacity:0;
+                pointer-events:none; transition:opacity .2s ease;
+            }
+            .sidebar-overlay.show{ opacity:1; pointer-events:auto; }
+
+            .top-bar{ position: sticky; top:0; z-index:30; background:#fff; }
+        }
+
+        /* Üst bar ve boşluklar */
+        .top-bar{
+            display:flex; align-items:center; justify-content:space-between;
+            padding:12px 16px; border-bottom:1px solid #eee;
+        }
+        .main-content{ padding:16px; }
+        @media (min-width:1024px){ .main-content{ padding:24px; } }
+
+        /* Tipografi (okunaklı) */
+        html{ font-size:16px; }
+        @media (min-width:1280px){ html{ font-size:17px; } }
+        body{ font-size:1rem; line-height:1.6; }
+
+        /* Sidebar linkleri & butonlar */
+        .sidebar-nav a{ display:flex; align-items:center; gap:10px; font-size:1rem; padding:12px 14px; }
+        .sidebar-nav i.lucide{ width:20px; height:20px; flex:0 0 20px; }
+        .btn{ font-size:.98rem; padding:10px 14px; border-radius:10px; min-height:38px; }
+        .btn.btn-sm{ font-size:.95rem; padding:8px 12px; min-height:34px; }
+        .btn i.lucide{ width:18px; height:18px; }
+        .notification-button .lucide{ width:22px; height:22px; }
+
+        /* Tablo: yatay kaydırma + mobilde kartlaşma */
+        .table-wrap{
+            width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
+            border:1px solid #e5e7eb; border-radius:10px;
+        }
+        table{ width:100%; border-collapse:collapse; }
+        thead th{
+            text-align:left; font-weight:700; font-size:.95rem; color:#374151;
+            border-bottom:1px solid #e5e7eb; padding:12px 14px; background:#fafafa;
+        }
+        tbody td{ border-bottom:1px solid #f1f5f9; padding:12px 14px; vertical-align:top; }
+
+        /* 640px altı: kart görünümü */
+        @media (max-width:640px){
+            table.responsive-stack thead{ display:none; }
+            table.responsive-stack, table.responsive-stack tbody,
+            table.responsive-stack tr, table.responsive-stack td{
+                display:block; width:100%;
+            }
+            table.responsive-stack tr{ border-bottom:1px solid #e5e7eb; padding:8px 10px; }
+            table.responsive-stack td{ padding:8px 10px; }
+            table.responsive-stack td::before{
+                content: attr(data-label);
+                display:block; font-size:11px; font-weight:600; color:#6b7280;
+                margin-bottom:4px; text-transform:uppercase; letter-spacing:.02em;
+            }
+        }
+
+        /* Yazdırma: sidebar’ı gizle, içerik tam genişlik */
+        @media print{
+            .no-print, .sidebar, .top-bar, .sidebar-overlay{ display:none !important; }
+            .main-wrapper{ display:block; }
+            .main-content{ padding:0 !important; }
+            .container{ max-width:none; padding:0; }
+            thead th{ background:#fff; border-bottom:1px solid #000; }
+            tbody td{ border-bottom:1px solid #ccc; }
+        }
+
     </style>
 </head>
 <body>
+<div class="main-wrapper">
 
 <aside class="sidebar no-print">
     <?php
@@ -308,6 +414,8 @@ require_once 'team_header.php';
         <a href="profile.php"><i data-lucide="settings"></i> Profilimi Düzenle</a>
         <a href="notifications.php"><i data-lucide="bell"></i> Bildirimler<?php if ($unreadTotal > 0): ?><span class="menu-badge"><?php echo $unreadTotal; ?></span><?php endif; ?></a>
         <a class="active" href="<?php echo h($_SERVER['PHP_SELF']); ?>"><i data-lucide="message-square"></i> Soru Yönetimi</a>
+        <a href="support_requests.php"><i data-lucide="life-buoy"></i> Destek</a>
+
         <?php
         if (!isset($_SESSION['admin_panel_view'])):
             ?>
@@ -316,8 +424,13 @@ require_once 'team_header.php';
     </nav>
 </aside>
 
-<main class="main-content">
+<main style="margin-left: 0px; padding: 0px" class="main-content">
     <div class="top-bar">
+        <button id="sidebarToggle"
+                class="inline-flex items-center justify-center w-10 h-10 rounded-md border"
+                aria-label="Menüyü aç/kapat" type="button" style="background:#fff">
+            <i data-lucide="menu"></i>
+        </button>
         <div class="font-bold">Takım #<?php echo $_SESSION['team_number']; ?> Paneli</div>
         <div class="actions">
             <button id="notif-button" class="notification-button">
@@ -335,7 +448,10 @@ require_once 'team_header.php';
         </div>
     </div>
     <div class="container">
+
+
         <div class="topbar">
+
             <div>
                 <h1 class="text-xl font-bold">Soru Yönetimi – Takım #<?php echo h($teamNumber); ?></h1>
                 <div class="print-hint">Yazdır: Sağ üstteki “Yazdır” butonunu kullan veya tarayıcı menüsünden Yazdır.</div>
@@ -504,6 +620,10 @@ require_once 'team_header.php';
         </div>
     </div>
 </main>
+</div>
+
+<div class="sidebar-overlay"></div>
+
 
 <?php require_once '../admin/admin_footer.php'; ?>
 <script>
@@ -609,6 +729,50 @@ require_once 'team_header.php';
     document.querySelector('#notif-button').addEventListener('click', ()=>{
         window.location.href = 'notifications.php';
     })
+    document.addEventListener('DOMContentLoaded', () => {
+        try { if (window.lucide?.createIcons) lucide.createIcons(); } catch(e){}
+
+        // Sidebar aktif link (opsiyonel)
+        (function(){
+            var here = '<?php echo basename($_SERVER["PHP_SELF"]); ?>';
+            document.querySelectorAll('.sidebar-nav a').forEach(a=>{
+                if((a.getAttribute('href')||'').endsWith(here)) a.classList.add('active');
+            });
+        })();
+
+        // Bildirim butonu (tutarlılık)
+        const notifBtn = document.getElementById('notif-button');
+        if (notifBtn) notifBtn.addEventListener('click', ()=>{ window.location.href='notifications.php'; });
+
+        // Sidebar toggle
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const toggle  = document.getElementById('sidebarToggle');
+        if (!sidebar || !overlay || !toggle) return;
+
+        const open = () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            const icon = toggle.querySelector('i.lucide');
+            if (icon){ icon.setAttribute('data-lucide','x'); try{ lucide.createIcons(); }catch(_){} }
+        };
+        const close = () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+            const icon = toggle.querySelector('i.lucide');
+            if (icon){ icon.setAttribute('data-lucide','menu'); try{ lucide.createIcons(); }catch(_){} }
+        };
+
+        toggle.addEventListener('click', ()=>{ sidebar.classList.contains('open') ? close() : open(); });
+        overlay.addEventListener('click', close);
+        document.addEventListener('keydown', e=>{ if(e.key==='Escape' && sidebar.classList.contains('open')) close(); });
+        sidebar.querySelectorAll('a').forEach(a=>{
+            a.addEventListener('click', ()=>{ if (window.matchMedia('(max-width:1023px)').matches) close(); });
+        });
+    });
+
 </script>
 </body>
 </html>

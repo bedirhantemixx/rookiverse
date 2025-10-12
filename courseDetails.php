@@ -5,6 +5,8 @@ if(!isset($_GET['course'])){
     header("location: course_actions.php");
     exit();
 }
+$course = getCourseDetails($_GET['course']);
+
 $preview = false;
 if (isset($_GET['preview'])) {
     if ($_GET['preview'] == '1'){
@@ -16,13 +18,14 @@ if (isset($_GET['preview'])) {
         }
     }
 }
+else{
 
 
-$course = getCourseDetails($_GET['course']);
-
-if ($course['status'] != 'approved'){
-    header("location: courses.php");
+    if ($course['status'] != 'approved'){
+        header("location: courses.php");
+    }
 }
+
 
 $anonId = $_COOKIE['rv_anon'] ?? null;
 $isEnrolled = false;
@@ -46,12 +49,22 @@ if ($anonId) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kurs Detayı - <?=$course['title']?></title>
+    <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
+
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/index.css">
 
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
+        gtag('config', 'G-EDSVL8LRCY');
+    </script>
     <script>
         tailwind.config = {
             theme: {
@@ -140,8 +153,12 @@ if ($anonId) {
     </style>
 </head>
 <body class="bg-white">
+
 <?php
-require_once 'navbar.php';
+if (!$preview){
+    require_once 'navbar.php';
+}
+
 ?>
 
 <div class="min-h-screen py-8">
@@ -154,7 +171,7 @@ require_once 'navbar.php';
             </a>
         </div>
         <?php endif;?>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div id="course-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <?php if ($preview): ?>
                 <!-- ÖNİZLEME HAVA PANELİ (SAĞ ÜST) -->
                 <div
@@ -214,7 +231,7 @@ require_once 'navbar.php';
             <?php endif; ?>
 
 
-            <div class="lg:col-span-2 space-y-8">
+            <div id="left-col" class="lg:col-span-2 space-y-8">
                 <div class="overflow-hidden border-2 border-custom-yellow/20 rounded-lg">
 
                     <div class="aspect-video relative bg-black">
@@ -626,7 +643,9 @@ require_once 'navbar.php';
         </div>
     </div>
 </div>
-<?php require_once 'footer.php'?>
+<?php if (!$preview){
+    require_once 'footer.php';
+}?>
 
 
 <script>
@@ -948,6 +967,39 @@ require_once 'navbar.php';
             alert(data.error || 'Gönderilemedi.');
         }
     });
+        (function () {
+        const qa = document.getElementById('qa-card');
+        const leftCol = document.getElementById('left-col');
+        const grid = document.getElementById('course-grid');
+        if (!qa || !leftCol || !grid) return;
+
+        // Eski yerini hatırlamak için placeholder
+        const ph = document.createComment('qa-placeholder');
+        if (!qa.nextSibling || qa.nextSibling !== ph) {
+        leftCol.insertBefore(ph, qa.nextSibling);
+    }
+
+        const mql = window.matchMedia('(max-width: 1023px)'); // Tailwind lg altı
+
+        function placeQA(e) {
+        if (mql.matches) {
+        // MOBİL: Q&A en alta (grid'in sonuna)
+        grid.after(qa);
+    } else {
+        // DESKTOP: Q&A sol sütundaki eski yerine
+        if (ph.parentNode) {
+        ph.parentNode.insertBefore(qa, ph.nextSibling);
+    } else {
+        leftCol.appendChild(qa);
+    }
+    }
+        try { window.lucide?.createIcons?.(); } catch(_) {}
+    }
+
+        // İlk yüklemede ve resize'da çalıştır
+        placeQA();
+        mql.addEventListener ? mql.addEventListener('change', placeQA) : window.addEventListener('resize', placeQA);
+    })();
 
     // İlk yükleme
     fetchReactions();

@@ -89,7 +89,7 @@ require_once($projectRoot . '/admin/admin_sidebar.php');
                         <th>Özet</th>
                         <th>Durum</th>
                         <th style="width:160px">Tarih</th>
-                        <th style="width:120px">İşlemler</th>
+                        <th >İşlemler</th>
                     </tr>
                     </thead>
                     <tbody  id="message-table">
@@ -107,12 +107,9 @@ require_once($projectRoot . '/admin/admin_sidebar.php');
                             <td><span class="<?= $badge ?>"><?= $badgeText ?></span></td>
                             <td class="muted"><?= htmlspecialchars($m['received_at']) ?></td>
                             <td>
-                                <div class="table-actions" style="display:flex;gap:.5rem;align-items:center">
-                                    <button class="btn-ghost open-detail"><i data-lucide="panel-right-open"></i> Detay</button>
-                                    <?php if ($m['is_read']): ?>
-                                        <button class="btn-ghost action-unread"><i data-lucide="mail"></i></button>
+                                <div class="table-actions" style="display:flex;align-items:center">
+                                    <button style="display: flex; flex-direction: column; align-items: center" class="btn-ghost open-detail"><i data-lucide="panel-right-open"></i> Detay</button>
 
-                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
