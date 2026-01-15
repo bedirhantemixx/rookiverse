@@ -1,0 +1,827 @@
+/* Google Fonts Bağlantısı */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap');
+
+:root {
+    /* Renk Paleti */
+    --primary-gold: #D4AF37;       /* İstenilen Altın Sarısı */
+    --primary-gold-hover: #C2A032; /* Buton üzerine gelince */
+    --text-dark: #2D3436;          /* Simsiyah yerine koyu antrasit (Göz yormaz) */
+    --text-grey: #636E72;          /* Yardımcı metinler */
+    --bg-body: #F9FAFB;            /* Çok hafif gri arka plan (Beyazın patlamasını önler) */
+    --white: #FFFFFF;
+    --border-light: #E5E7EB;       /* İnce gri çizgiler */
+    --success: #10B981;
+    --danger: #EF4444;
+    --radius: 10px;                /* Köşe yumuşaklığı */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+    line-height: 1.7; /* Okumayı kolaylaştırır */
+    font-size: 15px;
+}
+
+/* Başlıklar İçin Samimi Font */
+h1, h2, h3, h4, h5 {
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-top: 0;
+}
+
+/* Linkler */
+a { text-decoration: none; transition: 0.3s; }
+
+/* GENEL LAYOUT */
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* TOP NAVBAR (ÜST MENÜ) */
+.navbar {
+    background: var(--white);
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-bottom: 3px solid var(--primary-gold); /* Altın çizgi detayı */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.brand {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.brand span { color: var(--primary-gold); } /* Logodaki sarı detay */
+
+.user-menu a {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-grey);
+    margin-left: 25px;
+}
+.user-menu a:hover { color: var(--primary-gold); }
+.user-menu .logout { color: var(--danger); }
+
+/* KART TASARIMI (BEYAZ VE TEMİZ) */
+.card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 30px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02); /* Çok hafif gölge */
+}
+.card-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.card-header h3 { margin: 0; font-size: 18px; color: var(--primary-gold); }
+
+/* FORMLAR */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+input[type="text"], input[type="password"], input[type="date"], select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--border-light); /* Kalın ama açık gri kenarlık */
+    border-radius: 8px;
+    background: #FAFAFA;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-gold); /* Tıklayınca sarı olur */
+    background: var(--white);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); /* Sarı parlama */
+}
+
+/* BUTONLAR */
+.btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: var(--primary-gold);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px rgba(212, 175, 55, 0.2);
+}
+.btn:hover {
+    background-color: var(--primary-gold-hover);
+    transform: translateY(-1px);
+}
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-gold);
+    color: var(--primary-gold);
+    box-shadow: none;
+}
+.btn-outline:hover {
+    background: var(--primary-gold);
+    color: var(--white);
+}
+
+/* TABLO */
+.table-responsive { overflow-x: auto; }
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+}
+th {
+    background: #F3F4F6;
+    color: var(--text-grey);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid var(--border-light);
+}
+td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-dark);
+    font-size: 14px;
+    background: var(--white);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background-color: #FEFCE8; } /* Üzerine gelince çok açık sarı */
+
+/* DURUM ROZETLERİ */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.badge.Bekliyor { background: #FEF3C7; color: #D97706; }
+.badge.Onaylandı { background: #D1FAE5; color: #059669; }
+.badge.Reddedildi { background: #FEE2E2; color: #DC2626; }
+
+/* GİRİŞ SAYFASI ÖZEL */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #FDFBF7 0%, #F5F5F5 100%);
+}
+.login-box {
+    background: var(--white);
+    padding: 50px 40px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    text-align: center;
+    border-top: 5px solid var(--primary-gold);
+}
+.login-logo {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+.login-sub { color: var(--text-grey); font-size: 14px; margin-bottom: 30px; }
+
+/* Mevcut style.css'in en altına ekle veya güncelle */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+
+/* İMZA ALANI */
+.teacher-signature {
+    font-family: 'Dancing Script', cursive; /* El yazısı fontu */
+    font-size: 24px;
+    color: var(--primary-gold);
+    transform: rotate(-2deg); /* Hafif eğiklik gerçekçilik katar */
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+    margin-right: 15px;
+    padding: 5px 15px;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.settings-btn {
+    background: transparent;
+    border: 1px solid var(--text-grey);
+    color: var(--text-dark);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.settings-btn:hover { background: #eee; }
+
+
+/* MEVCUT CSS'İN ÜZERİNE BUNLARI EKLE VEYA GÜNCELLE */
+
+/* --- NAV BAR (ÜST MENÜ) YENİ TASARIM --- */
+.navbar {
+    background: var(--white);
+    height: 80px; /* Yüksekliği biraz artırdık */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    border-bottom: 3px solid var(--primary-gold);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Sol Taraf: Logo + Altuğ Hoca İmzası */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.nav-logo {
+    height: 60px; /* Logo boyutu */
+    width: auto;
+}
+.admin-signature-block {
+    border-left: 2px solid #eee;
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.sig-title { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; }
+.sig-name { font-size: 14px; font-weight: 700; color: var(--text-dark); line-height: 1.2; margin: 2px 0; }
+.sig-role { font-size: 10px; color: var(--primary-gold); font-weight: 600; line-height: 1.2; }
+
+/* Sağ Taraf: Aktif Kullanıcı Kutucuğu */
+.user-profile-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #F9FAFB;
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+.user-info {
+    text-align: right;
+}
+.u-name { display: block; font-size: 14px; font-weight: 600; color: var(--text-dark); }
+.u-role { display: block; font-size: 11px; color: #666; text-transform: uppercase; }
+.logout-btn {
+    background: #FEE2E2;
+    color: #DC2626;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.logout-btn:hover { background: #DC2626; color: white; }
+
+/* --- GİRİŞ EKRANI LOGO DÜZENİ --- */
+.school-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+.school-logo-lg { height: 80px; margin-bottom: 10px; }
+.school-name { font-size: 16px; font-weight: 700; color: var(--primary-dark); text-transform: uppercase; }
+
+
+/* MEVCUT CSS'İN ÜZERİNE YAPIŞTIR VEYA GÜNCELLE */
+
+/* --- NAV BAR --- */
+.navbar {
+    background: var(--white);
+    height: 70px; /* Yükseklik biraz daha kompakt */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    border-bottom: 3px solid var(--primary-gold);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Sol Taraf */
+.nav-left { display: flex; align-items: center; gap: 15px; }
+.nav-logo { height: 45px; width: auto; } /* LOGO KÜÇÜLTÜLDÜ */
+
+.admin-signature-block {
+    border-left: 2px solid #eee;
+    padding-left: 15px;
+    display: flex; flex-direction: column; justify-content: center;
+}
+.sig-title { font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 1px; }
+.sig-name { font-size: 13px; font-weight: 700; color: var(--text-dark); margin: 1px 0; }
+.sig-role { font-size: 10px; color: var(--primary-gold); font-weight: 600; }
+
+/* Sağ Taraf: İkonlar ve Profil */
+.nav-right { display: flex; align-items: center; gap: 20px; }
+
+/* Menü İkonları (Ana Sayfa / Ayarlar) */
+.nav-actions { display: flex; gap: 10px; }
+.nav-icon {
+    display: flex; align-items: center; justify-content: center;
+    width: 35px; height: 35px;
+    border-radius: 50%;
+    background: #f4f6f9; color: var(--text-dark);
+    text-decoration: none; font-size: 16px;
+    transition: 0.3s; position: relative;
+}
+.nav-icon:hover { background: var(--primary-gold); color: white; }
+
+/* Tooltip (Üzerine gelince çıkan yazı) */
+.nav-icon::after {
+    content: attr(data-tooltip);
+    position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+    background: #333; color: white; font-size: 10px; padding: 4px 8px;
+    border-radius: 4px; opacity: 0; visibility: hidden; transition: 0.2s; white-space: nowrap; pointer-events: none;
+}
+.nav-icon:hover::after { opacity: 1; visibility: visible; bottom: -25px; }
+
+/* Kullanıcı Kutusu (Yeni Tasarım) */
+.user-profile-box {
+    display: flex; align-items: center; gap: 12px;
+    background: white; border: 1px solid #eee;
+    padding: 6px 6px 6px 15px;
+    border-radius: 30px; /* Hap şeklinde tasarım */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+.user-info { text-align: right; line-height: 1.2; }
+.u-name { display: block; font-size: 13px; font-weight: 600; color: var(--text-dark); }
+.u-role { display: block; font-size: 10px; color: #888; text-transform: uppercase; }
+.profile-img {
+    width: 35px; height: 35px; background: var(--primary-gold); color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 14px;
+}
+.logout-btn-sm {
+    color: #e74c3c; font-size: 18px; text-decoration: none; margin-left: 5px;
+    display: flex; align-items: center;
+}
+.logout-btn-sm:hover { color: #c0392b; }
+
+/* --- YENİ NAVBAR TASARIMI (Görseldeki Gibi) --- */
+.navbar {
+    background: var(--white);
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Sol Üstteki Panel Kutusu (Görseldeki Müşteri Paneli Tarzı) */
+.panel-brand-box {
+    background-color: #0f172a; /* Koyu Lacivert */
+    color: #ffffff;
+    padding: 8px 20px 8px 8px;
+    border-radius: 50px; /* Hap şeklinde */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3);
+    transition: transform 0.2s;
+}
+.panel-brand-box:hover {
+    transform: translateY(-2px);
+}
+
+.panel-icon-circle {
+    background-color: var(--white);
+    color: #0f172a;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.panel-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    margin-right: 10px;
+}
+
+/* Panel içindeki küçük aksiyon butonları */
+.panel-actions-mini {
+    display: flex;
+    gap: 5px;
+    border-left: 1px solid rgba(255,255,255,0.2);
+    padding-left: 10px;
+}
+.mini-btn {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px;
+    transition: 0.2s;
+}
+.mini-btn:hover { color: #fff; transform: scale(1.1); }
+.mini-btn-red:hover { color: #ff6b6b; }
+
+
+/* --- TARİH SEÇİCİ (TAKVİM) CSS --- */
+/* Verdiğin görseldeki temiz takvim havasını inputlara verme */
+input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    color: var(--text-dark);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    display: inline-block;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+/* Takvim ikonunu düzenleme */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}
+
+/* Tarih inputunun sağına özel ikon ekleme efekti */
+.date-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.date-wrapper::after {
+    content: '📅';
+    position: absolute;
+    right: 12px;
+    pointer-events: none;
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* Input Focus Efekti (Sarı) */
+input:focus, select:focus {
+    border-color: var(--primary-gold);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+/* Kullanıcı Profil (Sağ Taraf) */
+.user-info-minimal {
+    text-align: right;
+}
+.user-name-text {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 14px;
+    display: block;
+}
+.user-role-badge {
+    background: var(--primary-gold);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* FONT VE IKON KUTUPHANESI */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --gold: #dcb14a; /* Görseldeki Altın Sarısı */
+    --gold-hover: #c9a03e;
+    --navy: #0f172a; /* Görseldeki Koyu Lacivert */
+    --bg-body: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-main: #334155;
+    --text-light: #64748b;
+    --white: #ffffff;
+    --radius: 12px; /* Görseldeki yuvarlaklık oranı */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+}
+
+/* --- NAVBAR (PROFESYONEL) --- */
+.navbar {
+    background: var(--white);
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+/* Sol Taraf: Görseldeki Lacivert Buton */
+.nav-brand-badge {
+    background-color: var(--navy);
+    color: var(--white);
+    padding: 10px 24px;
+    border-radius: 50px; /* Hap Şekli */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: transform 0.2s;
+}
+.nav-brand-badge:hover { transform: translateY(-1px); }
+.nav-brand-badge i { font-size: 18px; }
+
+/* Sağ Taraf: Kullanıcı Bilgisi */
+.nav-user-area {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.user-text { text-align: right; }
+.user-name { display: block; font-weight: 700; color: var(--navy); font-size: 14px; }
+.user-role { display: block; font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.avatar-circle {
+    width: 40px; height: 40px;
+    background: #f1f5f9;
+    color: var(--navy);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.btn-icon-only {
+    color: var(--text-light);
+    font-size: 18px;
+    transition: 0.3s;
+    margin-left: 10px;
+}
+.btn-icon-only:hover { color: #ef4444; } /* Kırmızı Çıkış */
+
+/* --- CONTAINER & LAYOUT --- */
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* --- KART TASARIMI (Görseldeki Gibi) --- */
+.card {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 20px; /* Görseldeki geniş radius */
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+}
+
+.card-header {
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold); /* Başlıklar Altın Rengi */
+    display: flex; align-items: center; gap: 10px;
+}
+
+/* --- FORMLAR VE INPUTLAR (Görsel 4'teki Gibi) --- */
+.form-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Input Stilleri */
+input[type="text"], input[type="date"], select {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--text-main);
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    height: 48px; /* Yükseklik standardı */
+}
+
+input:focus, select:focus {
+    border-color: var(--gold);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(220, 177, 74, 0.15);
+}
+
+/* Placeholder Rengi */
+::placeholder { color: #94a3b8; opacity: 1; }
+
+/* --- BUTONLAR --- */
+.btn {
+    background-color: var(--gold);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0 30px;
+    height: 48px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+}
+.btn:hover { background-color: var(--gold-hover); }
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+}
+.btn-outline:hover { background: var(--gold); color: white; }
+
+/* --- TABLO --- */
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; }
+th {
+    text-align: left;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+
+/* Badge (Etiketler) */
+.badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.badge-gray { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.badge-success { background: #dcfce7; color: #166534; }
+.badge-danger { background: #fee2e2; color: #991b1b; }
+.badge-warning { background: #fef3c7; color: #b45309; }
+
+/* İkon Butonları */
+.action-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+}
+.btn-approve { background: #dcfce7; color: #166534; }
+.btn-reject { background: #fee2e2; color: #991b1b; margin-left: 5px; }
+.btn-approve:hover, .btn-reject:hover { transform: scale(1.1); }
+
+
+/* --- PROJE KARTLARI (KLASÖR GÖRÜNÜMÜ) --- */
+.project-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.project-card-link {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    padding: 15px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+}
+
+.project-card-link:hover {
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(220, 177, 74, 0.15);
+}
+
+.project-card-link i {
+    font-size: 20px;
+    color: var(--gold); /* Klasör ikonu sarı */
+}
+
+.project-card-link span {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Kartın sağında küçük ok işareti */
+.project-card-link::after {
+    content: '\f054'; /* FontAwesome Chevron Right */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    font-size: 12px;
+    color: #cbd5e1;
+    transition: 0.3s;
+}
+
+.project-card-link:hover::after {
+    color: var(--gold);
+    right: 10px;
+}
+
+/* İstatistik Kutuları (Detay Sayfası İçin) */
+.stat-box {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+.stat-icon {
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+}
+.stat-info h4 { margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
+.stat-info p { margin: 5px 0 0 0; font-size: 24px; font-weight: 700; color: var(--navy); }
