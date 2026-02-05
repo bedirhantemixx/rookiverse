@@ -18,15 +18,15 @@ if (!isset($teamCourses)):
             <!-- Marka / Açıklama -->
             <div class="lg:col-span-2">
                 <a class="flex items-center space-x-2" href="<?= BASE_URL ?>">
-                    <span class="rookieverse">FRC ROOKIEVERSE</span>
+                    <span class="rookieverse">ROOKIEVERSE</span>
                 </a>
                 <p class="mt-4 text-gray-600 max-w-prose leading-relaxed text-sm sm:text-base">
-                    FRC takımlarının hazırladığı <b>kurslar</b>, <b>dokümanlar</b> ve <b>oyunlarla</b> robotik öğrenimini hızlandır.
+                    FIRST takımlarının hazırladığı <b>kurslar</b>, <b>dokümanlar</b> ve <b>oyunlarla</b> robotik öğrenimini hızlandır.
                 </p>
                 <p class="mt-4 text-gray-600 max-w-prose leading-relaxed text-sm sm:text-base">
                     Made by <br>
-                    <a class="text-custom-yellow font-bold hover:underline" href="https://www.linkedin.com/in/bedirhantemix/" rel="noopener" target="_blank">Bedirhan Temiz</a> ve
-                    <a class="text-custom-yellow font-bold hover:underline" href="https://www.linkedin.com/in/mustafa-deniz-buksur/" rel="noopener" target="_blank">Mustafa Deniz Buksur</a>
+                    <a class="text-custom-yellow font-bold hover:underline" href="https://www.linkedin.com/in/mustafa-deniz-buksur/" rel="noopener" target="_blank">Mustafa Deniz Buksur</a> and
+                    <a class="text-custom-yellow font-bold hover:underline" href="https://www.linkedin.com/in/bedirhantemix/" rel="noopener" target="_blank">Bedirhan Temiz</a>
                 </p>
             </div>
 
@@ -41,7 +41,7 @@ if (!isset($teamCourses)):
                         <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/courses.php"><span class="text-custom-yellow">•</span>Kurslar</a></li>
                         <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/games.php"><span class="text-custom-yellow">•</span>Oyunlar</a></li>
                         <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/teams.php"><span class="text-custom-yellow">•</span>Takımlar</a></li>
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/frc-terms.php"><span class="text-custom-yellow">•</span>FRC Sözlük</a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/frc-terms.php"><span class="text-custom-yellow">•</span>FIRST Sözlük</a></li>
                     </ul>
                 </details>
             </div>

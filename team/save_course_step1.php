@@ -34,10 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_insert = $pdo->prepare(
             "INSERT INTO courses (
                 course_uid, team_db_id, category_id, title, about_text, 
-                goal_text, learnings_text, level, status
+                goal_text, learnings_text, level, comp, status
              ) VALUES (
                 :uid, :team_id, :cat_id, :title, :about, 
-                :goal, :learnings, :level, 'pending'
+                :goal, :learnings, :level, :comp, 'pending'
             )"
         );
         
@@ -49,7 +49,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':about' => $_POST['about_text'],
             ':goal' => $_POST['goal_text'],
             ':learnings' => $_POST['learnings_text'],
-            ':level' => $_POST['level']
+            ':level' => $_POST['level'],
+            ':comp' => $_POST['comp'] ?? 'FRC'
         ]);
 
         // 6. ADIM: Başarılıysa, 2. adıma (görsel yükleme) yönlendir

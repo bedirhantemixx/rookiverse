@@ -67,6 +67,16 @@ $page_title = "Yeni Kurs Oluştur - Adım 1";
             </select>
         </div>
 
+        <div class="input-card">
+            <label for="comp">Yarışma Türü</label>
+            <select id="comp" name="comp" class="form-select w-full" required>
+                <option value="" disabled selected>Lütfen bir yarışma türü seçin...</option>
+                <option value="FRC">FRC (FIRST Robotics Competition)</option>
+                <option value="FTC">FTC (FIRST Tech Challenge)</option>
+                <option value="FLL">FLL (FIRST LEGO League)</option>
+            </select>
+        </div>
+
         <div class="text-right mt-8">
             <button type="submit" class="btn text-lg"><i data-lucide="arrow-right" class="mr-2"></i> Kaydet ve 2. Adıma Geç</button>
         </div>

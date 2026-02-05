@@ -21,6 +21,15 @@
       "icon": "help-circle"
     },
     {
+      "slug": "flashcards",
+      "title": "Ezber Kartları",
+      "desc": "Hafıza kartlarıyla öğrenmeyi kolaylaştır.",
+      "type": "hafiza",
+      "minutes": "5-10",
+      "players": "Tek",
+      "icon": "brain"
+    },
+    {
       "slug": "guessGame",
       "title": "Takım Numarası Tahmin",
       "desc": "FRC takımlarının isimlerinden doğru takım numarasını tahmin et.",
@@ -28,6 +37,15 @@
       "minutes": "4-6",
       "players": "Tek / İki",
       "icon": "hash"
+    },
+    {
+      "slug": "taboo",
+      "title": "FRC Tabu",
+      "desc": "FRC terimleriyle tabu oynayarak eğlenerek öğrenin.",
+      "type": "tahmin",
+      "minutes": "1",
+      "players": "En az iki",
+      "icon": "message-square-more"
     },
     {
       "slug": "flipGame",

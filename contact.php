@@ -1,48 +1,87 @@
-<?php require_once 'config.php';
+<?php
+require_once 'config.php';
 session_start();
 
+// Google reCAPTCHA Secret Key'ini buraya ekle
+define('RECAPTCHA_SECRET_KEY', '6LcmgucrAAAAAO39Mj17DgqOSXWx-K6_i5sFMHHN');
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // --- RECAPTCHA DOĞRULAMASI BAŞLANGIÇ ---
+    if (isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])) {
+        $recaptcha_response = $_POST['g-recaptcha-response'];
 
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $subject = $_POST['subject'];
-    $message = $_POST['message'];
+        // Google'ın doğrulama API'sine istek gönder
+        $url = 'https://www.google.com/recaptcha/api/siteverify';
+        $data = [
+            'secret'   => RECAPTCHA_SECRET_KEY,
+            'response' => $recaptcha_response,
+            'remoteip' => $_SERVER['REMOTE_ADDR']
+        ];
 
-    try {
-        $pdo = get_db_connection();
+        $options = [
+            'http' => [
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($data)
+            ]
+        ];
+        $context  = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+        $responseKeys = json_decode($result, true);
 
-        $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$name, $email, $subject, $message]);
-    }catch (Throwable $e) {
-        http_response_code(500);
-        echo 'DB error: ' . htmlspecialchars($e->getMessage());
+        // Doğrulama başarılıysa devam et
+        if ($responseKeys["success"]) {
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $subject = $_POST['subject'];
+            $message = $_POST['message'];
+
+            try {
+                $pdo = get_db_connection();
+                $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$name, $email, $subject, $message]);
+
+                // Başarı durumunda formun kendisini değil, sadece başarı mesajını döndürelim.
+                // Bu, JavaScript ile popup göstermek için daha uygun.
+                // HTTP 200 OK (başarılı) kodu döner.
+                exit(); // Script'i burada bitiriyoruz.
+
+            } catch (Throwable $e) {
+                http_response_code(500);
+                echo 'DB error: ' . htmlspecialchars($e->getMessage());
+                exit();
+            }
+
+        } else {
+            // reCAPTCHA doğrulaması başarısız oldu
+            http_response_code(400); // Bad Request
+            echo 'reCAPTCHA doğrulaması başarısız oldu. Lütfen tekrar deneyin.';
+            exit();
+        }
+    } else {
+        // reCAPTCHA yanıtı boş geldi
+        http_response_code(400);
+        echo 'Lütfen "Ben robot değilim" kutusunu işaretleyin.';
+        exit();
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>İletişim - FRC Rookieverse</title>
+  <title>İletişim • RookieVerse</title>
     <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
 
-  
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/contact.css">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-EDSVL8LRCY');
-    </script>
+  
   <script>
     tailwind.config = {
       theme: { extend: { colors: { 'custom-yellow': '#E5AE32' } } }
@@ -57,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-16">
         <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">İletişim</h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Sorularınız, önerileriniz veya geri bildirimleriniz için bize ulaşın. FRC topluluğuna destek olmaktan mutluluk duyarız.</p>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Sorularınız, önerileriniz veya geri bildirimleriniz için bize ulaşın. FIRST topluluğuna destek olmaktan mutluluk duyarız.</p>
       </div>
       
       <div class="bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-custom-yellow/50 transition-all duration-300">
@@ -70,15 +109,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="space-y-2"><label for="subject" class="font-medium text-gray-700">Konu *</label><input id="subject" name="subject" type="text" required placeholder="Mesaj konusu" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-custom-yellow focus:ring-custom-yellow"></div>
             <div class="space-y-2"><label for="message" class="font-medium text-gray-700">Mesajınız *</label><textarea id="message" name="message" required rows="6" placeholder="Detaylı mesajınızı buraya yazın..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-custom-yellow focus:ring-custom-yellow resize-none"></textarea></div>
+            
+            <div class="flex justify-center">
+                <div class="g-recaptcha" data-sitekey="6LcmgucrAAAAAKG54g57tXOGDPxO3tMdk9odOYfP"></div>
+            </div>
+
             <button type="submit" class="w-full bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-3 text-lg rounded-lg flex items-center justify-center">
               <span class="button-content flex items-center"><i data-lucide="send" class="mr-2 h-5 w-5"></i> Mesajı Gönder</span>
             </button>
+            <div id="form-error" class="text-red-600 text-center mt-4"></div>
           </form>
       </div>
       
-
-
-      <div id="sss" class="mt-16"><h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Sık Sorulan Sorular</h2><div class="space-y-4 max-w-4xl mx-auto"><div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg"><button class="faq-trigger w-full flex justify-between items-center text-left p-6"><span class="text-lg font-bold text-gray-900">Platform tamamen ücretsiz mi?</span><i data-lucide="chevron-down" class="faq-icon text-custom-yellow"></i></button><div class="faq-answer"><p class="text-base text-gray-600 px-6 pb-6">Evet! Rookieverse'deki tüm kurslar ve oyunlar tamamen ücretsizdir. Türk FRC topluluğuna destek olmak için bu platformu geliştirdik.</p></div></div><div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg"><button class="faq-trigger w-full flex justify-between items-center text-left p-6"><span class="text-lg font-bold text-gray-900">Yeni takım nasıl kurulur?</span><i data-lucide="chevron-down" class="faq-icon text-custom-yellow"></i></button><div class="faq-answer"><p class="text-base text-gray-600 px-6 pb-6">Yeni takım kurmak için önce FIRST'e kayıt olmanız gerekir. Size bu süreçte yardımcı olmak için detaylı rehberlerimiz mevcuttur.</p></div></div><div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg"><button class="faq-trigger w-full flex justify-between items-center text-left p-6"><span class="text-lg font-bold text-gray-900">Kurs sertifikası alabilir miyim?</span><i data-lucide="chevron-down" class="faq-icon text-custom-yellow"></i></button><div class="faq-answer"><p class="text-base text-gray-600 px-6 pb-6">Şu anda sertifika sistemi geliştirme aşamasındadır. Yakında kurs tamamlama sertifikaları sunmayı planlıyoruz.</p></div></div><div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg"><button class="faq-trigger w-full flex justify-between items-center text-left p-6"><span class="text-lg font-bold text-gray-900">Offline kurs materyalleri var mı?</span><i data-lucide="chevron-down" class="faq-icon text-custom-yellow"></i></button><div class="faq-answer"><p class="text-base text-gray-600 px-6 pb-6">Kurslarımızın PDF versiyonları ve videoları indirip offline olarak kullanabilmeniz mümkündür.</p></div></div></div></div>
+      <div id="sss" class="mt-16"><h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Sık Sorulan Sorular</h2><div class="space-y-4 max-w-4xl mx-auto"><div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg"><button class="faq-trigger w-full flex justify-between items-center text-left p-6"><span class="text-lg font-bold text-gray-900">Platform tamamen ücretsiz mi?</span><i data-lucide="chevron-down" class="faq-icon text-custom-yellow"></i></button><div class="faq-answer"><p class="text-base text-gray-600 px-6 pb-6">Evet! Rookieverse'deki tüm kurslar ve oyunlar tamamen ücretsizdir. Türk FIRST topluluğuna destek olmak için bu platformu geliştirdik.</p></div></div><div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg"><button class="faq-trigger w-full flex justify-between items-center text-left p-6"><span class="text-lg font-bold text-gray-900">Yeni takım nasıl kurulur?</span><i data-lucide="chevron-down" class="faq-icon text-custom-yellow"></i></button><div class="faq-answer"><p class="text-base text-gray-600 px-6 pb-6">Yeni takım kurmak için önce FIRST'e kayıt olmanız gerekir. Size bu süreçte yardımcı olmak için detaylı rehberlerimiz mevcuttur.</p></div></div><div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg"><button class="faq-trigger w-full flex justify-between items-center text-left p-6"><span class="text-lg font-bold text-gray-900">Kurs sertifikası alabilir miyim?</span><i data-lucide="chevron-down" class="faq-icon text-custom-yellow"></i></button><div class="faq-answer"><p class="text-base text-gray-600 px-6 pb-6">Şu anda sertifika sistemi geliştirme aşamasındadır. Yakında kurs tamamlama sertifikaları sunmayı planlıyoruz.</p></div></div><div class="border-2 hover:border-custom-yellow/50 transition-all duration-200 rounded-lg"><button class="faq-trigger w-full flex justify-between items-center text-left p-6"><span class="text-lg font-bold text-gray-900">Offline kurs materyalleri var mı?</span><i data-lucide="chevron-down" class="faq-icon text-custom-yellow"></i></button><div class="faq-answer"><p class="text-base text-gray-600 px-6 pb-6">Kurslarımızın PDF versiyonları ve videoları indirip offline olarak kullanabilmeniz mümkündür.</p></div></div></div></div>
     </div>
   </div>
 
@@ -88,19 +131,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   <script>
     lucide.createIcons();
-    
-    // ## DÜZELTME: SSS AKORDİYON SCRİPTİ EKLENDİ ##
+
+    // SSS script'i
     const faqTriggers = document.querySelectorAll('.faq-trigger');
     faqTriggers.forEach(trigger => {
       trigger.addEventListener('click', () => {
         const answer = trigger.nextElementSibling;
         const isActive = trigger.classList.contains('active');
-
-        // Önce tüm açık olanları kapat (isteğe bağlı)
-        // faqTriggers.forEach(t => {
-        //   t.classList.remove('active');
-        //   t.nextElementSibling.style.maxHeight = null;
-        // });
 
         if (!isActive) {
           trigger.classList.add('active');
@@ -112,9 +149,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       });
     });
 
-    // Sayfadaki diğer tüm JavaScript fonksiyonları (form gönderme, takım arama)
-    // öncekiyle aynı şekilde çalışmaya devam eder.
-    // ...
+    // Form gönderimini yöneten JavaScript
+    const contactForm = document.getElementById('contact-form');
+    const successPopup = document.getElementById('success-popup');
+    const formError = document.getElementById('form-error');
+
+    contactForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Sayfanın yeniden yüklenmesini engelle
+        formError.textContent = ''; // Hata mesajını temizle
+
+        const formData = new FormData(this);
+
+        fetch('', { // Mevcut sayfaya post et
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok && response.status !== 500) {
+                // Başarılı (HTTP 200)
+                successPopup.style.display = 'flex';
+                contactForm.reset(); // Formu sıfırla
+                grecaptcha.reset(); // reCAPTCHA'yı sıfırla
+                setTimeout(() => {
+                    successPopup.style.display = 'none';
+                }, 4000); // 4 saniye sonra popup'ı gizle
+            } else {
+                // Hata durumu (HTTP 400 veya 500)
+                return response.text().then(text => { throw new Error(text) });
+            }
+        })
+        .catch(error => {
+            // Hata mesajını ekranda göster
+            formError.textContent = error.message || 'Bir hata oluştu, lütfen tekrar deneyin.';
+            grecaptcha.reset(); // Hata durumunda reCAPTCHA'yı sıfırla
+        });
+    });
   </script>
 
 </body>

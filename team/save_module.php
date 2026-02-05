@@ -18,6 +18,19 @@ function ensure_dir(string $path): void {
         throw new RuntimeException("mkdir_failed: $path");
     }
 }
+
+function payload_to_correct_index(?string $payload): int
+{
+    if (!$payload) return 0;               // 0 = seçilmemiş
+    $parts = explode('&', $payload);
+    foreach ($parts as $i => $p) {
+        if (str_ends_with($p, '=TRUE')) {  // örn: "45=FALSE&35=TRUE"
+            return $i + 1;                 // 1..5
+        }
+    }
+    return 0;
+}
+
 function sanitize_filename(string $name): string {
     $name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
     $name = preg_replace('/[^A-Za-z0-9_\.-]/', '_', $name);
@@ -159,7 +172,61 @@ try {
 
             $dataToStore = null;
 
-            if ($rawType === 'text') {
+
+            if ($rawType === 'question') {
+                // formdan gelen blok
+                $q = $cVal['question'] ?? [];
+
+                $qText = trim((string)($q['text'] ?? ''));
+                $qExp = trim((string)($q['explanation'] ?? ''));
+
+                $choices = array_values(array_filter(array_map(
+                    fn($x) => trim((string)$x),
+                    (array)($q['choices'] ?? [])
+                )));
+
+
+
+
+                if ($qText === '' || count($choices) < 2) {
+                    // eksik soru ise kaydetme, sonraki içeriğe geç
+                    continue;
+                }
+
+                // doğru şık: payload'tan 1..5 çıkar
+                $payload = (string)($q['answers_payload'] ?? '');
+                $correct = payload_to_correct_index($payload); // 1..5, yoksa 0
+
+                // 5 kolona pad’le
+                $answers = array_pad($choices, 5, null);
+
+                // 1) questions’a yaz
+                $stmtQ = $pdo->prepare("
+        INSERT INTO questions
+            (module_id, text, answer1, answer2, answer3, answer4, answer5, correct_answer, explanation)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+                $stmtQ->execute([
+                    $module_id,
+                    $qText,
+                    $answers[0], $answers[1], $answers[2], $answers[3], $answers[4],
+                    $correct,
+                    $qExp
+                ]);
+                $questionId = (int)$pdo->lastInsertId();
+
+                // 2) module_content'e bağla (type=quiz, content=questionId)
+                $stmtMC = $pdo->prepare("
+    INSERT INTO module_contents (module_id, type, title, data, sort_order)
+    VALUES (?, 'quiz', NULL, ?, ?)
+");
+                $stmtMC->execute([$module_id, (string)$questionId, $sort]);
+
+                continue; // bu içerik bitti
+            }
+
+
+            elseif ($rawType === 'text') {
                 $clean = trim((string)$paragraph);
                 if ($clean === '') continue;          // boş text atla
                 $dataToStore = $paragraph;            // HTML içerik

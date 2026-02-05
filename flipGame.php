@@ -11,7 +11,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDSVL8LRCY"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -39,7 +38,7 @@
             height: 150px;
             cursor: pointer;
             transform-style: preserve-3d;
-            transition: transform 0.5s ease;
+            transition: transform 0.6s ease-in-out;
         }
 
         .card.flipped {
@@ -60,6 +59,7 @@
             font-size: 2rem;
             color: #fff;
             padding: 0.5rem;
+            transition: border-color 0.3s; /* Renk geçişini de yumuşatalım */
         }
 
         .card-front {
@@ -84,9 +84,10 @@
             background-color: #E5AE32;
         }
 
-        /* Eşleşen kartlar için stil */
-        .matched {
-            border: 3px solid #16a34a;
+        /* DÜZELTİLDİ: Sadece eşleşen kartların iç yüzlerinin kenarlık rengi yeşil olsun */
+        .card.matched .card-front,
+        .card.matched .card-back {
+            border-color: #16a34a; 
         }
     </style>
 
@@ -133,16 +134,35 @@
     const resultsContainer = document.getElementById('results-container');
     const finalTimeDisplay = document.getElementById('final-time');
 
-    // Kart resimleri ve isimleri
     const cardItems = [
-        { name: "ROBOT", image: "https://pics.firstinspires.org/FIRST/FIRST-Robotics-Competition-Robot-2023-Charged-Up.png" },
-        { name: "LOGO", image: "https://pics.firstinspires.org/FIRST/FIRST-Robotics-Competition-Logo.png" },
-        { name: "FTC", image: "https://pics.firstinspires.org/FIRST/FIRST-Tech-Challenge-Logo.png" },
-        { name: "FLL", image: "https://pics.firstinspires.org/FIRST/FIRST-Lego-League-Logo.png" },
-        { name: "INSPIRES", image: "https://pics.firstinspires.org/FIRST/FIRST-Inspires-Logo.png" },
-        { name: "GLOBAL", image: "https://pics.firstinspires.org/FIRST/FIRST-Global-Logo.png" },
-        { name: "CHAMPIONSHIP", image: "https://pics.firstinspires.org/FIRST/FIRST-Championship-Logo.png" },
-        { name: "VOLUNTEERS", image: "https://pics.firstinspires.org/FIRST/FIRST-Volunteers-Logo.png" }
+        { name: "ALG", image: "assets/images/alg.webp" },
+        { name: "APRIL", image: "assets/images/april.jpg" },
+        { name: "BATTERY", image: "assets/images/battery.webp" },
+        { name: "CAN", image: "assets/images/can.jpg" },
+        { name: "CIM", image: "assets/images/cim.jpg" },
+        { name: "CORAL", image: "assets/images/coral.webp" },
+        { name: "CU60", image: "assets/images/cu60.png" },
+        { name: "CUBE", image: "assets/images/cube.webp" },
+        { name: "DP", image: "assets/images/dp.webp" },
+        { name: "ELEVATOR", image: "assets/images/elevator.webp" },
+        { name: "FIELD", image: "assets/images/field.jpg" },
+        { name: "GEARBOX", image: "assets/images/gearbox.jpeg" },
+        { name: "IMPACT", image: "assets/images/impact.png" },
+        { name: "INTAKE", image: "assets/images/intake.webp" },
+        { name: "KRAKEN", image: "assets/images/kraken.webp" },
+        { name: "MAX", image: "assets/images/max.webp" },
+        { name: "MODEM", image: "assets/images/modem.webp" },
+        { name: "NEO", image: "assets/images/neo.jpg" },
+        { name: "NITRATE", image: "assets/images/nitrate.webp" },
+        { name: "NOTE", image: "assets/images/note.jpeg" },
+        { name: "PDH", image: "assets/images/pdh.webp" },
+        { name: "PNEUMATICS", image: "assets/images/pneumatics.webp" },
+        { name: "REFIELD", image: "assets/images/refield.jpg" },
+        { name: "ROBORIO", image: "assets/images/roborio.jpg" },
+        { name: "SAFETY", image: "assets/images/safety.jpeg" },
+        { name: "SPARK", image: "assets/images/spark.jpg" },
+        { name: "SWERVE", image: "assets/images/swerve.webp" },
+        { name: "VRM", image: "assets/images/vrm.jpg" }
     ];
 
     let cards = [];
@@ -150,10 +170,14 @@
     let matchedPairs = 0;
     let time = 0;
     let timerInterval;
+    let totalPairs = 0;
 
-    // Oyunu başlatma fonksiyonu
     function startGame() {
-        cards = [...cardItems, ...cardItems];
+        const shuffledItems = [...cardItems].sort(() => 0.5 - Math.random());
+        const selectedItems = shuffledItems.slice(0, 6);
+        totalPairs = selectedItems.length;
+        cards = [...selectedItems, ...selectedItems];
+        
         cards.sort(() => Math.random() - 0.5);
 
         gameBoard.innerHTML = '';
@@ -174,7 +198,7 @@
 
             const cardBack = document.createElement('div');
             cardBack.classList.add('card-back');
-            cardBack.textContent = '?';
+            cardBack.innerHTML = '<i data-lucide="help-circle"></i>';
 
             cardElement.appendChild(cardFront);
             cardElement.appendChild(cardBack);
@@ -183,20 +207,22 @@
             gameBoard.appendChild(cardElement);
         });
 
+        lucide.createIcons();
         startTimer();
     }
 
-    // Zamanlayıcıyı başlatır
     function startTimer() {
+        clearInterval(timerInterval);
+        time = 0;
+        timerDisplay.textContent = time;
         timerInterval = setInterval(() => {
             time++;
             timerDisplay.textContent = time;
         }, 1000);
     }
 
-    // Kartı çevirme mantığı
     function flipCard(card) {
-        if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
+        if (flippedCards.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
             card.classList.add('flipped');
             flippedCards.push(card);
 
@@ -206,18 +232,18 @@
         }
     }
 
-    // Eşleşme kontrolü
     function checkMatch() {
         const [card1, card2] = flippedCards;
         const name1 = card1.dataset.name;
         const name2 = card2.dataset.name;
 
         if (name1 === name2) {
+            // DÜZELTİLDİ: Sadece ana karta 'matched' class'ı ekleniyor.
             card1.classList.add('matched');
             card2.classList.add('matched');
             matchedPairs++;
 
-            if (matchedPairs === cardItems.length) {
+            if (matchedPairs === totalPairs) {
                 endGame();
             }
         } else {
@@ -228,7 +254,6 @@
         flippedCards = [];
     }
 
-    // Oyunu bitirme
     function endGame() {
         clearInterval(timerInterval);
         finalTimeDisplay.textContent = time;
@@ -236,7 +261,6 @@
         gameBoard.style.display = 'none';
     }
 
-    // Oyunu başlat
     startGame();
 </script>
 
