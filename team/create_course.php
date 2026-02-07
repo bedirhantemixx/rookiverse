@@ -68,12 +68,21 @@ $page_title = "Yeni Kurs Oluştur - Adım 1";
         </div>
 
         <div class="input-card">
-            <label for="comp">Yarışma Türü</label>
+            <label for="comp"><?= __('create_course.competition') ?></label>
             <select id="comp" name="comp" class="form-select w-full" required>
-                <option value="" disabled selected>Lütfen bir yarışma türü seçin...</option>
+                <option value="" disabled selected><?= __('create_course.competition_placeholder') ?></option>
                 <option value="FRC">FRC (FIRST Robotics Competition)</option>
                 <option value="FTC">FTC (FIRST Tech Challenge)</option>
                 <option value="FLL">FLL (FIRST LEGO League)</option>
+            </select>
+        </div>
+
+        <div class="input-card">
+            <label for="language"><?= __('create_course.language') ?></label>
+            <select id="language" name="language" class="form-select w-full" required>
+                <option value="" disabled selected><?= __('create_course.language_placeholder') ?></option>
+                <option value="tr">🇹🇷 <?= __('common.turkish') ?></option>
+                <option value="en">🇬🇧 <?= __('common.english') ?></option>
             </select>
         </div>
 

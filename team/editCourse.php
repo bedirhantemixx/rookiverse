@@ -30,7 +30,7 @@ if (!$course_id) { header('Location: panel.php'); exit(); }
 
 $stmt = $pdo->prepare("
 
-  SELECT id, title, about_text, goal_text, learnings_text, category_id, level, comp, status, is_deleted,
+  SELECT id, title, about_text, goal_text, learnings_text, category_id, level, comp, language, status, is_deleted,
 
          cover_image_url, intro_video_url
 
@@ -512,9 +512,35 @@ $fileValue = (!$isYT && !empty($course['intro_video_url'])) ? $course['intro_vid
 
             <div class="input-card">
 
+                <label for="language" class="font-semibold text-gray-800"><?= __('create_course.language') ?></label>
+
+                <select id="language" name="language" class="form-select" required>
+
+                    <?php
+
+                    $langs = ['tr' => __('common.turkish'), 'en' => __('common.english')];
+
+                    $curLang = $course['language'] ?? 'tr';
+
+                    foreach($langs as $val => $label){
+
+                        $sel = ($val === $curLang)?'selected':'';
+
+                        echo "<option value=\"{$val}\" {$sel}>{$label}</option>";
+
+                    }
+
+                    ?>
+
+                </select>
+
+            </div>
+
+            <div class="input-card">
+
                 <div class="flex items-center justify-between">
 
-                    <span class="font-semibold text-gray-800">Durum</span>
+                    <span class="font-semibold text-gray-800"><?= __('edit_course.status') ?></span>
 
                     <span class="badge"><?= htmlspecialchars($course['status'] ?? 'Taslak') ?></span>
 

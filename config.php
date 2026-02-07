@@ -37,7 +37,8 @@ define('BASE_URL', $protocol . $domain . $basePath);
 
 // define('BASE_URL_SLASH', rtrim(BASE_URL, '/') . '/');
 
-
+// i18n - Language support
+require_once __DIR__ . '/lang.php';
 
 
 

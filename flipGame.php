@@ -1,10 +1,10 @@
 <?php require_once 'config.php'; ?>
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="<?= CURRENT_LANG ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRC Hafıza Oyunu - FRC Rookieverse</title>
+    <title><?= __('fm.page_title') ?></title>
     <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -104,22 +104,22 @@
 <div class="min-h-screen pt-20 pb-10 flex flex-col items-center">
     <div class="max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">FRC Hafıza Oyunu</h1>
-            <p class="text-gray-600 mb-4">Aynı kartların çiftlerini bul!</p>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2"><?= __('fm.title') ?></h1>
+            <p class="text-gray-600 mb-4"><?= __('fm.subtitle') ?></p>
 
             <div class="flex justify-between items-center mb-6 border-b pb-4">
                 <div class="flex items-center space-x-2">
                     <i data-lucide="clock" class="text-custom-yellow"></i>
-                    <span class="text-xl font-bold text-gray-800" id="timer-display">0</span><span class="text-gray-600 ml-1">saniye</span>
+                    <span class="text-xl font-bold text-gray-800" id="timer-display">0</span><span class="text-gray-600 ml-1"><?= __('game.seconds') ?></span>
                 </div>
             </div>
 
             <div id="game-board" class="mx-auto"></div>
 
             <div id="results-container" class="hidden mt-8 text-center">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Tebrikler, Oyunu Bitirdin!</h2>
-                <p class="text-xl text-gray-700 mb-6">Süren: <span class="font-bold text-custom-yellow" id="final-time">0</span> saniye</p>
-                <button onclick="window.location.reload()" class="px-6 py-3 border-2 border-custom-yellow text-custom-yellow font-semibold rounded-lg hover:bg-custom-yellow hover:text-white transition-colors duration-200">Tekrar Oyna</button>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4"><?= __('fm.congrats') ?></h2>
+                <p class="text-xl text-gray-700 mb-6"><?= __('fm.your_time') ?> <span class="font-bold text-custom-yellow" id="final-time">0</span> <?= __("game.seconds") ?></p>
+                <button onclick="window.location.reload()" class="px-6 py-3 border-2 border-custom-yellow text-custom-yellow font-semibold rounded-lg hover:bg-custom-yellow hover:text-white transition-colors duration-200"><?= __('game.play_again') ?></button>
             </div>
         </div>
     </div>

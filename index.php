@@ -33,7 +33,7 @@ session_start();
 <!DOCTYPE html>
 
 
-<html lang="tr">
+<html lang="<?= CURRENT_LANG ?>">
 
 
 <head>
@@ -45,7 +45,7 @@ session_start();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-  <title>Anasayfa - FIRST Rookieverse</title>
+  <title><?= __('index.title') ?></title>
 
 
     <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
@@ -567,13 +567,13 @@ session_start();
             <div class="space-y-4">
 
 
-              <span class="inline-block bg-custom-yellow text-white px-4 py-1 rounded-md text-sm font-semibold">Rookie’lere özel video, doküman ve oyunlar.</span>
+              <span class="inline-block bg-custom-yellow text-white px-4 py-1 rounded-md text-sm font-semibold"><?= __('index.badge') ?></span>
 
 
-              <h1 class="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">FIRST Dünyasına <span class="text-custom-yellow block">Hoş Geldiniz</span></h1>
+              <h1 class="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight"><?= __('index.hero_title') ?> <span class="text-custom-yellow block"><?= __('index.hero_highlight') ?></span></h1>
 
 
-              <p class="text-xl text-gray-600 max-w-lg"><b class="block mb-4">Türk FIRST takımlarının hazırladığı tüm Türkçe doküman ve eğitim videoları artık tek çatı altında!</b> Rookie üyeler, ihtiyacınız olan kaynaklara zahmetsizce ulaşarak robotik serüveninize güçlü bir başlangıç yapın.</p>
+              <p class="text-xl text-gray-600 max-w-lg"><?= __('index.hero_desc') ?></p>
 
 
             </div>
@@ -582,10 +582,10 @@ session_start();
             <div class="flex flex-col sm:flex-row gap-4">
 
 
-              <a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center bg-custom-yellow hover:bg-opacity-90 text-white px-8 py-3 text-lg font-semibold rounded-lg"><i data-lucide="play" class="mr-2 w-5 h-5"></i>Kurslara Başla</a>
+              <a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center bg-custom-yellow hover:bg-opacity-90 text-white px-8 py-3 text-lg font-semibold rounded-lg"><i data-lucide="play" class="mr-2 w-5 h-5"></i><?= __('index.cta_courses') ?></a>
 
 
-              <a href="<?php echo BASE_URL; ?>/games.php" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-lg"><i data-lucide="gamepad-2" class="mr-2 w-5 h-5"></i>Oyunları Keşfet</a>
+              <a href="<?php echo BASE_URL; ?>/games.php" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-lg"><i data-lucide="gamepad-2" class="mr-2 w-5 h-5"></i><?= __('index.cta_games') ?></a>
 
 
             </div>
@@ -654,7 +654,7 @@ session_start();
 
 
 
-    <section class="py-20"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div class="text-center mb-16"><h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Neden RookieVerse?</h2><p class="text-xl text-gray-600 max-w-3xl mx-auto">Türk FIRST takımlarının deneyimli öğrencilerin hazırladığı, interaktif içeriklerden ve gerçek dünya deneyimlerinden faydalanın.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="book-open" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold">Kapsamlı Kurslar</h3></div><p class="text-center text-base text-gray-600">FIRST programlarının (FRC, FTC, FLL) tüm alanlarını kapsayan detaylı kurs içerikleri. Başlangıçtan ileri seviyeye kadar öğrenin.</p></div><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="gamepad-2" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold">İnteraktif Oyunlar</h3></div><p class="text-center text-base text-gray-600">Eğlenceli oyunlar ile öğrendiklerinizi pekiştirin. Öğrenme sürecini keyifli hale getirin.</p></div><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="users" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold">Topluluk Desteği</h3></div><p class="text-center text-base text-gray-600">Projenin amacı doğrultusunda Türkiye'deki FIRST takımlarına döküman veya videolara dair sorularınızı sorun.</p></div></div></div></section>
+    <section class="py-20"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div class="text-center mb-16"><h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"><?= __('index.why_title') ?></h2><p class="text-xl text-gray-600 max-w-3xl mx-auto"><?= __('index.why_desc') ?></p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="book-open" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold"><?= __('index.feature1_title') ?></h3></div><p class="text-center text-base text-gray-600"><?= __('index.feature1_desc') ?></p></div><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="gamepad-2" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold"><?= __('index.feature2_title') ?></h3></div><p class="text-center text-base text-gray-600"><?= __('index.feature2_desc') ?></p></div><div class="border-2 hover:border-custom-yellow/50 rounded-lg p-6"><div class="text-center pb-4"><div class="mx-auto w-16 h-16 bg-custom-yellow/10 rounded-full flex items-center justify-center mb-4"><i data-lucide="users" class="text-custom-yellow w-8 h-8"></i></div><h3 class="text-xl font-bold"><?= __('index.feature3_title') ?></h3></div><p class="text-center text-base text-gray-600"><?= __('index.feature3_desc') ?></p></div></div></div></section>
 
 
 
@@ -669,10 +669,10 @@ session_start();
               <div class="text-center mb-16">
 
 
-                  <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Öne Çıkan Kurslar</h2>
+                  <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"><?= __('index.featured_title') ?></h2>
 
 
-                  <p class="text-xl text-gray-600">En popüler ve etkili kurslarımızla FIRST yolculuğunuza başlayın</p>
+                  <p class="text-xl text-gray-600"><?= __('index.featured_desc') ?></p>
 
 
               </div>
@@ -786,7 +786,7 @@ session_start();
                               <div class="flex justify-between items-center">
 
 
-                                  <a href="courseDetails.php?course=<?=$course['course_uid']?>" class="px-3 py-1.5 text-sm bg-custom-yellow text-white rounded-md">Detayları Gör</a>
+                                  <a href="courseDetails.php?course=<?=$course['course_uid']?>" class="px-3 py-1.5 text-sm bg-custom-yellow text-white rounded-md"><?= __('index.see_details') ?></a>
 
 
                               </div>
@@ -813,13 +813,7 @@ session_start();
               <div class="text-center mt-12">
 
 
-                  <a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-md">
-
-
-                      Tüm Kursları Görüntüle
-
-
-                  </a>
+                  <a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center border-2 border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white px-8 py-3 text-lg font-semibold rounded-md"><?= __('index.view_all_courses') ?></a>
 
 
               </div>
@@ -843,7 +837,7 @@ session_start();
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
 
-            <div class="text-center mb-16"><h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Destekleyen Takımlar</h2><p class="text-xl text-gray-600">Bu platformun gelişimine katkıda bulunan değerli FIRST takımları</p></div>
+            <div class="text-center mb-16"><h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"><?= __('index.contributors_title') ?></h2><p class="text-xl text-gray-600"><?= __('index.contributors_desc') ?></p></div>
 
 
             <div class="logo-slider-container">
@@ -915,7 +909,7 @@ session_start();
     <section class="bg-custom-yellow py-20">
 
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"><div class="space-y-6"><h2 class="text-3xl lg:text-4xl font-bold text-white">FIRST Maceranıza İlk Adımı Atmaya Hazır mısınız?</h2><p class="text-xl text-white/90 max-w-2xl mx-auto">Robotik dünyasında yol gösterecek tüm kaynaklar burada. Ücretsiz eğitim içeriklerimiz ve takım destek programlarımızla hem bireysel katılımcıları hem de takımları başarıya taşıyoruz.</p><div class="flex flex-col sm:flex-row gap-4 justify-center"><a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center bg-white text-custom-yellow hover:bg-gray-100 px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="book-open" class="mr-2 w-5 h-5"></i>Ücretsiz Başla</a><a href="<?php echo BASE_URL; ?>/team-login.php" class="inline-flex items-center justify-center border-2 border-white text-white hover:bg-white hover:text-custom-yellow px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="log-in" class="mr-3 w-5 h-5"></i>Takım Girişi</a></div></div></div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"><div class="space-y-6"><h2 class="text-3xl lg:text-4xl font-bold text-white"><?= __('index.cta_title') ?></h2><p class="text-xl text-white/90 max-w-2xl mx-auto"><?= __('index.cta_desc') ?></p><div class="flex flex-col sm:flex-row gap-4 justify-center"><a href="<?php echo BASE_URL; ?>/courses.php" class="inline-flex items-center justify-center bg-white text-custom-yellow hover:bg-gray-100 px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="book-open" class="mr-2 w-5 h-5"></i><?= __('index.cta_free') ?></a><a href="<?php echo BASE_URL; ?>/team-login.php" class="inline-flex items-center justify-center border-2 border-white text-white hover:bg-white hover:text-custom-yellow px-8 py-3 text-lg font-semibold rounded-md"><i data-lucide="log-in" class="mr-3 w-5 h-5"></i><?= __('nav.team_login') ?></a></div></div></div>
 
 
     </section>

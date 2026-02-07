@@ -3,7 +3,7 @@ require_once 'config.php';
 ?>
 
 <!doctype html>
-<html lang="tr">
+<html lang="<?= CURRENT_LANG ?>">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -12,7 +12,7 @@ require_once 'config.php';
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
-    <title>RookieVerse • FRC Ezber Kartları</title>
+    <title><?= __('fc.page_title') ?></title>
     <style>
         :root{ --rv-yellow:#E5AE32; --bg:#f5f5f7; --card:#ffffff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; }
         *{box-sizing:border-box}
@@ -54,7 +54,7 @@ require_once 'config.php';
 <!-- PROGRESS -->
 <div class="container" style="margin-top:12px">
     <div class="card pad">
-        <div class="meta"><span id="metaLearned">0/0 öğrenildi</span><span id="metaLeft">0 kaldı</span></div>
+        <div class="meta"><span id="metaLearned">0/0 <?= __('fc.learned') ?></span><span id="metaLeft">0 <?= __('fc.remaining') ?></span></div>
         <div class="progress"><div id="bar"></div></div>
     </div>
 </div>
@@ -71,7 +71,7 @@ require_once 'config.php';
                     </div>
                     <div class="term" id="term"></div>
                     <div style="display:flex; justify-content:center; margin-bottom:6px">
-                        <button id="flipBtn" class="btn primary">Çevir (Space)</button>
+                        <button id="flipBtn" class="btn primary"><?= __('fc.flip') ?></button>
                     </div>
                 </section>
                 <section class="face back">
@@ -81,18 +81,18 @@ require_once 'config.php';
                     </div>
                     <div class="def" id="def"></div>
                     <div class="actions">
-                        <button id="prevBtn" class="btn">← Geri</button>
-                        <button id="againBtn" class="btn">Tekrar (A)</button>
-                        <button id="goodBtn" class="btn primary">Biliyorum (G)</button>
+                        <button id="prevBtn" class="btn"><?= __('fc.back') ?></button>
+                        <button id="againBtn" class="btn"><?= __('fc.again') ?></button>
+                        <button id="goodBtn" class="btn primary"><?= __('fc.know') ?></button>
                     </div>
                 </section>
             </div>
         </div>
         <div class="hint">
-            <span>İpucu: Kartı çevirip A/G ile puanla.</span>
+            <span><?= __('fc.hint') ?></span>
             <div>
-                <button id="navPrev" class="btn">Önceki</button>
-                <button id="navNext" class="btn">Sonraki</button>
+                <button id="navPrev" class="btn"><?= __('fc.prev') ?></button>
+                <button id="navNext" class="btn"><?= __('fc.next') ?></button>
             </div>
         </div>
     </div>
@@ -101,17 +101,17 @@ require_once 'config.php';
 <!-- SESSION SUMMARY + IMPORT/EXPORT -->
 <div class="container" style="padding-bottom:24px">
     <div class="card pad">
-        <h3 style="margin:8px 0 10px">Seans Özeti</h3>
+        <h3 style="margin:8px 0 10px"><?= __('fc.session') ?></h3>
         <div class="footer-grid">
-            <div class="stat"><div class="k">Toplam</div><div id="stTotal" class="v">0</div></div>
-            <div class="stat"><div class="k">Öğrenildi</div><div id="stLearned" class="v">0</div></div>
-            <div class="stat"><div class="k">Kaldı</div><div id="stLeft" class="v">0</div></div>
-            <div class="stat"><div class="k">Kuyruk</div><div id="stQueue" class="v">0</div></div>
+            <div class="stat"><div class="k"><?= __("fc.total") ?></div><div id="stTotal" class="v">0</div></div>
+            <div class="stat"><div class="k"><?= __("fc.learned_stat") ?></div><div id="stLearned" class="v">0</div></div>
+            <div class="stat"><div class="k"><?= __("fc.left") ?></div><div id="stLeft" class="v">0</div></div>
+            <div class="stat"><div class="k"><?= __("fc.queue") ?></div><div id="stQueue" class="v">0</div></div>
         </div>
         <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px">
 
-            <button id="shuffleBtn" class="btn">Karıştır</button>
-            <button id="resetBtn" class="btn">Sıfırla</button>
+            <button id="shuffleBtn" class="btn"><?= __('fc.shuffle') ?></button>
+            <button id="resetBtn" class="btn"><?= __('fc.reset') ?></button>
         </div>
     </div>
 </div>
@@ -246,8 +246,8 @@ require_once 'config.php';
     }
 
     function updateProgress(total, learned){
-        metaLearned.textContent = `${learned}/${total} öğrenildi`;
-        metaLeft.textContent = `${Math.max(total-learned,0)} kaldı`;
+        metaLearned.textContent = `${learned}/${total} <?= __('fc.learned') ?>`;
+        metaLeft.textContent = `${Math.max(total-learned,0)} <?= __('fc.remaining') ?>`;
         bar.style.width = `${total? (learned/total)*100 : 0}%`;
         stTotal.textContent = total;
         stLearned.textContent = learned;
@@ -262,8 +262,8 @@ require_once 'config.php';
 
         const cur = current();
         if(!cur){
-            termEl.textContent = 'Seans tamam! 🎉';
-            defEl.textContent = 'Yeni bir karıştırma yapabilir veya yeni bir seansa başlayabilirsin.';
+            termEl.textContent = '<?= __('fc.done') ?>';
+            defEl.textContent = '<?= __('fc.done_desc') ?>';
             catFront.textContent = '';
             catBack.textContent = '';
             idxFront.textContent = '';
@@ -282,8 +282,8 @@ require_once 'config.php';
 
         const q = queue();
         const pos = clamp(idx,0,q.length-1);
-        idxFront.textContent = `Kart ${pos+1} / ${q.length}`;
-        idxBack.textContent = `Kart ${pos+1} / ${q.length}`;
+        idxFront.textContent = `<?= __('fc.card') ?> ${pos+1} / ${q.length}`;
+        idxBack.textContent = `<?= __('fc.card') ?> ${pos+1} / ${q.length}`;
 
         if(showBack) flipBox.classList.add('showback'); else flipBox.classList.remove('showback');
     }

@@ -9,14 +9,7 @@
 
 
 
-
-
-
-
-
 ?>
-
-
 
 
 
@@ -52,6 +45,28 @@
 
     .fade-100      { opacity: 1; }
 
+    /* Language switcher */
+    .lang-switcher { position: relative; }
+    .lang-switcher-btn {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600;
+        border: 1px solid #e5e7eb; background: #fff; color: #374151; cursor: pointer;
+        transition: border-color .2s;
+    }
+    .lang-switcher-btn:hover { border-color: #E5AE32; }
+    .lang-dropdown {
+        display: none; position: absolute; top: 100%; right: 0; margin-top: 4px;
+        background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.1); z-index: 100; min-width: 120px; overflow: hidden;
+    }
+    .lang-dropdown.show { display: block; }
+    .lang-dropdown a {
+        display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+        font-size: 13px; color: #374151; text-decoration: none; transition: background .15s;
+    }
+    .lang-dropdown a:hover { background: #f9fafb; }
+    .lang-dropdown a.active { background: #fffbeb; color: #E5AE32; font-weight: 600; }
+
 </style>
 
 <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -74,19 +89,29 @@
 
             <div class="nav-desktop items-center space-x-8">
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/courses.php">Kurslar</a>
+                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/courses.php"><?= __('nav.courses') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/teams.php">Takımlar</a>
+                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/teams.php"><?= __('nav.teams') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/games.php">Oyunlar</a>
+                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/games.php"><?= __('nav.games') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/season.php">2026 Sezonu</a>
+                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/season.php"><?= __('nav.season') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/frc-terms.php">FIRST Sözlük</a>
+                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/frc-terms.php"><?= __('nav.frc_glossary') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/contact.php">İletişim</a>
+                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/contact.php"><?= __('nav.contact') ?></a>
 
-
+                <!-- Language Switcher -->
+                <div class="lang-switcher">
+                    <button class="lang-switcher-btn" id="lang-toggle" type="button">
+                        <?= CURRENT_LANG === 'tr' ? 'TR' : 'EN' ?>
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="lang-dropdown" id="lang-dropdown">
+                        <a href="<?= BASE_URL ?>/set_lang.php?lang=tr&redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="<?= CURRENT_LANG === 'tr' ? 'active' : '' ?>">Türkçe</a>
+                        <a href="<?= BASE_URL ?>/set_lang.php?lang=en&redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="<?= CURRENT_LANG === 'en' ? 'active' : '' ?>">English</a>
+                    </div>
+                </div>
 
                 <a href="<?= BASE_URL ?>/<?= isset($_SESSION['team_logged_in']) ? 'team/panel.php' : 'team-login.php' ?>"
 
@@ -98,7 +123,7 @@
 
                     <?php else: ?>
 
-                        <i data-lucide="log-in" class="w-4 h-4"></i> Takım Girişi
+                        <i data-lucide="log-in" class="w-4 h-4"></i> <?= __('nav.team_login') ?>
 
                     <?php endif; ?>
 
@@ -116,7 +141,7 @@
 
                     aria-controls="mobile-drawer" aria-expanded="false" type="button">
 
-                <span class="sr-only">Menüyü aç/kapat</span>
+                <span class="sr-only"><?= __('nav.toggle_menu') ?></span>
 
                 <i data-lucide="menu" class="w-6 h-6" id="icon-open"></i>
 
@@ -143,16 +168,15 @@
     <aside id="mobile-drawer"
 
            class="fixed inset-y-0 right-0 z-[70] w-[90vw] max-w-sm bg-white border-l shadow-xl
-
                 drawer-hidden transition-transform duration-300 will-change-transform"
 
            role="dialog" aria-modal="true" aria-labelledby="mobile-drawer-title">
 
         <div class="h-16 px-4 flex items-center justify-between border-b">
 
-            <div id="mobile-drawer-title" class="font-semibold">Menü</div>
+            <div id="mobile-drawer-title" class="font-semibold"><?= __('nav.menu') ?></div>
 
-            <button id="mobile-close" class="p-2 rounded-md hover:bg-gray-100" type="button" aria-label="Kapat">
+            <button id="mobile-close" class="p-2 rounded-md hover:bg-gray-100" type="button" aria-label="<?= __('nav.close') ?>">
 
                 <i data-lucide="x" class="w-6 h-6"></i>
 
@@ -162,19 +186,25 @@
 
         <nav class="px-4 py-3 space-y-1 overflow-y-auto h-[calc(100vh-4rem)]">
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/courses.php">Kurslar</a>
+            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/courses.php"><?= __('nav.courses') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/teams.php">Takımlar</a>
+            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/teams.php"><?= __('nav.teams') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/games.php">Oyunlar</a>
+            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/games.php"><?= __('nav.games') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/season.php">2026 Sezonu</a>
+            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/season.php"><?= __('nav.season') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/frc-terms.php">FIRST Sözlük</a>
+            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/frc-terms.php"><?= __('nav.frc_glossary') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/contact.php">İletişim</a>
+            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/contact.php"><?= __('nav.contact') ?></a>
 
-
+            <!-- Mobile Language Switcher -->
+            <div class="flex gap-2 px-3 py-2">
+                <a href="<?= BASE_URL ?>/set_lang.php?lang=tr&redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>"
+                   class="flex-1 text-center py-2 rounded-md text-sm font-semibold <?= CURRENT_LANG === 'tr' ? 'bg-[#E5AE32] text-white' : 'border border-gray-300 text-gray-700' ?>">🇹🇷 Türkçe</a>
+                <a href="<?= BASE_URL ?>/set_lang.php?lang=en&redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>"
+                   class="flex-1 text-center py-2 rounded-md text-sm font-semibold <?= CURRENT_LANG === 'en' ? 'bg-[#E5AE32] text-white' : 'border border-gray-300 text-gray-700' ?>">🇬🇧 English</a>
+            </div>
 
             <a href="<?= BASE_URL ?>/<?= isset($_SESSION['team_logged_in']) ? 'team/panel.php' : 'team-login.php' ?>"
 
@@ -186,7 +216,7 @@
 
                 <?php else: ?>
 
-                    <i data-lucide="log-in" class="w-4 h-4"></i> Takım Girişi
+                    <i data-lucide="log-in" class="w-4 h-4"></i> <?= __('nav.team_login') ?>
 
                 <?php endif; ?>
 
@@ -222,11 +252,9 @@
 
                 <p class="text-sm text-gray-700 leading-5">
 
-                    Platformumuzda <strong>hesap oluşturmadan konforlu kurs kaydı</strong> gibi özellikler için çerezler kullanıyoruz.
+                    <?= __('cookie.message') ?>
 
-                    Siteyi kullanmaya devam ederek çerezleri kabul etmiş olursunuz.
-
-                    <a href="<?= BASE_URL ?>/privacy.php" class="font-semibold text-[#E5AE32] hover:underline">Detaylar</a>
+                    <a href="<?= BASE_URL ?>/privacy.php" class="font-semibold text-[#E5AE32] hover:underline"><?= __('cookie.details') ?></a>
 
                 </p>
 
@@ -236,7 +264,7 @@
 
                             class="px-4 py-2 rounded-lg bg-[#E5AE32] text-white hover:bg-[#E5AE32]/90 text-sm font-semibold">
 
-                        Tamam
+                        <?= __('cookie.ok') ?>
 
                     </button>
 
@@ -342,6 +370,21 @@
 
     })();
 
+    // Language switcher dropdown
+    (function(){
+        const toggle = document.getElementById('lang-toggle');
+        const dropdown = document.getElementById('lang-dropdown');
+        if (!toggle || !dropdown) return;
+
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+        });
+        document.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+        });
+    })();
+
     (function () {
 
         const KEY = 'rv_cookie_consent';       // values: accepted | rejected
@@ -398,10 +441,6 @@
 
         // Auto-accept strategy:
 
-        // - İlk anlamlı etkileşimde (click, keydown, scroll) accepted olarak işaretle
-
-        // - Kullanıcı henüz “Tamam” demediyse bilgilendirme tostu göster
-
         function autoAccept() {
 
             const consent = getCookie(KEY);
@@ -418,8 +457,6 @@
 
 
 
-        // Bir kere tetikle ve sonra dinleyicileri kaldır
-
         function attachFirstInteractionAccept() {
 
             const once = () => {
@@ -432,8 +469,6 @@
 
                 window.removeEventListener('scroll', once, {passive:true});
 
-                // Eğer kullanıcı hiç etkileşime geçmeden 10 sn kalırsa yine kabul say
-
                 clearTimeout(timer);
 
             };
@@ -444,7 +479,7 @@
 
             window.addEventListener('scroll', once, {passive:true});
 
-            const timer = setTimeout(once, 10000); // 10s sonra otomatik kabul
+            const timer = setTimeout(once, 10000);
 
         }
 
@@ -458,8 +493,6 @@
 
 
 
-            // Daha önce reddetmişse daima bilgi tostu göster (kararını bozmayız)
-
             if (consent === 'rejected') {
 
                 showToast();
@@ -469,8 +502,6 @@
                 if (!ack) showToast();
 
             } else {
-
-                // henüz hiç karar yok: ilk etkileşimde auto-accept
 
                 attachFirstInteractionAccept();
 
@@ -499,7 +530,6 @@
 
 
 </script>
-
 
 
 

@@ -10,7 +10,7 @@ require_once 'config.php';
 
 <!DOCTYPE html>
 
-<html lang="tr">
+<html lang="<?= CURRENT_LANG ?>">
 
 <head>
 
@@ -18,7 +18,7 @@ require_once 'config.php';
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Oyunlar • Rookieverse</title>
+    <title><?= __('games.page_title') ?></title>
 
     <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
 
@@ -112,9 +112,9 @@ require_once 'config.php';
 
         <div>
 
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Oyunlar</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight"><?= __('games.title') ?></h1>
 
-            <p class="text-slate-600">FIRST terimleriyle öğrenirken eğlen. İstediğin oyunu seç ve hemen başla.</p>
+            <p class="text-slate-600"><?= __('games.description') ?></p>
 
         </div>
 
@@ -128,7 +128,7 @@ require_once 'config.php';
 
             <div class="flex-1 relative">
 
-                <input id="search" type="text" placeholder="Oyun ara (ör. harf, quiz, tahmin, eşleştirme)" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 pr-10 outline-none focus:border-custom-yellow" />
+                <input id="search" type="text" placeholder="<?= __('games.search_placeholder') ?>" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 pr-10 outline-none focus:border-custom-yellow" />
 
                 <i data-lucide="search" class="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
 
@@ -136,15 +136,15 @@ require_once 'config.php';
 
             <div class="flex flex-wrap gap-2" id="filters">
 
-                <button data-filter="all" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50">Tümü</button>
+                <button data-filter="all" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.all') ?></button>
 
-                <button data-filter="kelime" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50">Kelime</button>
+                <button data-filter="kelime" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.word') ?></button>
 
-                <button data-filter="tahmin" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50">Tahmin</button>
+                <button data-filter="tahmin" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.guess') ?></button>
 
-                <button data-filter="eslestirme" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50">Eşleştirme</button>
+                <button data-filter="eslestirme" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.matching') ?></button>
 
-                <button data-filter="hafiza" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50">Hafıza</button>
+                <button data-filter="hafiza" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.memory') ?></button>
 
             </div>
 
@@ -198,7 +198,7 @@ require_once 'config.php';
 
                     <i data-lucide="play"></i>
 
-                    <span>Oyna</span>
+                    <span><?= __('games.play') ?></span>
 
                 </a>
 
@@ -240,7 +240,7 @@ require_once 'config.php';
 
             console.error('Games yüklenemedi:', err);
 
-            grid.innerHTML = '<p class="text-red-600">Oyun listesi yüklenemedi.</p>';
+            grid.innerHTML = '<p class="text-red-600"><?= __("games.load_error") ?></p>';
 
         }
 
@@ -334,7 +334,7 @@ require_once 'config.php';
 
             tagsEl.appendChild(tag(g.type));
 
-            metaEl.appendChild(meta('clock', `${g.minutes} dk`));
+            metaEl.appendChild(meta('clock', `${g.minutes} <?= __('games.minutes') ?>`));
 
             metaEl.appendChild(meta('users', g.players));
 

@@ -70,9 +70,11 @@ try {
 
     $comp            = trim($_POST['comp'] ?? 'FRC');
 
+    $language        = trim($_POST['language'] ?? 'tr');
 
 
-    if ($course_id <= 0 || $title === '' || $about_text === '' || $goal_text === '' || $learnings === '' || $category_id <= 0 || $level === '' || !in_array($comp, ['FRC','FTC','FLL'])) {
+
+    if ($course_id <= 0 || $title === '' || $about_text === '' || $goal_text === '' || $learnings === '' || $category_id <= 0 || $level === '' || !in_array($comp, ['FRC','FTC','FLL']) || !in_array($language, ['tr','en'])) {
 
         json_response(false, ['message'=>'Eksik veya hatalı form verisi'], 422);
 
@@ -118,6 +120,8 @@ try {
 
                    comp = :comp,
 
+                   language = :language,
+
                    intro_video_url = :intro,        -- her zaman set
 
                    updated_at = NOW()
@@ -145,6 +149,8 @@ try {
     $u->bindValue(':lvl',    $level);
 
     $u->bindValue(':comp',   $comp);
+
+    $u->bindValue(':language', $language);
 
     $u->bindValue(':id',     $course_id, PDO::PARAM_INT);
 

@@ -28,7 +28,7 @@ foreach ($courses as $course) {
 
 <!DOCTYPE html>
 
-<html lang="tr">
+<html lang="<?= CURRENT_LANG ?>">
 
 <head>
 
@@ -36,7 +36,7 @@ foreach ($courses as $course) {
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Kurslar • RookieVerse</title>
+    <title><?= __('courses.page_title') ?></title>
 
     <link rel="icon" type="image/x-icon" href="assets/images/rokiverse_icon.png">
 
@@ -146,13 +146,13 @@ foreach ($courses as $course) {
 
         <div class="text-center mb-12">
 
-            <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Kurslar</h1>
+            <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4"><?= __('courses.title') ?></h1>
 
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
 
-                FIRST programlarında (FRC, FTC, FLL) ihtiyacınız olan tüm bilgileri kategorilere ayrılmış kapsamlı
+                <?= __('courses.description') ?>
 
-                kurslarımızda bulabilirsiniz.
+                
 
             </p>
 
@@ -161,9 +161,9 @@ foreach ($courses as $course) {
 
 
         <div class="mb-8">
-            <h3 class="text-center text-lg font-semibold text-gray-700 mb-3">Yarışma Türü</h3>
+            <h3 class="text-center text-lg font-semibold text-gray-700 mb-3"><?= __('courses.competition_type') ?></h3>
             <div class="flex flex-wrap justify-center gap-4 mb-6">
-                <button data-comp-filter="all" class="px-6 py-2 font-medium bg-custom-yellow text-white rounded-md comp-filter-btn">Tümü</button>
+                <button data-comp-filter="all" class="px-6 py-2 font-medium bg-custom-yellow text-white rounded-md comp-filter-btn"><?= __('courses.all') ?></button>
                 <button data-comp-filter="FRC" class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md comp-filter-btn">FRC</button>
                 <button data-comp-filter="FTC" class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md comp-filter-btn">FTC</button>
                 <button data-comp-filter="FLL" class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md comp-filter-btn">FLL</button>
@@ -171,9 +171,9 @@ foreach ($courses as $course) {
         </div>
 
         <div class="mb-8">
-            <h3 class="text-center text-lg font-semibold text-gray-700 mb-3">Kategori</h3>
+            <h3 class="text-center text-lg font-semibold text-gray-700 mb-3"><?= __('courses.category') ?></h3>
             <div class="flex flex-wrap justify-center gap-4 mb-12">
-                <button data-filter="all" class="px-6 py-2 font-medium bg-custom-yellow text-white rounded-md">Tümü</button>
+                <button data-filter="all" class="px-6 py-2 font-medium bg-custom-yellow text-white rounded-md"><?= __('courses.all') ?></button>
 
                 <?php
 
@@ -192,11 +192,19 @@ foreach ($courses as $course) {
             </div>
         </div>
 
-
+        <!-- Language Filter -->
+        <div class="mb-8">
+            <h3 class="text-center text-lg font-semibold text-gray-700 mb-3"><?= __('courses.language_filter') ?></h3>
+            <div class="flex flex-wrap justify-center gap-4 mb-6">
+                <button data-lang-filter="all" class="px-6 py-2 font-medium bg-custom-yellow text-white rounded-md lang-filter-btn"><?= __('courses.lang_all') ?></button>
+                <button data-lang-filter="tr" class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md lang-filter-btn"><?= __('courses.lang_tr') ?></button>
+                <button data-lang-filter="en" class="px-6 py-2 font-medium border border-custom-yellow text-custom-yellow hover:bg-custom-yellow hover:text-white rounded-md lang-filter-btn"><?= __('courses.lang_en') ?></button>
+            </div>
+        </div>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-2 mb-8 px-4">
 
-            <input type="text" placeholder="Kurslarda ara..."
+            <input type="text" placeholder="<?= __('courses.search_placeholder') ?>"
 
                    class="w-full sm:w-auto flex-1 max-w-lg px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-custom-yellow" />
 
@@ -214,7 +222,7 @@ foreach ($courses as $course) {
 
                 <h3 class="text-2xl sm:text-3xl font-bold text-custom-yellow"><?=$approvedCourses?></h3>
 
-                <p class="text-sm sm:text-lg text-gray-500">Toplam Kurs</p>
+                <p class="text-sm sm:text-lg text-gray-500"><?= __('courses.total_courses') ?></p>
 
             </div>
 
@@ -224,7 +232,7 @@ foreach ($courses as $course) {
 
                 <h3 class="text-2xl sm:text-3xl font-bold text-custom-yellow"><?=count($categories)?></h3>
 
-                <p class="text-sm sm:text-lg text-gray-500">Kategori</p>
+                <p class="text-sm sm:text-lg text-gray-500"><?= __('courses.category_label') ?></p>
 
             </div>
 
@@ -236,7 +244,7 @@ foreach ($courses as $course) {
 
                 <h3 class="text-2xl sm:text-3xl font-bold text-custom-yellow"><?=$studentcount?></h3>
 
-                <p class="text-sm sm:text-lg text-gray-500">Toplam Öğrenci</p>
+                <p class="text-sm sm:text-lg text-gray-500"><?= __('courses.total_students') ?></p>
 
             </div>
 
@@ -292,7 +300,7 @@ foreach ($courses as $course) {
 
                     ?>
 
-                        <div class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg course-card" data-comp="<?= htmlspecialchars($course['comp'] ?? 'FRC') ?>">
+                        <div class="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 hover:border-custom-yellow/50 rounded-lg course-card" data-comp="<?= htmlspecialchars($course['comp'] ?? 'FRC') ?>" data-lang="<?= htmlspecialchars($course['language'] ?? 'tr') ?>">
 
                             <div class="aspect-video relative overflow-hidden group">
 
@@ -308,7 +316,7 @@ foreach ($courses as $course) {
 
                                        class="inline-flex items-center justify-center px-4 py-2 bg-white text-custom-yellow hover:bg-gray-100 rounded-md">
 
-                                        <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> Kurs Tanıtımı
+                                        <i data-lucide="play" class="mr-2" style="width: 16px; height: 16px;"></i> <?= __('courses.course_preview') ?>
 
                                     </a>
 
@@ -377,9 +385,7 @@ foreach ($courses as $course) {
 
                                 <a href="courseDetails.php?course=<?=$course['course_uid']?>"
 
-                                   class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md">Kursa
-
-                                    Başla</a>
+                                   class="w-full inline-block text-center bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-2 transition-all duration-200 rounded-md"><?= __('courses.start_course') ?></a>
 
                             </div>
 
@@ -429,8 +435,12 @@ foreach ($courses as $course) {
     const compButtons = document.querySelectorAll('button[data-comp-filter]');
     const sections = document.querySelectorAll('div[data-category]');
 
+    const langButtons = document.querySelectorAll('button[data-lang-filter]');
+
     let activeCompFilter = 'all';
     let activeCategoryFilter = 'all';
+    // Auto-select language filter based on site language
+    let activeLangFilter = '<?= CURRENT_LANG === "en" ? "en" : "all" ?>';
 
     document.querySelectorAll('.team-name-button').forEach(button =>{
 
@@ -462,6 +472,38 @@ foreach ($courses as $course) {
             applyFilters();
         });
     });
+
+    // Language filter
+    langButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            activeLangFilter = button.getAttribute('data-lang-filter');
+            
+            langButtons.forEach(btn => {
+                btn.classList.remove('bg-custom-yellow', 'text-white');
+                btn.classList.add('border', 'border-custom-yellow', 'text-custom-yellow');
+            });
+            button.classList.add('bg-custom-yellow', 'text-white');
+            button.classList.remove('border', 'text-custom-yellow');
+            
+            applyFilters();
+        });
+    });
+
+    // Auto-select the correct language filter button on page load
+    (function(){
+        if (activeLangFilter !== 'all') {
+            langButtons.forEach(btn => {
+                const f = btn.getAttribute('data-lang-filter');
+                if (f === activeLangFilter) {
+                    btn.classList.add('bg-custom-yellow', 'text-white');
+                    btn.classList.remove('border', 'text-custom-yellow');
+                } else {
+                    btn.classList.remove('bg-custom-yellow', 'text-white');
+                    btn.classList.add('border', 'border-custom-yellow', 'text-custom-yellow');
+                }
+            });
+        }
+    })();
 
     // Category filter
     buttons.forEach(button => {
@@ -498,10 +540,12 @@ foreach ($courses as $course) {
 
             cards.forEach(card => {
                 const cardComp = card.getAttribute('data-comp');
+                const cardLang = card.getAttribute('data-lang') || 'tr';
                 const showByComp = activeCompFilter === 'all' || cardComp === activeCompFilter;
                 const showByCategory = activeCategoryFilter === 'all' || categoryId === activeCategoryFilter;
+                const showByLang = activeLangFilter === 'all' || cardLang === activeLangFilter;
 
-                if (showByComp && showByCategory) {
+                if (showByComp && showByCategory && showByLang) {
                     card.classList.remove('hidden');
                     hasVisibleCards = true;
                 } else {
@@ -526,7 +570,7 @@ foreach ($courses as $course) {
 
     // Arama input ve kurs kartlarını seç
 
-    const searchInput = document.querySelector('input[type="text"][placeholder="Kurslarda ara..."]');
+    const searchInput = document.querySelector('input[type="text"][placeholder="<?= __('courses.search_placeholder') ?>"]');
 
     const allSections = document.querySelectorAll('div[data-category]');
 
@@ -562,16 +606,18 @@ foreach ($courses as $course) {
 
                 const titleText = title.textContent.toLowerCase();
                 const cardComp = card.getAttribute('data-comp');
+                const cardLang = card.getAttribute('data-lang') || 'tr';
                 const categoryId = section.getAttribute('data-category');
 
                 // Check all filters
                 const matchesSearch = titleText.includes(searchTerm);
                 const matchesComp = activeCompFilter === 'all' || cardComp === activeCompFilter;
                 const matchesCategory = activeCategoryFilter === 'all' || categoryId === activeCategoryFilter;
+                const matchesLang = activeLangFilter === 'all' || cardLang === activeLangFilter;
 
 
 
-                if (matchesSearch && matchesComp && matchesCategory) {
+                if (matchesSearch && matchesComp && matchesCategory && matchesLang) {
 
                     card.classList.remove('hidden');
 
@@ -614,6 +660,9 @@ foreach ($courses as $course) {
         }
 
     });
+
+    // Apply filters on page load (for auto-selected language filter)
+    applyFilters();
 
 </script>
 

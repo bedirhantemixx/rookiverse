@@ -34,23 +34,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_insert = $pdo->prepare(
             "INSERT INTO courses (
                 course_uid, team_db_id, category_id, title, about_text, 
-                goal_text, learnings_text, level, comp, status
+                goal_text, learnings_text, level, comp, language, status
              ) VALUES (
                 :uid, :team_id, :cat_id, :title, :about, 
-                :goal, :learnings, :level, :comp, 'pending'
+                :goal, :learnings, :level, :comp, :language, 'pending'
             )"
         );
         
+        $language = $_POST['language'] ?? 'tr';
+        if (!in_array($language, ['tr', 'en'])) $language = 'tr';
+        
         $isSuccess = $stmt_insert->execute([
             ':uid' => $course_uid,
-            ':team_id' => $correct_team_id, // GÜVENLİ VE DOĞRU ID'Yİ KULLAN
+            ':team_id' => $correct_team_id,
             ':cat_id' => $_POST['category_id'],
             ':title' => $_POST['title'],
             ':about' => $_POST['about_text'],
             ':goal' => $_POST['goal_text'],
             ':learnings' => $_POST['learnings_text'],
             ':level' => $_POST['level'],
-            ':comp' => $_POST['comp'] ?? 'FRC'
+            ':comp' => $_POST['comp'] ?? 'FRC',
+            ':language' => $language
         ]);
 
         // 6. ADIM: Başarılıysa, 2. adıma (görsel yükleme) yönlendir

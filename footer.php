@@ -21,7 +21,7 @@ if (!isset($teamCourses)):
                     <span class="rookieverse">ROOKIEVERSE</span>
                 </a>
                 <p class="mt-4 text-gray-600 max-w-prose leading-relaxed text-sm sm:text-base">
-                    FIRST takımlarının hazırladığı <b>kurslar</b>, <b>dokümanlar</b> ve <b>oyunlarla</b> robotik öğrenimini hızlandır.
+                    <?= __('footer.description') ?>
                 </p>
                 <p class="mt-4 text-gray-600 max-w-prose leading-relaxed text-sm sm:text-base">
                     Made by <br>
@@ -30,18 +30,18 @@ if (!isset($teamCourses)):
                 </p>
             </div>
 
-            <!-- Öğren (accordion on mobile) -->
+            <!-- Öğren -->
             <div>
                 <details class="group lg:open">
                     <summary class="flex items-center justify-between cursor-pointer select-none py-2 lg:py-0">
-                        <h4 class="text-sm sm:text-base font-semibold tracking-wider uppercase" style="color:#E5AE32">Öğren</h4>
+                        <h4 class="text-sm sm:text-base font-semibold tracking-wider uppercase" style="color:#E5AE32"><?= __('footer.learn') ?></h4>
                         <svg class="ml-2 h-5 w-5 text-gray-500 lg:hidden transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/></svg>
                     </summary>
                     <ul class="mt-2 lg:mt-4 space-y-2 sm:space-y-3 text-gray-600">
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/courses.php"><span class="text-custom-yellow">•</span>Kurslar</a></li>
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/games.php"><span class="text-custom-yellow">•</span>Oyunlar</a></li>
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/teams.php"><span class="text-custom-yellow">•</span>Takımlar</a></li>
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/frc-terms.php"><span class="text-custom-yellow">•</span>FIRST Sözlük</a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/courses.php"><span class="text-custom-yellow">•</span><?= __('nav.courses') ?></a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/games.php"><span class="text-custom-yellow">•</span><?= __('nav.games') ?></a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/teams.php"><span class="text-custom-yellow">•</span><?= __('nav.teams') ?></a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/frc-terms.php"><span class="text-custom-yellow">•</span><?= __('nav.frc_glossary') ?></a></li>
                     </ul>
                 </details>
             </div>
@@ -50,13 +50,13 @@ if (!isset($teamCourses)):
             <div>
                 <details class="group lg:open">
                     <summary class="flex items-center justify-between cursor-pointer select-none py-2 lg:py-0">
-                        <h4 class="text-sm sm:text-base font-semibold tracking-wider uppercase" style="color:#E5AE32">Topluluk</h4>
+                        <h4 class="text-sm sm:text-base font-semibold tracking-wider uppercase" style="color:#E5AE32"><?= __('footer.community') ?></h4>
                         <svg class="ml-2 h-5 w-5 text-gray-500 lg:hidden transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/></svg>
                     </summary>
                     <ul class="mt-2 lg:mt-4 space-y-2 sm:space-y-3 text-gray-600">
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/#contributors"><span class="text-custom-yellow">•</span>Destekleyen Takımlar</a></li>
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/contact.php#sss"><span class="text-custom-yellow">•</span>SSS</a></li>
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/contact.php"><span class="text-custom-yellow">•</span>İletişim</a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/#contributors"><span class="text-custom-yellow">•</span><?= __('footer.supporting_teams') ?></a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/contact.php#sss"><span class="text-custom-yellow">•</span><?= __('footer.faq') ?></a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/contact.php"><span class="text-custom-yellow">•</span><?= __('nav.contact') ?></a></li>
                     </ul>
                 </details>
             </div>
@@ -65,13 +65,13 @@ if (!isset($teamCourses)):
             <div>
                 <details class="group lg:open">
                     <summary class="flex items-center justify-between cursor-pointer select-none py-2 lg:py-0">
-                        <h4 class="text-sm sm:text-base font-semibold tracking-wider uppercase" style="color:#E5AE32">Yasal</h4>
+                        <h4 class="text-sm sm:text-base font-semibold tracking-wider uppercase" style="color:#E5AE32"><?= __('footer.legal') ?></h4>
                         <svg class="ml-2 h-5 w-5 text-gray-500 lg:hidden transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/></svg>
                     </summary>
                     <ul class="mt-2 lg:mt-4 space-y-2 sm:space-y-3 text-gray-600">
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/privacy.php"><span class="text-custom-yellow">•</span>Gizlilik</a></li>
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/terms.php"><span class="text-custom-yellow">•</span>Kullanım Şartları</a></li>
-                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/cookies.php"><span class="text-custom-yellow">•</span>Çerezler</a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/privacy.php"><span class="text-custom-yellow">•</span><?= __('footer.privacy') ?></a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/terms.php"><span class="text-custom-yellow">•</span><?= __('footer.terms') ?></a></li>
+                        <li><a class="hover:text-custom-yellow inline-flex items-center gap-2" href="<?= BASE_URL ?>/cookies.php"><span class="text-custom-yellow">•</span><?= __('footer.cookies') ?></a></li>
                     </ul>
                 </details>
             </div>
@@ -87,24 +87,23 @@ if (!isset($teamCourses)):
                         loading="lazy"
                 >
                 <p class="text-gray-600 text-sm sm:text-base px-2">
-                    RookieVerse'ün gelişimine katkılarından dolayı değerli sponsorumuz
-                    <span id="sponsor-text" class="hover:cursor-pointer font-bold" style="color:#E5AE32">İnetmar</span>'a içten teşekkürler!
+                    <?= __('footer.sponsor_text') ?>
+                    <span id="sponsor-text" class="hover:cursor-pointer font-bold" style="color:#E5AE32">İnetmar</span><?= __('footer.sponsor_thanks') ?>
                 </p>
             </div>
         </div>
 
         <!-- MAT Robotics Hakları -->
         <p class="text-gray-600 text-center mt-10 sm:mt-12 text-sm sm:text-base">
-            Tüm hakları <b>MAT Robotics</b>'e aittir. © 2025
+            <?= __('footer.copyright') ?>
         </p>
     </div>
 
     <!-- JavaScript -->
     <script>
-        // details: desktop'ta otomatik açık tut (lg ve üzeri)
         (function () {
             const sync = () => {
-                const wide = window.matchMedia('(min-width: 1024px)').matches; // lg
+                const wide = window.matchMedia('(min-width: 1024px)').matches;
                 document.querySelectorAll('footer details').forEach(d => {
                     if (wide) d.setAttribute('open','');
                     else d.removeAttribute('open');
@@ -113,12 +112,10 @@ if (!isset($teamCourses)):
             sync();
             window.addEventListener('resize', () => { clearTimeout(window.__footerTO); window.__footerTO = setTimeout(sync, 150); });
 
-            // Sponsor link güvenli açılış
             const s1 = document.getElementById('sponsor-text');
             const s2 = document.getElementById('sponsor');
             s1?.addEventListener('click', () => window.open('https://www.inetmar.com/', '_blank','noopener'));
             s2?.addEventListener('click', (e) => {
-                // içerdeki linke veya butona tıklandıysa tekrar açma
                 if (e.target?.closest('a,button')) return;
                 window.open('https://www.inetmar.com/', '_blank','noopener');
             });
