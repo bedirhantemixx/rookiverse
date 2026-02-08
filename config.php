@@ -29,7 +29,7 @@ $projRoot = rtrim(str_replace('\\','/', __DIR__), '/'); // config.php'nin klasö
 $basePath = str_replace($docRoot, '', $projRoot);       // web köküne göre relatif path, ör: /rookieverse/rookieverse
 
 
-define('RECAPTCHA_SECRET_KEY', '6LcmgucrAAAAAO39Mj17DgqOSXWx-K6_i5sFMHHN');
+define('RECAPTCHA_SECRET_KEY', 'fuhhh');
 
 define('BASE_URL', $protocol . $domain . $basePath);
 
