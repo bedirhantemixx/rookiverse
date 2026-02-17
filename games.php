@@ -138,13 +138,15 @@ require_once 'config.php';
 
                 <button data-filter="all" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.all') ?></button>
 
-                <button data-filter="kelime" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.word') ?></button>
+                <button data-filter="word" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.word') ?></button>
 
-                <button data-filter="tahmin" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.guess') ?></button>
+                <button data-filter="quiz" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.quiz') ?></button>
 
-                <button data-filter="eslestirme" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.matching') ?></button>
+                <button data-filter="guess" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.guess') ?></button>
 
-                <button data-filter="hafiza" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.memory') ?></button>
+                <button data-filter="matching" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.matching') ?></button>
+
+                <button data-filter="memory" class="px-3 py-2 rounded-xl bg-white rv-chip text-slate-700 hover:bg-slate-50"><?= __('games.memory') ?></button>
 
             </div>
 
@@ -222,6 +224,34 @@ require_once 'config.php';
 
 
 
+    const TYPE_LABELS = {
+        word: '<?= __('games.word') ?>',
+        quiz: '<?= __('games.quiz') ?>',
+        guess: '<?= __('games.guess') ?>',
+        matching: '<?= __('games.matching') ?>',
+        memory: '<?= __('games.memory') ?>'
+    };
+
+    const TYPE_ALIASES = {
+        kelime: 'word',
+        word: 'word',
+        quiz: 'quiz',
+        tahmin: 'guess',
+        guess: 'guess',
+        eslestirme: 'matching',
+        eşleştirme: 'matching',
+        matching: 'matching',
+        hafiza: 'memory',
+        hafıza: 'memory',
+        memory: 'memory'
+    };
+
+    function normalizeType(typeValue) {
+        return TYPE_ALIASES[(typeValue || '').toLowerCase()] || 'word';
+    }
+
+    window.GAMES = [];
+
     async function loadGames() {
 
         try {
@@ -232,29 +262,22 @@ require_once 'config.php';
 
             if (!json.ok) throw new Error(json.error);
 
-            window.GAMES = json.data.items;
+            window.GAMES = (json.data.items || []).map((item) => ({
+                ...item,
+                normalizedType: normalizeType(item.type)
+            }));
 
             render(window.GAMES);
 
         } catch (err) {
 
-            console.error('Games yüklenemedi:', err);
+            console.error('Games failed to load:', err);
 
             grid.innerHTML = '<p class="text-red-600"><?= __("games.load_error") ?></p>';
 
         }
 
     }
-
-
-
-    // Sayfa açılınca oyunları yükle
-
-    loadGames();
-
-
-
-
 
 
 
@@ -332,7 +355,7 @@ require_once 'config.php';
 
             descEl.textContent = g.desc;
 
-            tagsEl.appendChild(tag(g.type));
+            tagsEl.appendChild(tag(TYPE_LABELS[g.normalizedType] || g.type));
 
             metaEl.appendChild(meta('clock', `${g.minutes} <?= __('games.minutes') ?>`));
 
@@ -372,9 +395,9 @@ require_once 'config.php';
 
         const out = window.GAMES.filter(g => {
 
-            const matchesText = [g.title, g.desc, g.type].join(' ').toLowerCase().includes(q);
+            const matchesText = [g.title, g.desc, g.type, TYPE_LABELS[g.normalizedType] || ''].join(' ').toLowerCase().includes(q);
 
-            const matchesFilter = f === 'all' ? true : g.type === f;
+            const matchesFilter = f === 'all' ? true : g.normalizedType === f;
 
             return matchesText && matchesFilter;
 
@@ -412,7 +435,8 @@ require_once 'config.php';
 
     filters.querySelector('button[data-filter="all"]').setAttribute('aria-pressed', 'true');
 
-    render(window.GAMES);
+    // Sayfa acilisinda oyunlari yukle.
+    loadGames();
 
 </script>
 

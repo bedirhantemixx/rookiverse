@@ -5,12 +5,171 @@
 $page_title = "FIRST Terimleri Sözlüğü"; // Sayfa başlığını belirliyoruz
 
 session_start();
+$isEn = CURRENT_LANG === 'en';
+
+function h(string $value): string {
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+$glossary = $isEn ? [
+    'genel-terimler' => [
+        'title' => 'General Terms',
+        'items' => [
+            ['term' => 'FIRST', 'desc' => 'A nonprofit organization focused on inspiring students in science and technology.'],
+            ['term' => 'FRC', 'desc' => 'FIRST Robotics Competition, the flagship high school robotics program in FIRST.'],
+            ['term' => 'Gracious Professionalism', 'desc' => 'A core FIRST value that combines strong competition with respect, kindness, and integrity.'],
+            ['term' => 'Coopertition', 'desc' => 'A FIRST mindset where teams compete while still helping and learning from each other.'],
+            ['term' => 'Rookie', 'desc' => 'A team or member participating in FRC for the first time.'],
+            ['term' => 'Veteran', 'desc' => 'A team or member with at least one completed FRC season.'],
+        ],
+    ],
+    'oyun-ve-saha' => [
+        'title' => 'Game and Field',
+        'items' => [
+            ['term' => 'Alliance', 'desc' => 'A group of teams playing together in a match, usually red vs blue alliances.'],
+            ['term' => 'Autonomous Period', 'desc' => 'The first 15 seconds of a match where robots run pre-programmed actions.'],
+            ['term' => 'Tele-Op Period', 'desc' => 'The driver-controlled part of the match after autonomous mode.'],
+            ['term' => 'Endgame', 'desc' => 'The final part of a match with bonus scoring tasks such as climbing.'],
+            ['term' => 'Game Piece', 'desc' => 'Objects robots collect, move, place, or score during the season game.'],
+            ['term' => 'Driver Station', 'desc' => 'The control area where drivers and operators command the robot.'],
+            ['term' => 'Ranking Points (RP)', 'desc' => 'Points used for qualification ranking and playoff seeding.'],
+        ],
+    ],
+    'robot-parcalari' => [
+        'title' => 'Robot Parts and Mechanics',
+        'items' => [
+            ['term' => 'Chassis / Drivetrain', 'desc' => 'The base system including wheels, motors, and structure used for movement.'],
+            ['term' => 'Bumper', 'desc' => 'Protective padding around the robot used for safety and alliance identification.'],
+            ['term' => 'Manipulator / Actuator', 'desc' => 'Mechanisms used to intake, move, or score game pieces.'],
+            ['term' => 'roboRIO', 'desc' => 'The main robot controller that manages motors, sensors, and other electronics.'],
+            ['term' => 'Motor Controller', 'desc' => 'Electronics that convert roboRIO commands into motor output.'],
+            ['term' => 'Pneumatics', 'desc' => 'Compressed-air systems used to power pistons and mechanisms.'],
+            ['term' => 'Sensor', 'desc' => 'Devices such as cameras or gyros that help the robot understand its environment.'],
+        ],
+    ],
+    'takim-ve-roller' => [
+        'title' => 'Team and Roles',
+        'items' => [
+            ['term' => 'Drive Team', 'desc' => 'The match crew that typically includes Driver, Operator, Coach, and Human Player.'],
+            ['term' => 'Pit', 'desc' => 'The team workspace where robots are repaired, improved, and prepared.'],
+            ['term' => 'Scouting', 'desc' => 'Collecting and analyzing match data to support strategy and alliance decisions.'],
+            ['term' => 'Mentor', 'desc' => 'An experienced volunteer who guides students in technical and personal development.'],
+        ],
+    ],
+    'oduller-ve-etkinlikler' => [
+        'title' => 'Awards and Events',
+        'items' => [
+            ['term' => 'Kickoff', 'desc' => 'The annual event where the new FRC game and rules are officially released.'],
+            ['term' => 'Regional / District', 'desc' => 'Official event formats where teams compete during the season.'],
+            ['term' => 'Championship', 'desc' => 'The world-level final event featuring top teams from around the globe.'],
+            ['term' => 'FIRST Impact Award', 'desc' => 'The most prestigious FRC award recognizing long-term community impact.'],
+            ['term' => 'Engineering Inspiration Award', 'desc' => 'Recognizes teams that strongly promote engineering culture and inspiration.'],
+            ['term' => 'Rookie All-Star Award', 'desc' => 'Given to an outstanding rookie team with strong potential and FIRST values.'],
+            ['term' => 'Excellence in Engineering Award', 'desc' => 'Honors robust and effective engineering in robot design and execution.'],
+            ['term' => 'Industrial Design Award', 'desc' => 'Recognizes excellence in function-focused and elegant robot design.'],
+            ['term' => 'Autonomous Award', 'desc' => 'Rewards consistent and effective autonomous performance.'],
+            ['term' => 'Innovation in Control Award', 'desc' => 'Honors creative and effective control systems in software and electronics.'],
+            ['term' => 'Creativity Award', 'desc' => 'Recognizes unique and clever mechanical or strategic problem solving.'],
+            ['term' => 'Quality Award', 'desc' => 'Given for high-quality workmanship and reliability in robot construction.'],
+            ['term' => 'Gracious Professionalism Award', 'desc' => 'Recognizes teams that best model respect and sportsmanship in competition.'],
+            ['term' => 'Team Spirit Award', 'desc' => 'Celebrates teams that energize events with enthusiasm and identity.'],
+            ['term' => 'Judges’ Award', 'desc' => 'A special award for notable achievements that may not fit other categories.'],
+            ['term' => 'Winner', 'desc' => 'Teams on the alliance that wins the final playoff matches.'],
+            ['term' => 'Finalist', 'desc' => 'Teams on the alliance that finishes second in the final playoff matches.'],
+            ['term' => 'FIRST Dean’s List Award', 'desc' => 'An individual award for students with outstanding leadership and impact.'],
+            ['term' => 'Woodie Flowers Finalist Award', 'desc' => 'An individual award honoring exceptional mentors.'],
+            ['term' => 'Volunteer of the Year Award', 'desc' => 'Recognizes volunteers with major contributions to event success.'],
+            ['term' => 'Digital Animation Award', 'desc' => 'Awarded for outstanding digital animation around STEM/FRC themes.'],
+            ['term' => 'Safety Animation Award', 'desc' => 'Recognizes top animation work promoting safety in robotics events.'],
+            ['term' => 'Imagery Award', 'desc' => 'Honors teams with outstanding visual identity and branding.'],
+            ['term' => 'Team Sustainability Award', 'desc' => 'Recognizes strong long-term team structure and sustainability planning.'],
+            ['term' => 'Rising All-Star Award', 'desc' => 'Given to progressing young teams showing strong development potential.'],
+            ['term' => 'Founder’s Award', 'desc' => 'Recognizes individuals or organizations that significantly support FIRST values.'],
+        ],
+    ],
+] : [
+    'genel-terimler' => [
+        'title' => 'Genel Terimler',
+        'items' => [
+            ['term' => 'FIRST', 'desc' => '"For Inspiration and Recognition of Science and Technology" kelimelerinin baş harflerinden oluşan, gençleri bilim ve teknolojiye teşvik etmek amacıyla kurulmuş olan kâr amacı gütmeyen organizasyon.'],
+            ['term' => 'FRC', 'desc' => 'FIRST Robotics Competition. FIRST organizasyonunun lise öğrencilerine yönelik en büyük ve kapsamlı robotik yarışması.'],
+            ['term' => 'Gracious Professionalism (Duyarlı Profesyonellik)', 'desc' => 'Hem rekabetin hem de karşılıklı saygının bir arada yürüdüğü bir FRC felsefesi. Rakiplerinize yardım etmeyi ve onlardan öğrenmeyi teşvik eder.'],
+            ['term' => 'Coopertition (İşbirlikçi Rekabet)', 'desc' => '"Cooperation" ve "Competition" kelimelerinin birleşimi. Takımların hem rekabet edip hem de birbirlerine yardım ederek daha büyük başarılara ulaşmasını ifade eder.'],
+            ['term' => 'Rookie', 'desc' => "FRC'ye ilk defa katılan takım veya üye."],
+            ['term' => 'Veteran', 'desc' => 'FRC’de en az bir sezon tecrübesi olan takım veya üye.'],
+        ],
+    ],
+    'oyun-ve-saha' => [
+        'title' => 'Oyun ve Saha',
+        'items' => [
+            ['term' => 'Alliance (İttifak)', 'desc' => 'Maç sırasında birlikte hareket eden takımlar grubu. Genellikle Kırmızı ve Mavi olmak üzere iki ittifak bulunur.'],
+            ['term' => 'Autonomous Period (Otonom Dönem)', 'desc' => 'Maçın ilk 15 saniyesi; robotlar sürücü kontrolü olmadan önceden programlanmış görevleri yapar.'],
+            ['term' => 'Tele-Op Period (Sürücü Kontrol Dönemi)', 'desc' => 'Otonomdan sonraki sürücü kontrollü bölüm.'],
+            ['term' => 'Endgame (Oyun Sonu)', 'desc' => 'Maçın sonunda ekstra puan getiren görevlerin yapıldığı bölüm.'],
+            ['term' => 'Game Piece (Oyun Elemanı)', 'desc' => 'Robotların topladığı, taşıdığı ve skorladığı oyun nesneleri.'],
+            ['term' => 'Driver Station (Sürücü İstasyonu)', 'desc' => 'Sürücülerin robotu yönettiği kontrol alanı.'],
+            ['term' => 'Ranking Points (RP)', 'desc' => 'Takımların sıralamada kullanıldığı puan sistemi.'],
+        ],
+    ],
+    'robot-parcalari' => [
+        'title' => 'Robot Parçaları ve Mekanik',
+        'items' => [
+            ['term' => 'Chassis / Drivetrain', 'desc' => 'Robotun hareketini sağlayan temel mekanik ve aktarma yapısı.'],
+            ['term' => 'Bumper (Tampon)', 'desc' => 'Robotu çarpışmalara karşı koruyan güvenlik bileşeni.'],
+            ['term' => 'Manipulator / Actuator', 'desc' => 'Oyun elemanlarını toplama, taşıma ve yerleştirme mekanizmaları.'],
+            ['term' => 'roboRIO', 'desc' => 'Robotun ana kontrol birimi.'],
+            ['term' => 'Motor Controller (Motor Sürücü)', 'desc' => 'Motorlara giden gücü ve komutları yöneten sürücü kartı.'],
+            ['term' => 'Pneumatics (Pnömatik Sistem)', 'desc' => 'Basınçlı hava ile çalışan mekanizma sistemi.'],
+            ['term' => 'Sensor (Sensör)', 'desc' => 'Robotun çevreyi algılamasını sağlayan bileşenler.'],
+        ],
+    ],
+    'takim-ve-roller' => [
+        'title' => 'Takım ve Roller',
+        'items' => [
+            ['term' => 'Drive Team (Sürücü Ekibi)', 'desc' => 'Maç esnasında robotu yöneten ekip: sürücü, operatör, koç ve insan oyuncu.'],
+            ['term' => 'Pit (Pit Alanı)', 'desc' => 'Takımın robot bakım ve hazırlıklarını yaptığı çalışma alanı.'],
+            ['term' => 'Scouting', 'desc' => 'Takım performanslarını izleyip veri toplayarak strateji geliştirme süreci.'],
+            ['term' => 'Mentor', 'desc' => 'Öğrencilere teknik ve sosyal alanlarda rehberlik eden gönüllü yetişkin.'],
+        ],
+    ],
+    'oduller-ve-etkinlikler' => [
+        'title' => 'Ödüller ve Etkinlikler',
+        'items' => [
+            ['term' => 'Kickoff', 'desc' => 'Yeni FRC oyununun ve kurallarının açıklandığı sezon başlangıç etkinliği.'],
+            ['term' => 'Regional / District', 'desc' => 'Takımların sezon boyunca yarıştığı resmi turnuva formatları.'],
+            ['term' => 'Championship (Dünya Şampiyonası)', 'desc' => 'Sezon sonunda en iyi takımların yarıştığı final etkinliği.'],
+            ['term' => 'FIRST Impact Award (Etki Ödülü)', 'desc' => 'Toplumsal etki ve FIRST değerlerini en güçlü yansıtan takıma verilen prestijli ödül.'],
+            ['term' => 'Engineering Inspiration Award', 'desc' => 'Mühendislik bilincini ve ilhamını güçlü şekilde yaygınlaştıran takımlara verilir.'],
+            ['term' => 'Rookie All-Star Award', 'desc' => 'İlk yılında güçlü performans ve potansiyel gösteren çaylak takıma verilir.'],
+            ['term' => 'Excellence in Engineering Award', 'desc' => 'Robot tasarımında güçlü mühendislik uygulamalarını ödüllendirir.'],
+            ['term' => 'Industrial Design Award', 'desc' => 'İşlevsellik ve estetik odaklı tasarım başarısını ödüllendirir.'],
+            ['term' => 'Autonomous Award', 'desc' => 'Otonom performansın tutarlılık ve başarısını ödüllendirir.'],
+            ['term' => 'Innovation in Control Award', 'desc' => 'Kontrol sistemlerinde yenilikçi çözüm geliştiren takımlara verilir.'],
+            ['term' => 'Creativity Award', 'desc' => 'Yaratıcı ve akıllı mekanik/stratejik çözümleri ödüllendirir.'],
+            ['term' => 'Quality Award', 'desc' => 'Yüksek üretim kalitesi ve dayanıklılığı olan robotları ödüllendirir.'],
+            ['term' => 'Gracious Professionalism Award', 'desc' => 'Sahada ve pitte saygı ile rekabeti birlikte yansıtan takımlara verilir.'],
+            ['term' => 'Team Spirit Award', 'desc' => 'Turnuvaya enerji, coşku ve kimlik katan takımlara verilir.'],
+            ['term' => 'Judges’ Award', 'desc' => 'Diğer kategorilere girmeyen özel ve değerli başarılara verilen jüri ödülüdür.'],
+            ['term' => 'Winner', 'desc' => 'Final maçlarını kazanan ittifaktaki takımların unvanı.'],
+            ['term' => 'Finalist', 'desc' => 'Final maçlarını ikinci sırada tamamlayan ittifaktaki takımların unvanı.'],
+            ['term' => 'FIRST Dean’s List Award', 'desc' => 'Liderlik ve teknik etki gösteren öğrencilere verilen bireysel ödül.'],
+            ['term' => 'Woodie Flowers Finalist Award', 'desc' => 'Öğrencilere ilham veren mentorlara verilen bireysel ödül.'],
+            ['term' => 'Volunteer of the Year Award', 'desc' => 'Etkinlik başarısına önemli katkı sağlayan gönüllülere verilen ödül.'],
+            ['term' => 'Digital Animation Award', 'desc' => 'STEM/FRC temasını en iyi anlatan dijital animasyon çalışmasını ödüllendirir.'],
+            ['term' => 'Safety Animation Award', 'desc' => 'Güvenlik farkındalığını yaratıcı şekilde anlatan animasyonları ödüllendirir.'],
+            ['term' => 'Imagery Award', 'desc' => 'Takım kimliği ve görsel bütünlüğü güçlü şekilde yansıtan takımlara verilir.'],
+            ['term' => 'Team Sustainability Award', 'desc' => 'Uzun vadeli sürdürülebilir takım yapısı kuran takımlara verilir.'],
+            ['term' => 'Rising All-Star Award', 'desc' => 'Gelişimini güçlü şekilde sürdüren genç takımları ödüllendirir.'],
+            ['term' => 'Founder’s Award', 'desc' => 'FIRST misyonuna önemli katkı sağlayan kişi veya kurumları onurlandırır.'],
+        ],
+    ],
+];
 
 ?>
 
 <!DOCTYPE html>
 
-<html lang="tr">
+<html lang="<?= CURRENT_LANG ?>">
 
 <head>
 
@@ -206,23 +365,27 @@ session_start();
 
                     <i data-lucide="book-marked" class="w-12 h-12 text-custom-yellow"></i>
 
-                    <h1 class="text-4xl lg:text-5xl font-bold text-gray-900">FIRST Terimleri Sözlüğü</h1>
+                    <h1 class="text-4xl lg:text-5xl font-bold text-gray-900"><?= $isEn ? 'FIRST Glossary' : 'FIRST Terimleri Sözlüğü' ?></h1>
 
                 </div>
 
-                <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">FIRST programlarında (FRC, FTC, FLL) sıkça karşılaşacağınız terimlerin ve kısaltmaların açıklamalarını burada bulabilirsiniz.</p>
+                <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto"><?= $isEn ? 'Find common terms and abbreviations used across FIRST programs (FRC, FTC, FLL).' : 'FIRST programlarında (FRC, FTC, FLL) sıkça karşılaşacağınız terimlerin ve kısaltmaların açıklamalarını burada bulabilirsiniz.' ?></p>
 
 
 
                 <div class="mt-8 max-w-lg mx-auto relative">
 
-                    <input type="text" id="term-search" placeholder="Terim ara (Örn: Rookie, Alliance, roboRIO)" 
+                    <input type="text" id="term-search" placeholder="<?= $isEn ? 'Search a term (e.g. Rookie, Alliance, roboRIO)' : 'Terim ara (Örn: Rookie, Alliance, roboRIO)' ?>" 
 
                            class="w-full pl-12 pr-4 py-3 border-2 border-custom-yellow/50 rounded-full focus:ring-2 focus:ring-custom-yellow focus:border-custom-yellow transition duration-150 shadow-md placeholder-gray-500">
 
                     <i data-lucide="search" class="w-6 h-6 absolute left-4 top-1/2 transform -translate-y-1/2 text-custom-yellow"></i>
 
                 </div>
+
+                <?php if ($isEn): ?>
+                    <p class="mt-4 text-sm text-gray-500">Core labels are localized in English mode. Detailed term descriptions are being expanded gradually.</p>
+                <?php endif; ?>
 
                 </div>
 
@@ -242,21 +405,21 @@ session_start();
 
                         <div class="term-menu-container">
 
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Kategoriler</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2"><?= $isEn ? 'Categories' : 'Kategoriler' ?></h3>
 
                             <nav id="term-menu">
 
                                 <ul class="space-y-1">
 
-                                    <li><a href="#genel-terimler" class="term-link block py-2 text-gray-600">Genel Terimler</a></li>
+                                    <li><a href="#genel-terimler" class="term-link block py-2 text-gray-600"><?= $isEn ? 'General Terms' : 'Genel Terimler' ?></a></li>
 
-                                    <li><a href="#oyun-ve-saha" class="term-link block py-2 text-gray-600">Oyun ve Saha</a></li>
+                                    <li><a href="#oyun-ve-saha" class="term-link block py-2 text-gray-600"><?= $isEn ? 'Game and Field' : 'Oyun ve Saha' ?></a></li>
 
-                                    <li><a href="#robot-parcalari" class="term-link block py-2 text-gray-600">Robot Parçaları ve Mekanik</a></li>
+                                    <li><a href="#robot-parcalari" class="term-link block py-2 text-gray-600"><?= $isEn ? 'Robot Parts and Mechanics' : 'Robot Parçaları ve Mekanik' ?></a></li>
 
-                                    <li><a href="#takim-ve-roller" class="term-link block py-2 text-gray-600">Takım ve Roller</a></li>
+                                    <li><a href="#takim-ve-roller" class="term-link block py-2 text-gray-600"><?= $isEn ? 'Team and Roles' : 'Takım ve Roller' ?></a></li>
 
-                                    <li><a href="#oduller-ve-etkinlikler" class="term-link block py-2 text-gray-600">Ödüller ve Etkinlikler</a></li>
+                                    <li><a href="#oduller-ve-etkinlikler" class="term-link block py-2 text-gray-600"><?= $isEn ? 'Awards and Events' : 'Ödüller ve Etkinlikler' ?></a></li>
 
                                 </ul>
 
@@ -269,185 +432,28 @@ session_start();
                     
 
                     <main class="lg:col-span-3 space-y-12" id="glossary-main">
+                        <?php foreach ($glossary as $sectionId => $section): ?>
+                            <div id="<?= h($sectionId) ?>" class="space-y-6 scroll-mt-24">
+                                <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-custom-yellow pl-4"><?= h($section['title']) ?></h2>
+                                <div class="bg-white p-6 rounded-lg shadow-sm border space-y-4 term-category">
+                                    <?php foreach ($section['items'] as $item): ?>
+                                        <p class="term-item"><strong><?= h($item['term']) ?>:</strong> <?= h($item['desc']) ?></p>
+                                    <?php endforeach; ?>
 
-                        
-
-                        <div id="genel-terimler" class="space-y-6 scroll-mt-24">
-
-                            <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-custom-yellow pl-4">Genel Terimler</h2>
-
-                            <div class="bg-white p-6 rounded-lg shadow-sm border space-y-4 term-category">
-
-                                <p class="term-item"><strong>FIRST:</strong> "For Inspiration and Recognition of Science and Technology" kelimelerinin baş harflerinden oluşan, gençleri bilim ve teknolojiye teşvik etmek amacıyla kurulmuş olan kâr amacı gütmeyen organizasyon.</p>
-
-                                <p class="term-item"><strong>FRC:</strong> FIRST Robotics Competition. FIRST organizasyonunun lise öğrencilerine yönelik en büyük ve kapsamlı robotik yarışması.</p>
-
-                                <p class="term-item"><strong>Gracious Professionalism (Duyarlı Profesyonellik):</strong> Hem rekabetin hem de karşılıklı saygının bir arada yürüdüğü bir FRC felsefesi. Rakiplerinize yardım etmeyi ve onlardan öğrenmeyi teşvik eder.</p>
-
-                                <p class="term-item"><strong>Coopertition (İşbirlikçi Rekabet):</strong> "Cooperation" (iş birliği) ve "Competition" (rekabet) kelimelerinin birleşimidir. Takımların aynı anda hem rekabet edip hem de birbirlerine yardım ederek daha büyük başarılara ulaşmasını ifade eder.</p>
-
-                                <p class="term-item"><strong>Rookie:</strong> FRC'ye ilk defa katılan takım veya üye.</p>
-
-                                <p class="term-item"><strong>Veteran:</strong> FRC'de en az bir sezon tecrübesi olan takım veya üye.</p>
-
+                                    <?php if ($sectionId === 'oduller-ve-etkinlikler'): ?>
+                                        <hr class="my-4">
+                                        <div class="bg-fyk-purple/10 p-4 rounded-lg border-l-4 border-fyk-purple text-gray-700 mb-4">
+                                            <p class="font-semibold text-fyk-purple">
+                                                <?= $isEn ? 'For more details, visit the official FRC Turkiye page:' : 'Daha fazla bilgi almak için FRC Türkiye Sayfasını ziyaret edin:' ?>
+                                            </p>
+                                            <a href="https://www.frcturkiye.org" target="_blank" class="text-fyk-purple font-bold hover:text-fyk-purple/80 underline transition duration-150 ease-in-out">
+                                                <?= $isEn ? 'FRC Turkiye Official Website' : 'FRC Türkiye Resmi Web Sitesi' ?>
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                             </div>
-
-                        </div>
-
-
-
-                        <div id="oyun-ve-saha" class="space-y-6 scroll-mt-24">
-
-                            <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-custom-yellow pl-4">Oyun ve Saha</h2>
-
-                            <div class="bg-white p-6 rounded-lg shadow-sm border space-y-4 term-category">
-
-                                <p class="term-item"><strong>Alliance (İttifak):</strong> Maç sırasında birlikte hareket eden takımlar grubu. Genellikle 3 takımdan oluşan Kırmızı (Red) ve Mavi (Blue) olmak üzere iki ittifak bulunur.</p>
-
-                                <p class="term-item"><strong>Autonomous Period (Otonom Dönem):</strong> Maçın ilk 15 saniyesidir. Bu sürede robotlar, sürücü kontrolü olmadan önceden programlanmış görevleri yerine getirir.</p>
-
-                                <p class="term-item"><strong>Tele-Op Period (Sürücü Kontrol Dönemi):</strong> Maçın otonomdan sonraki 2 dakika 15 saniyelik kısmıdır. Bu sürede sürücüler robotları uzaktan kontrol eder.</p>
-
-                                <p class="term-item"><strong>Endgame (Oyun Sonu):</strong> Tele-Op periyodunun genellikle son 30 saniyesidir. Bu bölümde takımlar genellikle tırmanma gibi ekstra puan kazandıran özel görevleri yaparlar.</p>
-
-                                <p class="term-item"><strong>Game Piece (Oyun Elemanı):</strong> O sezonun oyununda robotların manipüle ettiği (topladığı, taşıdığı, attığı) nesneler. (Örn: top, küp, koni).</p>
-
-                                <p class="term-item"><strong>Driver Station (Sürücü İstasyonu):</strong> Sürücülerin maçı yönettikleri, bilgisayar ve kontrol cihazlarının (joystick, gamepad) bulunduğu alan.</p>
-
-                                <p class="term-item"><strong>Ranking Points (RP - Sıralama Puanı):</strong> Takımların eleme turlarına kalmak için kvalifikasyon maçlarında kazandıkları puanlar. Genellikle galibiyete, beraberliğe ve belirli görevleri başarmaya göre verilir.</p>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div id="robot-parcalari" class="space-y-6 scroll-mt-24">
-
-                            <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-custom-yellow pl-4">Robot Parçaları ve Mekanik</h2>
-
-                            <div class="bg-white p-6 rounded-lg shadow-sm border space-y-4 term-category">
-
-                                <p class="term-item"><strong>Chassis / Drivetrain (Şasi / Aktarma Organı):</strong> Robotun hareket etmesini sağlayan tekerlekler, motorlar, dişliler ve iskelet sisteminin bütünü.</p>
-
-                                <p class="term-item"><strong>Bumper (Tampon):</strong> Robotların etrafını saran, genellikle kırmızı ve mavi renkli koruyucu köpüklerdir. Hem robotları korur hem de ittifak rengini belirtir.</p>
-
-                                <p class="term-item"><strong>Manipulator / Actuator:</strong> Robotun oyun elemanlarını toplama, taşıma, fırlatma gibi işlevleri yerine getiren mekanizmalarına verilen genel ad.</p>
-
-                                <p class="term-item"><strong>roboRIO:</strong> Robotun "beyni" olarak kabul edilen ana kontrolcüdür. Tüm motorları, sensörleri ve diğer elektronik bileşenleri yönetir.</p>
-
-                                <p class="term-item"><strong>Motor Controller (Motor Sürücü):</strong> roboRIO'dan gelen sinyalleri motorların anlayacağı elektrik gücüne dönüştüren elektronik kart. (Örn: Talon, Spark MAX).</p>
-
-                                <p class="term-item"><strong>Pneumatics (Pnömatik Sistem):</strong> Basınçlı hava kullanarak pistonları hareket ettiren ve robotta çeşitli mekanizmaları çalıştırmaya yarayan sistem.</p>
-
-                                <p class="term-item"><strong>Sensor (Sensör):</strong> Robotun çevresini algılamasına yardımcı olan bileşenler. (Örn: Kamera, ultrasonik mesafe sensörü, jiroskop).</p>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div id="takim-ve-roller" class="space-y-6 scroll-mt-24">
-
-                            <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-custom-yellow pl-4">Takım ve Roller</h2>
-
-                            <div class="bg-white p-6 rounded-lg shadow-sm border space-y-4 term-category">
-
-                                <p class="term-item"><strong>Drive Team (Sürücü Ekibi):</strong> Maç sırasında robotu yöneten ekip. Genellikle Sürücü (Driver), Operatör (Operator), Koç (Coach) ve İnsan Oyuncu (Human Player)'dan oluşur.</p>
-
-                                <p class="term-item"><strong>Pit (Pit Alanı):</strong> Turnuvalarda her takıma ayrılan çalışma alanı. Robotların tamir edildiği, geliştirildiği ve diğer takımlarla sosyalleşilen yerdir.</p>
-
-                                <p class="term-item"><strong>Scouting:</strong> Diğer takımların robotlarının yeteneklerini, stratejilerini ve performanslarını maçlar sırasında izleyerek veri toplama ve analiz etme süreci.</p>
-
-                                <p class="term-item"><strong>Mentor:</strong> Takım öğrencilerine teknik veya sosyal konularda rehberlik eden gönüllü yetişkinler.</p>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div id="oduller-ve-etkinlikler" class="space-y-6 scroll-mt-24">
-
-                            <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-custom-yellow pl-4">Ödüller ve Etkinlikler</h2>
-
-                            <div class="bg-white p-6 rounded-lg shadow-sm border space-y-4 term-category">
-
-                                <p class="term-item"><strong>Kickoff:</strong> Her yıl Ocak ayının başında yeni FRC sezonunun oyununun ve kurallarının tüm dünyaya duyurulduğu etkinlik.</p>
-
-                                <p class="term-item"><strong>Regional / District:</strong> Takımların Dünya Şampiyonası'na katılma hakkı kazanmak için yarıştığı yerel veya bölgesel turnuvalar.</p>
-
-                                <p class="term-item"><strong>Championship (Dünya Şampiyonası):</strong> Sezonun sonunda, dünyanın dört bir yanından gelen en iyi takımların yarıştığı final etkinliği.</p>
-
-                                <hr class="my-4">
-
-                                <p class="term-item"><strong>FIRST Impact Award (Etki Ödülü):</strong> FRC'deki en prestijli ödüldür. Robot performansının ötesinde, takımın FIRST misyonunu ne kadar iyi temsil ettiğine, topluma olan etkisine ve rol model olmasına bakılarak verilir.</p>
-
-                                <p class="term-item"><strong>Engineering Inspiration Award (Mühendislik İlhamı Ödülü):</strong> Bilim ve teknolojiyi kutlama konusunda üstün başarı gösteren, öğrencileri mühendislik mesleğine özendiren takımlara verilir.</p>
-
-                                <p class="term-item"><strong>Rookie All-Star Award (Çaylak Yıldız Ödülü):</strong> İlk senesinde hem güçlü bir robot performansı sergileyen hem de FIRST felsefesini benimseyerek gelecekte güçlü bir etki yaratma potansiyeline sahip çaylak takıma verilir.</p>
-
-                                <p class="term-item"><strong>Excellence in Engineering Award (Mühendislikte Mükemmellik Ödülü):</strong> Robotun tasarımı ve yapımında sağlam, güvenilir ve yenilikçi mühendislik prensiplerini sergileyen takıma verilir.</p>
-
-                                <p class="term-item"><strong>Industrial Design Award (Endüstriyel Tasarım Ödülü):</strong> Robotun işlevselliğini, estetiğini ve üretim kolaylığını birleştiren endüstriyel tasarımda üstün başarı gösteren takıma verilir.</p>
-
-                                <p class="term-item"><strong>Autonomous Award (Otonom Ödülü):</strong> Otonom modda güvenilir, tutarlı ve etkili performans gösteren robot tasarımını ve programlamasını takdir eden ödüldür.</p>
-
-                                <p class="term-item"><strong>Innovation in Control Award (Kontrolde Yenilik Ödülü):</strong> Robotun hareketini, manipülasyonunu veya karar vermesini sağlayan elektrik, yazılım ve kontrol sistemlerinde zarif ve yenilikçi uygulamalar kullanan takıma verilir.</p>
-
-                                <p class="term-item"><strong>Creativity Award (Yaratıcılık Ödülü):</strong> Oyunu çözmek veya özel bir görevi yerine getirmek için alışılmışın dışında, yenilikçi ve akıllıca bir mekanik veya stratejik çözüm sergileyen takıma verilir.</p>
-
-                                <p class="term-item"><strong>Quality Award (Kalite Ödülü):</strong> Robotun işlevselliği, dayanıklılığı ve profesyonel görünümü ile öne çıkan, sağlam ve iyi üretilmiş bir robota sahip takıma verilir.</p>
-
-                                <p class="term-item"><strong>Gracious Professionalism® Award (Duyarlı Profesyonellik Ödülü):</strong> Rekabetçi ruhu ve karşılıklı saygıyı birleştirerek FRC felsefesini sahada ve pit alanında en iyi şekilde sergileyen takıma verilir.</p>
-
-                                <p class="term-item"><strong>Team Spirit Award (Takım Ruhu Ödülü):</strong> Coşkusu, pozitifliği, görünürlüğü ve etkinliği ile sahaya ve turnuvaya enerji katan, benzersiz bir takım ruhuna sahip takıma verilir.</p>
-
-                                <p class="term-item"><strong>Judges’ Award (Jüri Özel Ödülü):</strong> Jürilerin, yukarıdaki kategorilere tam olarak uymayan, ancak takdir etmeye değer benzersiz başarıları, çabaları veya zorlukların üstesinden gelmesi nedeniyle öne çıkan bir takıma verdiği ödüldür.</p>
-
-                                <p class="term-item"><strong>Winner (Kazanan):</strong> Turnuvanın final maçlarını kazanarak şampiyon olan ittifaktaki takımlara verilen unvandır.</p>
-
-                                <p class="term-item"><strong>Finalist:</strong> Turnuvanın final maçlarını kaybederek ikinci olan ittifaktaki takımlara verilen unvandır.</p>
-
-                                <hr class="my-4">
-
-                                <p class="term-item"><strong>FIRST Dean’s List Award (Dean's List Ödülü):</strong> Takım içinde liderlik ve teknik uzmanlık gösteren, FIRST'ün misyonunu benimsemiş, olağanüstü öğrencilere verilen bireysel bir ödüldür.</p>
-
-                                <p class="term-item"><strong>Woodie Flowers Finalist Award (Woodie Flowers Finalist Ödülü):</strong> Takım öğrencilerine rehberlik eden, ilham veren ve liderlik eden olağanüstü mentorlara verilen bireysel bir ödüldür.</p>
-
-                                <p class="term-item"><strong>Volunteer of the Year Award (Yılın Gönüllüsü Ödülü):</strong> FRC etkinliklerinin başarısına önemli katkılarda bulunmuş, olağanüstü bir gönüllüye verilen bireysel bir ödüldür.</p>
-
-                                <p class="term-item"><strong>Digital Animation Award (Dijital Animasyon Ödülü):</strong> FRC temasını veya bir bilim/teknoloji kavramını anlatan en iyi dijital animasyon videosunu hazırlayan takıma verilir.</p>
-
-                                <p class="term-item"><strong>Safety Animation Award (Güvenlik Animasyon Ödülü):</strong> UL sponsorluğunda, FRC güvenliğini eğlenceli ve yaratıcı bir şekilde anlatan en iyi animasyon videosunu hazırlayan takıma verilir.</p>
-
-                                <p class="term-item"><strong>Imagery Award (İmaj Ödülü):</strong> Takım ruhunu, imajını ve özgünlüğünü en iyi şekilde yansıtan takıma verilir.</p>
-
-                                <p class="term-item"><strong>Team Sustainability Award (Takım Sürdürülebilirlik Ödülü):</strong> Takım yapısını, finansal modelini ve mentorluk sistemini gelecek yıllara taşıyabilecek sürdürülebilir bir model oluşturmayı başaran takıma verilir.</p>
-
-                                <p class="term-item"><strong>Rising All-Star Award (Yükselen Yıldız Ödülü):</strong> Bölgesel/Bölgesel turnuvalarda, ikinci yılını dolduran ve Rookie All-Star ödülünden sonra önemli ölçüde gelişme gösteren takımlara verilen ödüldür.</p>
-
-                                <p class="term-item"><strong>Founder’s Award (Kurucu Ödülü):</strong> Organizasyonda veya camiada, FIRST misyonuna önemli katkılarda bulunan kişi veya kurumlara verilen ödüldür.</p>
-
-                                <hr class="my-4">
-
-                                <div class="bg-fyk-purple/10 p-4 rounded-lg border-l-4 border-fyk-purple text-gray-700 mb-4">
-
-    <p class="font-semibold text-fyk-purple">Daha fazla bilgi almak için FRC Türkiye Sayfasını ziyaret edin:</p>
-
-    <a href="https://www.frcturkiye.org" target="_blank" class="text-fyk-purple font-bold hover:text-fyk-purple/80 underline transition duration-150 ease-in-out">FRC Türkiye Resmi Web Sitesi</a>
-
-</div>
-
-
-
-                            </div>
-
-                        </div>
-
-
-
+                        <?php endforeach; ?>
                     </main>
 
                 </div>

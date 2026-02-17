@@ -120,69 +120,70 @@ require_once 'config.php';
 
 <script>
     lucide.createIcons();
-    const RAW = [
-// Genel Terimler
+    const LANG = '<?= CURRENT_LANG ?>';
+    const RAW_TR = [
         { term: "FIRST", category: "Genel Terimler", definition: "'For Inspiration and Recognition of Science and Technology' kelimelerinin baş harflerinden oluşan, gençleri bilim ve teknolojiye teşvik etmek amacıyla kurulmuş olan kâr amacı gütmeyen organizasyon." },
         { term: "FRC", category: "Genel Terimler", definition: "FIRST Robotics Competition. FIRST organizasyonunun lise öğrencilerine yönelik en büyük ve kapsamlı robotik yarışması." },
-        { term: "Gracious Professionalism (Duyarlı Profesyonellik)", category: "Genel Terimler", definition: "Hem rekabetin hem de karşılıklı saygının bir arada yürüdüğü bir FRC felsefesi. Rakiplerinize yardım etmeyi ve onlardan öğrenmeyi teşvik eder." },
-        { term: "Coopertition (İşbirlikçi Rekabet)", category: "Genel Terimler", definition: "'Cooperation' ve 'Competition' kelimelerinin birleşimi. Takımların hem rekabet edip hem de birbirlerine yardım ederek daha büyük başarılara ulaşmasını ifade eder." },
+        { term: "Gracious Professionalism", category: "Genel Terimler", definition: "Hem rekabetin hem de karşılıklı saygının bir arada yürüdüğü bir FRC felsefesi." },
+        { term: "Coopertition", category: "Genel Terimler", definition: "İş birliği ve rekabetin birlikte yürütülmesini anlatan FIRST yaklaşımı." },
         { term: "Rookie", category: "Genel Terimler", definition: "FRC'ye ilk defa katılan takım veya üye." },
         { term: "Veteran", category: "Genel Terimler", definition: "FRC'de en az bir sezon tecrübesi olan takım veya üye." },
-
-
-// Oyun ve Saha
-        { term: "Alliance (İttifak)", category: "Oyun ve Saha", definition: "Maç sırasında birlikte hareket eden takımlar grubu. Genellikle 3 takımdan oluşan Kırmızı ve Mavi olmak üzere iki ittifak bulunur." },
-        { term: "Autonomous Period (Otonom Dönem)", category: "Oyun ve Saha", definition: "Maçın ilk 15 saniyesi. Robotlar sürücü kontrolü olmadan önceden programlanmış görevleri yapar." },
-        { term: "Tele-Op Period (Sürücü Kontrol Dönemi)", category: "Oyun ve Saha", definition: "Otonomdan sonraki 2 dakika 15 saniyelik kısım. Sürücüler robotları uzaktan kontrol eder." },
-        { term: "Endgame (Oyun Sonu)", category: "Oyun ve Saha", definition: "Tele-Op’un genellikle son 30 saniyesi. Takımlar tırmanma gibi ekstra puanlı görevleri yapar." },
-        { term: "Game Piece (Oyun Elemanı)", category: "Oyun ve Saha", definition: "Sezonun oyununda robotların manipüle ettiği nesneler (ör. top, küp, koni)." },
-        { term: "Driver Station (Sürücü İstasyonu)", category: "Oyun ve Saha", definition: "Sürücülerin maçı yönettiği, bilgisayar ve kontrol cihazlarının bulunduğu alan." },
-        { term: "Ranking Points (RP)", category: "Oyun ve Saha", definition: "Kvalifikasyon maçlarında elemelere kalmak için kazanılan puanlar; galibiyet, beraberlik ve belirli görevlerle verilir." },
-
-
-// Robot Parçaları ve Mekanik
-        { term: "Chassis / Drivetrain (Şasi / Aktarma)", category: "Robot Parçaları ve Mekanik", definition: "Robotun hareket etmesini sağlayan tekerlekler, motorlar, dişliler ve iskelet sisteminin bütünü." },
-        { term: "Bumper (Tampon)", category: "Robot Parçaları ve Mekanik", definition: "Robotların etrafını saran, kırmızı/mavi renkli koruyucu köpükler. Hem robotu korur hem ittifak rengini gösterir." },
-        { term: "Manipulator / Actuator", category: "Robot Parçaları ve Mekanik", definition: "Oyun elemanlarını toplama, taşıma, fırlatma gibi işlevleri yapan mekanizmalar." },
-        { term: "roboRIO", category: "Robot Parçaları ve Mekanik", definition: "Robotun 'beyni' kabul edilen ana kontrolcü; motorları, sensörleri ve elektronik bileşenleri yönetir." },
-        { term: "Motor Controller (Motor Sürücü)", category: "Robot Parçaları ve Mekanik", definition: "roboRIO sinyallerini motorlara uygun güce çeviren kart (ör. Talon, Spark MAX)." },
-        { term: "Pneumatics (Pnömatik)", category: "Robot Parçaları ve Mekanik", definition: "Basınçlı hava ile pistonları hareket ettiren ve çeşitli mekanizmaları çalıştıran sistem." },
-        { term: "Sensor (Sensör)", category: "Robot Parçaları ve Mekanik", definition: "Robotun çevresini algılamasına yardım eden bileşenler (kamera, ultrasonik, jiroskop vb.)." },
-
-
-// Takım ve Roller
-        { term: "Drive Team (Sürücü Ekibi)", category: "Takım ve Roller", definition: "Maçta robotu yöneten ekip: Sürücü, Operatör, Koç ve İnsan Oyuncu." },
-        { term: "Pit (Pit Alanı)", category: "Takım ve Roller", definition: "Turnuvada takımlara ayrılan çalışma alanı; robot bakımının ve sosyalleşmenin yapıldığı yer." },
-        { term: "Scouting", category: "Takım ve Roller", definition: "Diğer takımların robot yeteneklerini ve stratejilerini izleyip veri toplama ve analiz etme süreci." },
-        { term: "Mentor", category: "Takım ve Roller", definition: "Takım öğrencilerine teknik/sosyal konularda rehberlik eden gönüllü yetişkin." },
-
-
-// Ödüller ve Etkinlikler (uzun liste)
-        { term: "Kickoff", category: "Ödüller ve Etkinlikler", definition: "Her yıl Ocak başında yeni FRC sezon oyununun ve kurallarının açıklandığı etkinlik." },
-        { term: "Regional / District", category: "Ödüller ve Etkinlikler", definition: "Takımların Dünya Şampiyonası’na katılma hakkı için yarıştığı yerel/bölgesel turnuvalar." },
-        { term: "Championship (Dünya Şampiyonası)", category: "Ödüller ve Etkinlikler", definition: "Sezon sonunda dünyanın dört bir yanından en iyi takımların yarıştığı final etkinliği." },
-        { term: "FIRST Impact Award (Etki Ödülü)", category: "Ödüller ve Etkinlikler", definition: "FRC’deki en prestijli ödül; takımın FIRST misyonunu temsil etmesi, topluma etkisi ve rol model oluşu değerlendirilir." },
-        { term: "Engineering Inspiration Award", category: "Ödüller ve Etkinlikler", definition: "Bilim ve teknolojiyi kutlamada üstün başarı, öğrencileri mühendisliğe özendirme." },
-        { term: "Rookie All-Star Award", category: "Ödüller ve Etkinlikler", definition: "İlk senesinde güçlü performans ve FIRST felsefesini benimseyen çaylak takıma." },
-        { term: "Excellence in Engineering Award", category: "Ödüller ve Etkinlikler", definition: "Sağlam, güvenilir ve yenilikçi mühendislik prensiplerini sergileyen robota." },
-        { term: "Industrial Design Award", category: "Ödüller ve Etkinlikler", definition: "İşlevsellik, estetik ve üretim kolaylığını birleştiren endüstriyel tasarım başarısı." },
-        { term: "Autonomous Award", category: "Ödüller ve Etkinlikler", definition: "Otonom modda güvenilir ve etkili performans gösteren tasarım ve yazılım." },
-        { term: "Innovation in Control Award", category: "Ödüller ve Etkinlikler", definition: "Elektrik, yazılım ve kontrol sistemlerinde zarif/yenilikçi uygulamalar." },
-        { term: "Creativity Award", category: "Ödüller ve Etkinlikler", definition: "Oyunu çözmek için alışılmışın dışında, akıllıca mekanik veya stratejik çözüm." },
-        { term: "Quality Award", category: "Ödüller ve Etkinlikler", definition: "Dayanıklı, profesyonel görünümde, sağlam ve iyi üretilmiş robota." },
-        { term: "Gracious Professionalism® Award", category: "Ödüller ve Etkinlikler", definition: "Rekabet ve saygıyı birleştirerek FRC felsefesini en iyi sergileyen takıma." },
-        { term: "Team Spirit Award", category: "Ödüller ve Etkinlikler", definition: "Coşkusu, görünürlüğü ve etkinliği ile sahaya enerji katan takıma." },
-        { term: "Judges’ Award", category: "Ödüller ve Etkinlikler", definition: "Kategorilere uymayan ama takdire değer benzersiz başarılara verilen jüri özel ödülü." },
-        { term: "Winner (Kazanan)", category: "Ödüller ve Etkinlikler", definition: "Final maçlarını kazanarak şampiyon olan ittifaktaki takımlara verilen unvan." },
-        { term: "Finalist", category: "Ödüller ve Etkinlikler", definition: "Final maçlarını kaybederek ikinci olan ittifaktaki takımlar." },
-        { term: "FIRST Dean’s List Award", category: "Ödüller ve Etkinlikler", definition: "Liderlik ve teknik uzmanlık gösteren, FIRST’ün misyonunu benimsemiş olağanüstü öğrencilere bireysel ödül." },
-        { term: "Woodie Flowers Finalist Award", category: "Ödüller ve Etkinlikler", definition: "İlham veren, liderlik eden olağanüstü mentorlara verilen bireysel ödül." },
-        { term: "Volunteer of the Year Award", category: "Ödüller ve Etkinlikler", definition: "FRC etkinliklerine olağanüstü katkıda bulunan gönüllüye verilen bireysel ödül." },
-        { term: "Digital Animation Award", category: "Ödüller ve Etkinlikler", definition: "FRC temasını veya bir bilim/teknoloji kavramını anlatan en iyi dijital animasyon." },
-        { term: "Safety Animation Award", category: "Ödüller ve Etkinlikler", definition: "UL sponsorluğunda, FRC güvenliğini yaratıcı şekilde anlatan animasyon ödülü." },
-        { term: "Imagery Award", category: "Ödüller ve Etkinlikler", definition: "Takım ruhunu, imajını ve özgünlüğünü en iyi yansıtan takıma." },
-        { term: "Team Sustainability Award", category: "Ödüller ve Etkinlikler", definition: "Yapısını ve finansal/mentorluk modelini sürdürülebilir kılan takıma." },
+        { term: "Alliance", category: "Oyun ve Saha", definition: "Maç sırasında birlikte hareket eden takım grubu." },
+        { term: "Autonomous Period", category: "Oyun ve Saha", definition: "Maçın ilk 15 saniyesi; robotlar sürücü kontrolü olmadan çalışır." },
+        { term: "Tele-Op Period", category: "Oyun ve Saha", definition: "Sürücülerin robotları aktif olarak kontrol ettiği maç bölümü." },
+        { term: "Endgame", category: "Oyun ve Saha", definition: "Maçın son bölümündeki ekstra puan fırsatları." },
+        { term: "Game Piece", category: "Oyun ve Saha", definition: "Robotların topladığı, taşıdığı veya yerleştirdiği oyun nesneleri." },
+        { term: "Driver Station", category: "Oyun ve Saha", definition: "Sürücülerin robotu yönettiği kontrol alanı." },
+        { term: "Ranking Points", category: "Oyun ve Saha", definition: "Sıralama için kullanılan maç puanı sistemi." },
+        { term: "Drivetrain", category: "Robot Mekaniği", definition: "Robotun hareketini sağlayan mekanik ve güç aktarım sistemi." },
+        { term: "Bumper", category: "Robot Mekaniği", definition: "Robotu çarpmalara karşı koruyan güvenlik bileşeni." },
+        { term: "roboRIO", category: "Robot Mekaniği", definition: "Robotun ana kontrol birimi." },
+        { term: "Motor Controller", category: "Robot Mekaniği", definition: "Motorlara giden gücü ve komutları yöneten elektronik sürücü." },
+        { term: "Pneumatics", category: "Robot Mekaniği", definition: "Basınçlı hava ile çalışan mekanizma sistemi." },
+        { term: "Sensor", category: "Robot Mekaniği", definition: "Robotun çevreyi algılamasını sağlayan bileşenler." },
+        { term: "Drive Team", category: "Takım Rolleri", definition: "Sürücü, operatör, koç ve insan oyuncudan oluşan maç ekibi." },
+        { term: "Pit", category: "Takım Rolleri", definition: "Takımın robot bakımını yaptığı çalışma alanı." },
+        { term: "Scouting", category: "Takım Rolleri", definition: "Rakiplerin performans verilerini toplama ve analiz süreci." },
+        { term: "Mentor", category: "Takım Rolleri", definition: "Takıma teknik ve sosyal rehberlik sağlayan gönüllü uzman." },
+        { term: "Kickoff", category: "Etkinlikler ve Ödüller", definition: "Yeni sezon oyununun ve kurallarının açıklandığı resmi başlangıç etkinliği." },
+        { term: "Regional / District", category: "Etkinlikler ve Ödüller", definition: "Takımların sezon içinde yarıştığı resmi turnuva formatları." },
+        { term: "Championship", category: "Etkinlikler ve Ödüller", definition: "Sezon sonunda en iyi takımların buluştuğu dünya düzeyi final etkinliği." },
+        { term: "FIRST Impact Award", category: "Etkinlikler ve Ödüller", definition: "Toplumsal etki ve FIRST değerlerini en güçlü yansıtan takıma verilen ödül." },
+        { term: "Engineering Inspiration Award", category: "Etkinlikler ve Ödüller", definition: "Mühendislik farkındalığı ve ilham etkisi yüksek takımları ödüllendirir." }
     ];
+
+    const RAW_EN = [
+        { term: "FIRST", category: "General Terms", definition: "A nonprofit organization that inspires young people in science and technology through robotics programs." },
+        { term: "FRC", category: "General Terms", definition: "FIRST Robotics Competition, the largest high-school robotics program in FIRST." },
+        { term: "Gracious Professionalism", category: "General Terms", definition: "A FIRST value that combines strong competition with respect and kindness." },
+        { term: "Coopertition", category: "General Terms", definition: "A FIRST concept that blends cooperation and competition." },
+        { term: "Rookie", category: "General Terms", definition: "A team or member participating in FRC for the first time." },
+        { term: "Veteran", category: "General Terms", definition: "A team or member with at least one completed FRC season." },
+        { term: "Alliance", category: "Game and Field", definition: "A group of teams that play together during a match." },
+        { term: "Autonomous Period", category: "Game and Field", definition: "The first 15 seconds of a match where robots run pre-programmed actions." },
+        { term: "Tele-Op Period", category: "Game and Field", definition: "The driver-controlled phase that follows autonomous play." },
+        { term: "Endgame", category: "Game and Field", definition: "The final portion of a match with bonus scoring opportunities." },
+        { term: "Game Piece", category: "Game and Field", definition: "Objects robots collect, move, or score during the game." },
+        { term: "Driver Station", category: "Game and Field", definition: "The control area where the drive team operates the robot." },
+        { term: "Ranking Points", category: "Game and Field", definition: "Points used to rank teams during qualification matches." },
+        { term: "Drivetrain", category: "Robot Mechanics", definition: "The mechanical system that powers and controls robot movement." },
+        { term: "Bumper", category: "Robot Mechanics", definition: "A protective structure around the robot used for safety and identification." },
+        { term: "roboRIO", category: "Robot Mechanics", definition: "The main onboard controller of an FRC robot." },
+        { term: "Motor Controller", category: "Robot Mechanics", definition: "An electronic device that controls motor power and direction." },
+        { term: "Pneumatics", category: "Robot Mechanics", definition: "A system that uses compressed air to power mechanisms." },
+        { term: "Sensor", category: "Robot Mechanics", definition: "A device that helps the robot detect conditions or environment changes." },
+        { term: "Drive Team", category: "Team Roles", definition: "The students and coach who operate and guide the robot during matches." },
+        { term: "Pit", category: "Team Roles", definition: "The designated workspace where teams service and improve their robot." },
+        { term: "Scouting", category: "Team Roles", definition: "Collecting and analyzing performance data from teams and matches." },
+        { term: "Mentor", category: "Team Roles", definition: "An experienced volunteer who guides students in technical and soft skills." },
+        { term: "Kickoff", category: "Events and Awards", definition: "The official event where the new season game and rules are announced." },
+        { term: "Regional / District", category: "Events and Awards", definition: "Official competition formats teams attend during the season." },
+        { term: "Championship", category: "Events and Awards", definition: "The season-ending world-level event featuring top teams." },
+        { term: "FIRST Impact Award", category: "Events and Awards", definition: "A major award recognizing teams with outstanding community impact." },
+        { term: "Engineering Inspiration Award", category: "Events and Awards", definition: "Recognizes teams that strongly promote engineering and STEM inspiration." }
+    ];
+
+    const RAW = LANG === 'en' ? RAW_EN : RAW_TR;
     const CARDS = RAW.map((c)=> ({...c, id:`${c.category}-${c.term}`}));
 
     // ======= DURUM & STORAGE =======

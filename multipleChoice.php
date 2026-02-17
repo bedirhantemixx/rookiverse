@@ -251,9 +251,9 @@
             answer: "Alliance Score"
         },
         {
-            question: "Where is the most popular FRC competition held in Turkey?",
-            options: ["Ankara", "Izmir", "Istanbul", "Bursa"],
-            answer: "Istanbul"
+            question: "How many teams are usually in one alliance during an FRC match?",
+            options: ["2", "3", "4", "6"],
+            answer: "3"
         },
         {
             question: "What is the name of the area where the robot driver operates?",
@@ -261,9 +261,9 @@
             answer: "Driver Station"
         },
         {
-            question: "What is the budget limit given to teams in FRC?",
-            options: ["$10,000", "$25,000", "$5,000", "$15,000"],
-            answer: "$5,000"
+            question: "What is the first 15-second period of an FRC match called?",
+            options: ["Tele-Op", "Autonomous", "Endgame", "Timeout"],
+            answer: "Autonomous"
         }
     ];
     const questions = (LANG === 'en') ? questions_en : questions_tr;

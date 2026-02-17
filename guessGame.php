@@ -230,6 +230,16 @@
 
     lucide.createIcons();
 
+    const I18N = <?= json_encode([
+        'noTeams' => __('gg.no_teams'),
+        'timeUp' => __('gg.time_up'),
+        'allDone' => __('gg.all_done'),
+        'enterNumber' => __('gg.enter_number'),
+        'correct' => __('gg.correct'),
+        'wrong' => __('gg.wrong'),
+        'skipped' => __('gg.skipped'),
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+
 
 
     const teamNameDisplay = document.getElementById('team-name-display');
@@ -450,7 +460,7 @@
 
         if (availableTeams.length === 0) {
 
-            alert('<?= __('gg.no_teams') ?>');
+            alert(I18N.noTeams);
 
             return;
 
@@ -482,7 +492,7 @@
 
             if (timeLeft <= 0) {
 
-                endGame('<?= __('gg.time_up') ?>');
+                endGame(I18N.timeUp);
 
             }
 
@@ -496,7 +506,7 @@
 
         if (availableTeams.length === 0) {
 
-            endGame('<?= __('gg.all_done') ?>');
+            endGame(I18N.allDone);
 
             return;
 
@@ -530,7 +540,7 @@
 
         if (isNaN(inputNumber)) {
 
-            feedbackDisplay.textContent = '<?= __('gg.enter_number') ?>';
+            feedbackDisplay.textContent = I18N.enterNumber;
 
             feedbackDisplay.classList.remove('text-green-600');
 
@@ -544,7 +554,7 @@
 
         if (inputNumber === currentTeam.number) {
 
-            feedbackDisplay.textContent = '<?= __('gg.correct') ?>';
+            feedbackDisplay.textContent = I18N.correct;
 
             feedbackDisplay.classList.remove('text-red-600');
 
@@ -558,7 +568,7 @@
 
         } else {
 
-            feedbackDisplay.textContent = '<?= __('gg.wrong') ?> ' + currentTeam.number;
+            feedbackDisplay.textContent = I18N.wrong + ' ' + currentTeam.number;
 
             feedbackDisplay.classList.remove('text-green-600');
 
@@ -574,7 +584,7 @@
 
     function skipQuestion() {
 
-        feedbackDisplay.textContent = '<?= __('gg.skipped') ?> ' + currentTeam.number;
+        feedbackDisplay.textContent = I18N.skipped + ' ' + currentTeam.number;
 
         feedbackDisplay.classList.remove('text-green-600');
 
