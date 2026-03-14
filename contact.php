@@ -2,68 +2,27 @@
 require_once 'config.php';
 session_start();
 
-// Google reCAPTCHA Secret Key'ini buraya ekle
-define('RECAPTCHA_SECRET_KEY', '6LcmgucrAAAAAO39Mj17DgqOSXWx-K6_i5sFMHHN');
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // --- RECAPTCHA DOĞRULAMASI BAŞLANGIÇ ---
-    if (isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])) {
-        $recaptcha_response = $_POST['g-recaptcha-response'];
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $subject = trim($_POST['subject'] ?? '');
+    $message = trim($_POST['message'] ?? '');
 
-        // Google'ın doğrulama API'sine istek gönder
-        $url = 'https://www.google.com/recaptcha/api/siteverify';
-        $data = [
-            'secret'   => RECAPTCHA_SECRET_KEY,
-            'response' => $recaptcha_response,
-            'remoteip' => $_SERVER['REMOTE_ADDR']
-        ];
-
-        $options = [
-            'http' => [
-                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method'  => 'POST',
-                'content' => http_build_query($data)
-            ]
-        ];
-        $context  = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
-        $responseKeys = json_decode($result, true);
-
-        // Doğrulama başarılıysa devam et
-        if ($responseKeys["success"]) {
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $subject = $_POST['subject'];
-            $message = $_POST['message'];
-
-            try {
-                $pdo = get_db_connection();
-                $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$name, $email, $subject, $message]);
-
-                // Başarı durumunda formun kendisini değil, sadece başarı mesajını döndürelim.
-                // Bu, JavaScript ile popup göstermek için daha uygun.
-                // HTTP 200 OK (başarılı) kodu döner.
-                exit(); // Script'i burada bitiriyoruz.
-
-            } catch (Throwable $e) {
-                http_response_code(500);
-                echo 'DB error: ' . htmlspecialchars($e->getMessage());
-                exit();
-            }
-
-        } else {
-            // reCAPTCHA doğrulaması başarısız oldu
-            http_response_code(400); // Bad Request
-            echo 'reCAPTCHA doğrulaması başarısız oldu. Lütfen tekrar deneyin.';
+    if (!empty($name) && !empty($email) && !empty($subject) && !empty($message) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        try {
+            $pdo = get_db_connection();
+            $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$name, $email, $subject, $message]);
+            exit();
+        } catch (Throwable $e) {
+            http_response_code(500);
+            echo 'DB error: ' . htmlspecialchars($e->getMessage());
             exit();
         }
-    } else {
-        // reCAPTCHA yanıtı boş geldi
-        http_response_code(400);
-        echo 'Lütfen "Ben robot değilim" kutusunu işaretleyin.';
-        exit();
     }
+    http_response_code(400);
+    echo __('contact.error_validation');
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -77,8 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/navbar.css">
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/contact.css">
   
@@ -109,10 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="space-y-2"><label for="subject" class="font-medium text-gray-700"><?= __('contact.subject') ?></label><input id="subject" name="subject" type="text" required placeholder="<?= __('contact.subject_placeholder') ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-custom-yellow focus:ring-custom-yellow"></div>
             <div class="space-y-2"><label for="message" class="font-medium text-gray-700"><?= __('contact.message') ?></label><textarea id="message" name="message" required rows="6" placeholder="<?= __('contact.message_placeholder') ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-custom-yellow focus:ring-custom-yellow resize-none"></textarea></div>
-            
-            <div class="flex justify-center">
-                <div class="g-recaptcha" data-sitekey="6LcmgucrAAAAAKG54g57tXOGDPxO3tMdk9odOYfP"></div>
-            </div>
 
             <button type="submit" class="w-full bg-custom-yellow hover:bg-opacity-90 text-white font-semibold py-3 text-lg rounded-lg flex items-center justify-center">
               <span class="button-content flex items-center"><i data-lucide="send" class="mr-2 h-5 w-5"></i> <?= __('contact.send') ?></span>
@@ -168,8 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (response.ok && response.status !== 500) {
                 // Başarılı (HTTP 200)
                 successPopup.style.display = 'flex';
-                contactForm.reset(); // Formu sıfırla
-                grecaptcha.reset(); // reCAPTCHA'yı sıfırla
+                contactForm.reset();
                 setTimeout(() => {
                     successPopup.style.display = 'none';
                 }, 4000); // 4 saniye sonra popup'ı gizle
@@ -181,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .catch(error => {
             // Hata mesajını ekranda göster
             formError.textContent = error.message || 'Bir hata oluştu, lütfen tekrar deneyin.';
-            grecaptcha.reset(); // Hata durumunda reCAPTCHA'yı sıfırla
         });
     });
   </script>

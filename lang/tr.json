@@ -133,6 +133,7 @@
   "contact.success_title": "Mesajınız Gönderildi!",
   "contact.success_desc": "En kısa sürede size geri dönüş yapacağız.",
   "contact.error_recaptcha": "Lütfen \"Ben robot değilim\" kutusunu işaretleyin.",
+  "contact.error_validation": "Lütfen tüm alanları doğru şekilde doldurun.",
   "contact.faq_title": "Sık Sorulan Sorular",
   "contact.faq1_q": "Platform tamamen ücretsiz mi?",
   "contact.faq1_a": "Evet! Rookieverse'deki tüm kurslar ve oyunlar tamamen ücretsizdir. Türk FIRST topluluğuna destek olmak için bu platformu geliştirdik.",

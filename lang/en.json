@@ -133,6 +133,7 @@
   "contact.success_title": "Message Sent!",
   "contact.success_desc": "We will get back to you as soon as possible.",
   "contact.error_recaptcha": "Please check the \"I am not a robot\" box.",
+  "contact.error_validation": "Please fill in all fields correctly.",
   "contact.faq_title": "Frequently Asked Questions",
   "contact.faq1_q": "Is the platform completely free?",
   "contact.faq1_a": "Yes! All courses and games on Rookieverse are completely free. We built this platform to support FIRST learners and teams worldwide.",
