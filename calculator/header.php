@@ -55,6 +55,7 @@ $calcBase = BASE_URL . '/calculator';
             <span class="text-gray-300">|</span>
             <a href="<?= $calcBase ?>/motors.php" class="text-gray-500 hover:text-gold transition-colors">Motors</a>
             <a href="<?= $calcBase ?>/compressors.php" class="text-gray-500 hover:text-gold transition-colors">Compressors</a>
+            <a href="<?= $calcBase ?>/utilities.php" class="text-gray-500 hover:text-gold transition-colors">Utilities</a>
         </div>
     </div>
 </div>

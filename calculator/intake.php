@@ -27,7 +27,7 @@ require_once 'header.php';
                 </div>
             </div>
             <div class="input-row">
-                <label>Current Ratio</label>
+                <label>Gear Ratio</label>
                 <div class="input-group">
                     <input type="number" data-param="ratio" value="2" min="0.1" step="0.1">
                     <span class="unit">:1</span>
@@ -87,7 +87,7 @@ require_once 'header.php';
             <div class="result-highlight" style="border-color: #3B82F6;">
                 <div class="result-label">Recommended Ratio</div>
                 <div class="result-number" id="out-rec-ratio" style="color: #3B82F6;">—</div>
-                <span class="text-sm text-gray-500">for <?= '<?= $multiplier ?>' ?>x drivetrain speed</span>
+                <span class="text-sm text-gray-500"></span>
                 <span class="text-sm text-gray-500" id="out-rec-label">for target speed</span>
             </div>
 

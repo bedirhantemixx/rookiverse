@@ -103,16 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
             motorCurrent = Math.max(0, Math.min(motorCurrent, currentLimit));
 
             const torquePerMotor = motor.kT * Math.max(0, motorCurrent - motor.freeCurrent);
-            const totalTorque = torquePerMotor * numMotors * eff;
-
-            // Force at wheel
-            let force = totalTorque * ratio / wheelRadius; // Incorrect, should be / ratio... let me fix
-            // Correct: Motor torque * ratio = wheel torque, then wheel torque / wheel radius = force
-            // But totalTorque is already total motor torque, and we need to multiply by ratio to get wheel torque
-            // Wait - ratio is reduction, so wheel torque = motor torque * ratio
-            // Actually the motor torque from solveMotorState already accounts for numMotors
-            // Force = (motor_torque_per_motor * numMotors * efficiency * ratio) / wheelRadius
-            force = (torquePerMotor * numMotors * eff * ratio) / wheelRadius;
+            // Force at wheel: motor torque * ratio = wheel torque, / wheel radius = force
+            let force = (torquePerMotor * numMotors * eff * ratio) / wheelRadius;
 
             // Traction limit
             if (force > tractionForce) {

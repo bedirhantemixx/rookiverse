@@ -87,6 +87,11 @@ require_once 'header.php';
             <div class="tile-title">Compressors</div>
             <div class="tile-desc">Compressor specs & flow</div>
         </a>
+        <a href="<?= $calcBase ?>/utilities.php" class="calc-tile">
+            <div class="tile-icon"><i data-lucide="wrench" class="w-6 h-6"></i></div>
+            <div class="tile-title">Utilities</div>
+            <div class="tile-desc">Cheat sheets & tools</div>
+        </a>
     </div>
 
     <!-- Quick Links -->
