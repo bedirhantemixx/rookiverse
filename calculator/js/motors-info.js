@@ -80,17 +80,17 @@ document.addEventListener('DOMContentLoaded', () => {
     MechTools.createChart('motor-curves-chart', {
         options: {
             scales: {
-                x: { title: { display: true, text: 'Speed (RPM)' } },
-                y: { title: { display: true, text: 'Torque (N·m)' }, min: 0, position: 'left' },
+                x: { title: { display: true, text: t('calc.js.speed_rpm') } },
+                y: { title: { display: true, text: t('calc.js.torque_nm') }, min: 0, position: 'left' },
                 y1: {
                     position: 'right',
-                    title: { display: true, text: 'Power (W)' },
+                    title: { display: true, text: t('calc.js.power_w') },
                     min: 0,
                     grid: { drawOnChartArea: false },
                 },
                 y2: {
                     position: 'right',
-                    title: { display: true, text: 'Current (A)' },
+                    title: { display: true, text: t('calc.js.current_a') },
                     min: 0,
                     grid: { drawOnChartArea: false },
                 }
@@ -125,19 +125,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         MechTools.updateChart('motor-curves-chart', [
             {
-                label: 'Torque (N·m)',
+                label: t('calc.js.torque_nm'),
                 data: torqueData,
                 borderColor: MechTools.colors.gold,
                 yAxisID: 'y',
             },
             {
-                label: 'Current (A)',
+                label: t('calc.js.current_a'),
                 data: currentData,
                 borderColor: MechTools.colors.red,
                 yAxisID: 'y2',
             },
             {
-                label: 'Power (W)',
+                label: t('calc.js.power_w'),
                 data: powerData,
                 borderColor: MechTools.colors.blue,
                 yAxisID: 'y1',

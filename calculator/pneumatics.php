@@ -1,54 +1,54 @@
 <?php
-$pageTitle = 'Pneumatics Calculator';
+$pageTitle = 'calc.pneumatics.title';
 $calcScripts = ['compressors-data.js', 'pneumatics.js'];
 require_once 'header.php';
 ?>
 
 <div class="calc-container">
     <div class="calc-header">
-        <h1><i data-lucide="wind" class="w-7 h-7 inline text-gold"></i> Pneumatics Calculator</h1>
-        <button id="share-btn" class="share-btn"><i data-lucide="share-2" class="w-4 h-4"></i> Share</button>
+        <h1><i data-lucide="wind" class="w-7 h-7 inline text-gold"></i> <?= __('calc.pneumatics.title') ?></h1>
+        <button id="share-btn" class="share-btn"><i data-lucide="share-2" class="w-4 h-4"></i> <?= __('calc.share') ?></button>
     </div>
 
     <div class="calc-grid">
         <!-- Inputs -->
         <div class="calc-card">
-            <h2>System</h2>
+            <h2><?= __('calc.pneumatics.system') ?></h2>
             <div class="input-row">
-                <label>Compressor</label>
+                <label><?= __('calc.pneumatics.compressor') ?></label>
                 <div class="input-group">
                     <select data-param="compressor" class="motor-select"></select>
                 </div>
             </div>
             <div class="input-row">
-                <label>Tank Volume</label>
+                <label><?= __('calc.pneumatics.tank_volume') ?></label>
                 <div class="input-group">
                     <input type="number" data-param="tankVol" value="574" min="1" step="10">
                     <span class="unit">mL</span>
                 </div>
             </div>
             <div class="input-row">
-                <label>Number of Tanks</label>
+                <label><?= __('calc.pneumatics.num_tanks') ?></label>
                 <div class="input-group">
                     <input type="number" data-param="tankQty" value="2" min="1" max="10" step="1">
                 </div>
             </div>
-            <p class="text-xs text-gray-400 mt-1">Most common FRC tank is 574 mL.</p>
+            <p class="text-xs text-gray-400 mt-1"><?= __('calc.pneumatics.tank_common') ?></p>
 
             <hr class="calc-divider">
-            <h2>Cylinders</h2>
-            <p class="text-xs text-gray-500 mb-2">Each cylinder is double-acting. Set extend/retract pressures and cycle period individually.</p>
+            <h2><?= __('calc.pneumatics.cylinders') ?></h2>
+            <p class="text-xs text-gray-500 mb-2"><?= __('calc.pneumatics.cyl_desc') ?></p>
             <div id="pistons-container">
                 <!-- Pistons added by JS -->
             </div>
             <div class="flex gap-2 mt-3">
-                <button id="add-piston" class="btn-add"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Cylinder</button>
+                <button id="add-piston" class="btn-add"><i data-lucide="plus" class="w-3.5 h-3.5"></i> <?= __('calc.pneumatics.add_cylinder') ?></button>
             </div>
 
             <hr class="calc-divider">
-            <h2>Storage</h2>
+            <h2><?= __('calc.pneumatics.storage') ?></h2>
             <div class="input-row">
-                <label>Storage Pressure</label>
+                <label><?= __('calc.pneumatics.storage_pressure') ?></label>
                 <div class="input-group">
                     <input type="number" data-param="storePsi" value="120" min="1" max="120" step="1">
                     <span class="unit">PSI</span>
@@ -58,31 +58,31 @@ require_once 'header.php';
 
         <!-- Outputs -->
         <div class="calc-card">
-            <h2>Match Simulation (150s)</h2>
+            <h2><?= __('calc.pneumatics.match_sim') ?></h2>
 
             <div class="result-highlight">
-                <div class="result-label">Compressor Duty Cycle</div>
+                <div class="result-label"><?= __('calc.pneumatics.duty_cycle') ?></div>
                 <div class="result-number" id="out-duty-cycle">—</div>
-                <span class="text-sm text-gray-500">% runtime during match</span>
+                <span class="text-sm text-gray-500"><?= __('calc.pneumatics.duty_desc') ?></span>
             </div>
 
             <div class="mt-4">
                 <div class="output-row">
-                    <label>Min Pressure in Match</label>
+                    <label><?= __('calc.pneumatics.min_pressure') ?></label>
                     <div class="input-group">
                         <span class="output-value" id="out-min-pressure">—</span>
                         <span class="unit">PSI</span>
                     </div>
                 </div>
                 <div class="output-row">
-                    <label>Recommended KOP Tanks</label>
+                    <label><?= __('calc.pneumatics.rec_tanks') ?></label>
                     <div class="input-group">
                         <span class="output-value" id="out-rec-tanks">—</span>
                         <span class="unit">× 574 mL</span>
                     </div>
                 </div>
                 <div class="output-row">
-                    <label>Actuations (no compressor)</label>
+                    <label><?= __('calc.pneumatics.actuations') ?></label>
                     <div class="input-group">
                         <span class="output-value" id="out-actuations">—</span>
                         <span class="unit">cycles</span>
@@ -91,29 +91,29 @@ require_once 'header.php';
             </div>
 
             <hr class="calc-divider">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Per Cylinder Forces</h3>
+            <h3 class="text-sm font-semibold text-gray-700 mb-2"><?= __('calc.pneumatics.per_cyl_forces') ?></h3>
             <div id="cylinder-forces">
                 <!-- Generated by JS -->
             </div>
 
             <hr class="calc-divider">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">System</h3>
+            <h3 class="text-sm font-semibold text-gray-700 mb-2"><?= __('calc.pneumatics.system_section') ?></h3>
             <div class="output-row">
-                <label>Air per Cycle (all cylinders)</label>
+                <label><?= __('calc.pneumatics.air_per_cycle') ?></label>
                 <div class="input-group">
                     <span class="output-value" id="out-air-cycle">—</span>
                     <span class="unit">in³</span>
                 </div>
             </div>
             <div class="output-row">
-                <label>Total Tank Volume</label>
+                <label><?= __('calc.pneumatics.total_tank_vol') ?></label>
                 <div class="input-group">
                     <span class="output-value" id="out-total-vol">—</span>
                     <span class="unit">in³</span>
                 </div>
             </div>
             <div class="output-row">
-                <label>Fill Time (0 → full)</label>
+                <label><?= __('calc.pneumatics.fill_time') ?></label>
                 <div class="input-group">
                     <span class="output-value" id="out-fill-time">—</span>
                     <span class="unit">s</span>
@@ -124,7 +124,7 @@ require_once 'header.php';
 
     <!-- Chart -->
     <div class="calc-card-full">
-        <h2>System Pressure Over Time (150s Match)</h2>
+        <h2><?= __('calc.pneumatics.chart_title') ?></h2>
         <div class="chart-container" style="height:350px;">
             <canvas id="pneumatics-chart"></canvas>
         </div>

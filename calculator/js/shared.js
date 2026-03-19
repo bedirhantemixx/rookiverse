@@ -3,6 +3,11 @@
  * URL state management, unit conversion, input binding, share button
  */
 
+// Translation helper for JS-facing strings
+function t(key) {
+    return (window.T && window.T[key]) || key;
+}
+
 const MechTools = {
     // ─── Unit Conversion ───
     units: {
@@ -178,7 +183,7 @@ const MechTools = {
             navigator.clipboard.writeText(window.location.href).then(() => {
                 btn.classList.add('copied');
                 const orig = btn.innerHTML;
-                btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copied!';
+                btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> ' + t('calc.js.copied');
                 lucide.createIcons();
                 setTimeout(() => {
                     btn.classList.remove('copied');

@@ -104,12 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const countEl = document.getElementById('result-count');
 
         if (results.length === 0) {
-            container.innerHTML = '<p class="text-gray-400 text-sm">No combinations found. Try increasing max error or tooth range.</p>';
+            container.innerHTML = '<p class="text-gray-400 text-sm">' + t('calc.js.no_combos') + '</p>';
             countEl.textContent = '';
             return;
         }
 
-        countEl.textContent = `(${results.length} found)`;
+        countEl.textContent = t('calc.js.found_n').replace('%s', results.length);
         container.innerHTML = '';
 
         results.forEach(r => {
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="text-right">
                     <span class="text-xs font-medium ${r.error < 0.01 ? 'text-green-600' : r.error < 0.03 ? 'text-yellow-600' : 'text-red-500'}">
-                        ${errorPct}% error
+                        ${errorPct}${t('calc.js.error_pct')}
                     </span>
                 </div>
             `;

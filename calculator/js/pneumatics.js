@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = `piston-item ${p.enabled ? '' : 'disabled'}`;
             div.innerHTML = `
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-semibold text-gray-600">Cylinder ${i + 1}</span>
+                    <span class="text-sm font-semibold text-gray-600">${t('calc.js.cylinder_n')} ${i + 1}</span>
                     <div class="flex items-center gap-2">
                         <label class="toggle-switch">
                             <input type="checkbox" class="piston-toggle" data-index="${i}" ${p.enabled ? 'checked' : ''}>
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="input-row">
-                    <label>Bore</label>
+                    <label>${t('calc.js.bore')}</label>
                     <div class="input-group">
                         <select class="piston-bore" data-index="${i}" style="width:100px;padding:6px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;">
                             ${BORE_SIZES.map(b => `<option value="${b}" ${b === p.bore ? 'selected' : ''}>${b}"</option>`).join('')}
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="input-row">
-                    <label>Rod Diameter</label>
+                    <label>${t('calc.js.rod_diameter')}</label>
                     <div class="input-group">
                         <input type="number" class="piston-rod" data-index="${i}" value="${p.rodD}" min="0.1" step="0.0625"
                             style="width:70px;padding:6px;border:1px solid #d1d5db;border-radius:8px;text-align:right;font-size:0.85rem;">
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="input-row">
-                    <label>Stroke</label>
+                    <label>${t('calc.js.stroke')}</label>
                     <div class="input-group">
                         <input type="number" class="piston-stroke" data-index="${i}" value="${p.stroke}" min="0.5" step="0.5"
                             style="width:70px;padding:6px;border:1px solid #d1d5db;border-radius:8px;text-align:right;font-size:0.85rem;">
@@ -68,14 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="input-row">
-                    <label>Count</label>
+                    <label>${t('calc.js.count')}</label>
                     <div class="input-group">
                         <input type="number" class="piston-qty" data-index="${i}" value="${p.qty}" min="1" max="10" step="1"
                             style="width:50px;padding:6px;border:1px solid #d1d5db;border-radius:8px;text-align:right;font-size:0.85rem;">
                     </div>
                 </div>
                 <div class="input-row">
-                    <label>Extend PSI</label>
+                    <label>${t('calc.js.extend_psi')}</label>
                     <div class="input-group">
                         <input type="number" class="piston-extpsi" data-index="${i}" value="${p.extendPsi}" min="1" max="120" step="1"
                             style="width:60px;padding:6px;border:1px solid #d1d5db;border-radius:8px;text-align:right;font-size:0.85rem;">
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="input-row">
-                    <label>Retract PSI</label>
+                    <label>${t('calc.js.retract_psi')}</label>
                     <div class="input-group">
                         <input type="number" class="piston-retpsi" data-index="${i}" value="${p.retractPsi}" min="1" max="120" step="1"
                             style="width:60px;padding:6px;border:1px solid #d1d5db;border-radius:8px;text-align:right;font-size:0.85rem;">
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="input-row">
-                    <label>Cycle Period</label>
+                    <label>${t('calc.js.cycle_period')}</label>
                     <div class="input-group">
                         <input type="number" class="piston-period" data-index="${i}" value="${p.period}" min="1" step="1"
                             style="width:60px;padding:6px;border:1px solid #d1d5db;border-radius:8px;text-align:right;font-size:0.85rem;">
@@ -191,10 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = document.createElement('div');
             row.className = 'output-row';
             row.innerHTML = `
-                <label>Cyl ${i + 1} (${p.bore}" × ${p.stroke}")</label>
+                <label>${t('calc.js.cylinder_n')} ${i + 1} (${p.bore}" × ${p.stroke}")</label>
                 <div class="input-group">
                     <span class="output-value">${extendForce.toFixed(1)} / ${retractForce.toFixed(1)}</span>
-                    <span class="unit">lbf ext/ret</span>
+                    <span class="unit">${t('calc.js.lbf_ext_ret')}</span>
                 </div>
             `;
             forcesEl.appendChild(row);
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const labels = timeData.map(t => t.toString());
         MechTools.updateChart('pneumatics-chart',
             [{
-                label: 'Tank Pressure (PSI)',
+                label: t('calc.js.tank_pressure_psi'),
                 data: pressureData,
                 borderColor: MechTools.colors.gold,
                 backgroundColor: 'rgba(229, 174, 50, 0.1)',
@@ -345,8 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
     MechTools.createChart('pneumatics-chart', {
         options: {
             scales: {
-                x: { title: { display: true, text: 'Time (s)' } },
-                y: { title: { display: true, text: 'Pressure (PSI)' }, min: 0 }
+                x: { title: { display: true, text: t('calc.js.time_s') } },
+                y: { title: { display: true, text: t('calc.js.pressure_psi') }, min: 0 }
             }
         }
     });

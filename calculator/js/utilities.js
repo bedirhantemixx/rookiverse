@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = html;
         }
 
-        renderBoltTable(IMPERIAL_BOLTS, 'hole-imperial', ['Tapped', 'Close Fit', 'Free Fit']);
-        renderBoltTable(METRIC_BOLTS, 'hole-metric', ['Tapped', 'Normal Fit', 'Loose Fit']);
+        renderBoltTable(IMPERIAL_BOLTS, 'hole-imperial', [t('calc.js.tapped'), t('calc.js.close_fit'), t('calc.js.free_fit')]);
+        renderBoltTable(METRIC_BOLTS, 'hole-metric', [t('calc.js.tapped'), t('calc.js.normal_fit'), t('calc.js.loose_fit')]);
     }
 
     document.getElementById('hole-input').addEventListener('input', updateHoleSizes);
@@ -98,19 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = '<div class="space-y-1">';
         if (result.length === 0) {
-            html += '<p class="text-gray-400 text-sm">No spacers needed.</p>';
+            html += '<p class="text-gray-400 text-sm">' + t('calc.js.no_spacers') + '</p>';
         } else {
             result.forEach(r => {
                 const label = r.size >= 1 ? `${r.size}"` : fractionLabel(r.size);
                 html += `<div class="flex justify-between items-center py-1 border-b border-gray-100">
-                    <span class="text-sm font-medium">${label} spacer</span>
+                    <span class="text-sm font-medium">${label} ${t('calc.js.spacer')}</span>
                     <span class="output-value" style="min-width:auto;padding:4px 8px;">${r.count}×</span>
                 </div>`;
             });
             if (remaining > 0.0005) {
-                html += `<div class="mt-2 text-xs text-red-500">Remaining: ${remaining.toFixed(4)}" (no standard spacer)</div>`;
+                html += `<div class="mt-2 text-xs text-red-500">${t('calc.js.remaining')} ${remaining.toFixed(4)}" ${t('calc.js.no_standard')}</div>`;
             } else {
-                html += `<div class="mt-2 text-xs text-green-600">Exact match!</div>`;
+                html += `<div class="mt-2 text-xs text-green-600">${t('calc.js.exact_match')}</div>`;
             }
         }
         html += '</div>';

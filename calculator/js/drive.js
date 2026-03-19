@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         MechTools.setOutput('out-traction', tractionForceLbf, 1);
 
         const isTractionLimited = pushForce > tractionForce;
-        MechTools.setOutput('out-traction-limited', isTractionLimited ? 'Yes' : 'No');
+        MechTools.setOutput('out-traction-limited', isTractionLimited ? t('calc.js.yes') : t('calc.js.no'));
 
         // Stall current per motor
         const stallCur = Math.min(motor.stallCurrent, currentLimit);
@@ -139,13 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Velocity (ft/s)',
+                        label: t('calc.js.velocity_fts'),
                         data: velData,
                         borderColor: MechTools.colors.gold,
                         yAxisID: 'y',
                     },
                     {
-                        label: 'Position (ft)',
+                        label: t('calc.js.position_ft'),
                         data: posData,
                         borderColor: MechTools.colors.blue,
                         yAxisID: 'y1',
@@ -154,17 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             options: {
                 scales: {
-                    x: { title: { display: true, text: 'Time (s)' } },
+                    x: { title: { display: true, text: t('calc.js.time_s') } },
                     y: {
                         type: 'linear',
                         position: 'left',
-                        title: { display: true, text: 'Velocity (ft/s)' },
+                        title: { display: true, text: t('calc.js.velocity_fts') },
                         beginAtZero: true,
                     },
                     y1: {
                         type: 'linear',
                         position: 'right',
-                        title: { display: true, text: 'Position (ft)' },
+                        title: { display: true, text: t('calc.js.position_ft') },
                         beginAtZero: true,
                         grid: { drawOnChartArea: false },
                     }
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Motor Current (A)',
+                    label: t('calc.js.motor_current_a'),
                     data: curData,
                     borderColor: MechTools.colors.red,
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -185,8 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             options: {
                 scales: {
-                    x: { title: { display: true, text: 'Time (s)' } },
-                    y: { title: { display: true, text: 'Current (A)' }, beginAtZero: true }
+                    x: { title: { display: true, text: t('calc.js.time_s') } },
+                    y: { title: { display: true, text: t('calc.js.current_a') }, beginAtZero: true }
                 }
             }
         });

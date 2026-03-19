@@ -36,11 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         MechTools.setOutput('out-rec-ratio', recommendedRatio.toFixed(2) + ':1');
         MechTools.setOutput('out-target-speed', targetSpeed, 1);
-        MechTools.setOutput('out-rec-label', `for ${multiplier}x drivetrain speed`);
+        MechTools.setOutput('out-rec-label', t('calc.js.for_speed').replace('%s', multiplier));
 
         // Speed comparison
         const speedRatio = surfaceSpeedFtS / driveSpeed;
-        MechTools.setOutput('out-speed-ratio', speedRatio.toFixed(1) + 'x drivetrain');
+        MechTools.setOutput('out-speed-ratio', speedRatio.toFixed(1) + t('calc.js.x_drivetrain'));
     }
 
     MechTools.bindInputs(calculate);

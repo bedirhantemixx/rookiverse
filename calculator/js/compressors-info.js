@@ -87,8 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         options: {
             scales: {
-                x: { title: { display: true, text: 'Pressure (PSI)' } },
-                y: { title: { display: true, text: 'Flow Rate (CFM)' }, min: 0 }
+                x: { title: { display: true, text: t('calc.js.pressure_psi') } },
+                y: { title: { display: true, text: t('calc.js.flow_rate_cfm') }, min: 0 }
             },
             plugins: {
                 legend: { position: 'right' }
