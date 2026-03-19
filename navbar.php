@@ -89,17 +89,19 @@
 
             <div class="nav-desktop items-center space-x-8">
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/courses.php"><?= __('nav.courses') ?></a>
+                <a class="py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/courses.php"><?= __('nav.courses') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/teams.php"><?= __('nav.teams') ?></a>
+                <a class="py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/teams.php"><?= __('nav.teams') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/games.php"><?= __('nav.games') ?></a>
+                <a class="py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/games.php"><?= __('nav.games') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/season.php"><?= __('nav.season') ?></a>
+                <a class="py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/season.php"><?= __('nav.season') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/frc-terms.php"><?= __('nav.frc_glossary') ?></a>
+                <a class="py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/frc-terms.php"><?= __('nav.frc_glossary') ?></a>
 
-                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/contact.php"><?= __('nav.contact') ?></a>
+                <a class="py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/contact.php"><?= __('nav.contact') ?></a>
+
+                <a class="py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/calculator/"><?= __('nav.calculator') ?></a>
 
                 <!-- Language Switcher -->
                 <div class="lang-switcher">
@@ -186,17 +188,19 @@
 
         <nav class="px-4 py-3 space-y-1 overflow-y-auto h-[calc(100vh-4rem)]">
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/courses.php"><?= __('nav.courses') ?></a>
+            <a class="block py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/courses.php"><?= __('nav.courses') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/teams.php"><?= __('nav.teams') ?></a>
+            <a class="block py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/teams.php"><?= __('nav.teams') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/games.php"><?= __('nav.games') ?></a>
+            <a class="block py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/games.php"><?= __('nav.games') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/season.php"><?= __('nav.season') ?></a>
+            <a class="block py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/season.php"><?= __('nav.season') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/frc-terms.php"><?= __('nav.frc_glossary') ?></a>
+            <a class="block py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/frc-terms.php"><?= __('nav.frc_glossary') ?></a>
 
-            <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/contact.php"><?= __('nav.contact') ?></a>
+            <a class="block py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/contact.php"><?= __('nav.contact') ?></a>
+
+            <a class="block py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E5AE32] hover:bg-gray-50" href="<?= BASE_URL ?>/calculator/"><?= __('nav.calculator') ?></a>
 
             <!-- Mobile Language Switcher -->
             <div class="flex gap-2 px-3 py-2">
